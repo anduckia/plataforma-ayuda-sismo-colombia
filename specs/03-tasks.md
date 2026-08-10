@@ -25,7 +25,7 @@ Cada tarea traza a requisitos (RF/RNF) y a la sección de la guía (`docs/guia-l
 - [ ] **T-103** 👤 Estructurar los SMS entrantes: categoría, urgencia, pin · (RF-09 · Guía §9)
 - [ ] **T-104** 👤 Exportar CSV mínimo 2 veces al día a las dos ubicaciones seguras · (RF-11)
 - [ ] **T-105** 🤝 Anonimizar contacto de solicitudes Resueltas con más de 48 h · (P2)
-- [ ] **T-106** 🤝 Publicar este repositorio en GitHub (público) para réplica; confirmar que `.gitignore` excluye todo dato personal · (RF-12, P7) — *Preparado 10-ago-2026:* auditoría sin datos personales ✅ · `.gitignore` reforzado ✅ · git inicializado con commit inicial ✅ · 👤 falta crear el repositorio público en GitHub y hacer push
+- [x] **T-106** 🤝 Publicar este repositorio en GitHub (público) para réplica; confirmar que `.gitignore` excluye todo dato personal · (RF-12, P7) — *Hecho 10-ago-2026:* https://github.com/anduckia/plataforma-ayuda-sismo-colombia · auditoría sin datos personales ✅ · `.gitignore` reforzado ✅
 
 ## Fase 2 · Evolución (solo si la operación lo exige)
 
