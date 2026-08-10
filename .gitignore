@@ -1,0 +1,20 @@
+# NUNCA subir datos de personas afectadas al repositorio (P2)
+exports/
+exportaciones/
+respaldos/
+backups/
+datos/
+*.csv
+*.xls
+*.xlsx
+*.vcf
+*.log
+
+# Secretos (clave de SMSSync, tokens, credenciales)
+.env
+.env.*
+
+# Archivos basura del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini

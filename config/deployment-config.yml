@@ -1,0 +1,131 @@
+# =====================================================================
+# FUENTE DE VERDAD de la configuración del despliegue (RF-12, P8).
+# La guía humana para aplicarla: docs/guia-lanzamiento.md
+# Fase 2 (RF-F2-03): aplicar este archivo automáticamente vía API.
+# Visibilidades: publico | protegido (Ayudantes verificados + admins) | solo_admin
+# =====================================================================
+
+despliegue:
+  nombre: "SOS Sismo Colombia — Ayuda ciudadana"
+  url: "https://sos-sismo-colombia.ushahidi.io/"
+  idioma: es
+  zona_horaria: America/Bogota
+  mapa:
+    centro: { lat: 5.0, lng: -76.2 }
+    nota: "zoom que abarque Chocó, Valle del Cauca, Risaralda, Quindío y Caldas"
+  publicacion_instantanea: true   # RF-02: desactivar la aprobación previa
+  descripcion_publica: >
+    Plataforma ciudadana para el sismo del 10 de agosto. Publica tu solicitud
+    para que la ayuda te encuentre. Tu teléfono y tu dirección exacta NUNCA son
+    públicos: solo los ven ayudantes verificados por el equipo. Nunca te
+    pediremos dinero, claves ni números de cuenta. Este sitio es gratuito.
+    Sin internet, envía un SMS al [NUMERO_SMS].
+
+categorias:
+  - "🆘 Rescate — persona atrapada"
+  - "🚑 Atención médica / paramédicos"
+  - "💊 Medicamentos"
+  - "🍞 Comida y agua"
+  - "🏠 Refugio / alojamiento"
+  - "🚜 Maquinaria / remoción de escombros"
+  - "🚐 Transporte / evacuación"
+  - "👮 Seguridad / Policía"
+  - "🔍 Búsqueda de familiares"
+  - "❓ Otro"
+
+roles:
+  - id: administrador
+    tipo: nativo
+  - id: ayudante_verificado
+    tipo: personalizado
+    otorgado_por: "el equipo, tras llamada de confirmación — nunca automático (RF-08, ADR-005)"
+    permisos:
+      - ver_campos_protegidos          # se marca campo por campo en la interfaz
+      - gestionar_publicaciones        # para actualizar Estado; revocable si la red crece
+
+encuestas:
+
+  pido_ayuda:
+    titulo: "🆘 Pido ayuda"
+    campos_nativos:
+      titulo:      { etiqueta: "¿Qué está pasando? (en una frase)" }
+      descripcion: { etiqueta: "Cuéntanos más" }
+    campos:
+      - { etiqueta: "¿Para quién pides ayuda?", tipo: opcion_unica, opciones: ["Para mí", "Para otra persona"], obligatorio: true, visibilidad: publico }
+      - { etiqueta: "Nombre o apodo", tipo: texto_corto, obligatorio: true, visibilidad: publico, ayuda: "No necesitas tu nombre completo." }
+      - { etiqueta: "¿Qué necesitas?", tipo: casillas_categorias, obligatorio: true, visibilidad: publico, ayuda: "Marca todas las que apliquen." }
+      - { etiqueta: "Urgencia", tipo: opcion_unica, opciones: ["🔴 CRÍTICA: vidas en riesgo ahora", "🟠 ALTA: necesito ayuda hoy", "🟡 MEDIA: puede esperar 1–2 días"], obligatorio: true, visibilidad: publico }
+      - { etiqueta: "¿Cuántas personas necesitan ayuda?", tipo: numero, obligatorio: true, visibilidad: publico }
+      - { etiqueta: "¿Hay personas vulnerables?", tipo: casillas, opciones: ["Bebés o niños", "Adultos mayores", "Heridos", "Personas con discapacidad", "Embarazo"], obligatorio: false, visibilidad: publico }
+      - { etiqueta: "Ubicación (punto en el mapa)", tipo: ubicacion, obligatorio: true, visibilidad: publico, ayuda: "Coloca el punto en tu BARRIO o VEREDA, no en tu casa exacta. La dirección precisa va en el siguiente campo y es privada." }
+      - { etiqueta: "Municipio y departamento", tipo: texto_corto, obligatorio: true, visibilidad: publico, ayuda: "Ej.: San José del Palmar, Chocó." }
+      - { etiqueta: "Dirección exacta y señas", tipo: texto_largo, obligatorio: true, visibilidad: protegido, ayuda: "Solo la verán ayudantes verificados por el equipo. Da señas claras: color de la casa, referencias, piso." }
+      - { etiqueta: "Teléfono de contacto", tipo: texto_corto, obligatorio: false, visibilidad: protegido, ayuda: "Opcional. Solo lo verán ayudantes verificados por el equipo; si lo escribes, autorizas que te llamen." }  # ADR-004
+      - { etiqueta: "Otra forma de contacto (pública)", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "Ej.: usuario de Instagram/X/Facebook, o el número de un familiar fuera de la zona." }
+      - { etiqueta: "Foto", tipo: imagen, obligatorio: false, visibilidad: publico, ayuda: "Solo si tu señal lo permite." }
+      - { etiqueta: "Estado de la solicitud", tipo: opcion_unica, opciones: ["🕐 Pendiente", "🚧 En atención", "✅ Resuelta"], defecto: "🕐 Pendiente", obligatorio: true, visibilidad: publico, ayuda: "Lo actualiza el equipo." }
+      - { etiqueta: "Verificación", tipo: opcion_unica, opciones: ["Sin verificar", "✔️ Verificada por el equipo"], defecto: "Sin verificar", obligatorio: true, visibilidad: publico }
+
+  busco_familiar:
+    titulo: "🔍 Busco a un familiar"
+    campos:
+      - { etiqueta: "Nombre de la persona buscada", tipo: texto_corto, obligatorio: true, visibilidad: publico, ayuda: "Si es menor de edad, escribe solo el nombre de pila." }
+      - { etiqueta: "Edad aproximada", tipo: numero, obligatorio: false, visibilidad: publico }
+      - { etiqueta: "Descripción física y ropa", tipo: texto_largo, obligatorio: false, visibilidad: publico }
+      - { etiqueta: "Último lugar donde se le vio (mapa)", tipo: ubicacion, obligatorio: true, visibilidad: publico, ayuda: "Punto aproximado." }
+      - { etiqueta: "Detalles del último contacto", tipo: texto_largo, obligatorio: false, visibilidad: publico, ayuda: "Fecha, hora, con quién estaba." }
+      - { etiqueta: "Foto", tipo: imagen, obligatorio: false, visibilidad: publico, ayuda: "Si es menor de edad, NO publiques foto: el equipo te contactará para gestionarla en privado." }
+      - { etiqueta: "Tu parentesco", tipo: texto_corto, obligatorio: false, visibilidad: publico }
+      - { etiqueta: "Tu teléfono", tipo: texto_corto, obligatorio: false, visibilidad: protegido, ayuda: "Solo lo verán ayudantes verificados." }
+      - { etiqueta: "Estado de la búsqueda", tipo: opcion_unica, opciones: ["🔍 Buscando", "✅ Localizada"], defecto: "🔍 Buscando", obligatorio: true, visibilidad: publico }
+    nota_publica: >
+      Recomienda registrar el caso también en el programa de Restablecimiento
+      del Contacto entre Familiares de la Cruz Roja Colombiana. Esta plataforma
+      complementa, no reemplaza, los canales oficiales.
+
+  quiero_ayudar:
+    titulo: "🤝 Quiero ayudar"
+    visibilidad_de_todos_los_campos: solo_admin   # RF-08
+    campos:
+      - { etiqueta: "Nombre completo", tipo: texto_corto, obligatorio: true }
+      - { etiqueta: "Organización (o «voluntario independiente»)", tipo: texto_corto, obligatorio: true }
+      - { etiqueta: "Teléfono", tipo: texto_corto, obligatorio: true }
+      - { etiqueta: "Municipios donde puedes actuar", tipo: texto_corto, obligatorio: true }
+      - { etiqueta: "Qué ofreces", tipo: casillas, opciones: ["Rescate", "Médico", "Transporte", "Maquinaria", "Alimentos", "Refugio", "Comunicaciones", "Otro"], obligatorio: true }
+      - { etiqueta: "Correo con el que creaste tu cuenta aquí", tipo: texto_corto, obligatorio: true, ayuda: "Para asignarte el rol tras la llamada de verificación." }
+    reglas_para_ayudantes:
+      - "Direcciones y teléfonos son confidenciales: prohibido sacarlos de la operación."
+      - "Al tomar un caso, cámbialo a «En atención»."
+      - "Al terminarlo, márcalo «Resuelta»."
+      - "Jamás pedir dinero ni datos bancarios a los afectados."
+
+sms:
+  fuente: SMSSync
+  apk_oficial: "https://github.com/ushahidi/SMSSync/releases/download/v3.1.1/smssync-withAnalyticsRelease-v3.1.1-RELEASE.apk"
+  numero: "[NUMERO_SMS]"   # T-012: reemplazar cuando exista la SIM
+  respuesta_automatica: >
+    Recibimos tu mensaje y ya es visible para los equipos de ayuda. Si puedes,
+    envía otro SMS con: municipio, barrio y cuántas personas son.
+  formato_difundido: "AYUDA + qué necesitas + cuántas personas + municipio y barrio"
+
+respaldos:
+  frecuencia: "mínimo 2 veces al día"
+  formato: CSV
+  destino: "dos ubicaciones seguras FUERA de este repositorio (P2)"
+
+difusion:
+  mensaje_whatsapp: >
+    🆘 SISMO COLOMBIA — Si necesitas ayuda (rescate, médicos, comida, refugio)
+    o buscas a un familiar, repórtalo aquí:
+    https://sos-sismo-colombia.ushahidi.io/ · Sin internet, envía un SMS al
+    [NUMERO_SMS] con: AYUDA + qué necesitas + cuántas personas + municipio y
+    barrio. Tu teléfono y dirección exacta NO se publican. Es gratuito.
+    Comparte 🙏
+  destinatarios_prioritarios:
+    - "PMU: Bogotá, Cali, Armenia, Quibdó"
+    - "UNGRD"
+    - "Cruz Roja Colombiana"
+    - "Defensa Civil"
+    - "Bomberos"
+    - "Alcaldías de municipios afectados (Chocó, Caldas, Valle, Risaralda, Quindío)"
+    - "Emisoras comunitarias y radio local (que lean el número SMS al aire)"
