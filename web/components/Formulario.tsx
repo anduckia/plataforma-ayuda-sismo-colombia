@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import SelectorUbicacion from './SelectorUbicacion';
+import SelectorMunicipio from './SelectorMunicipio';
 import {
   publicar, esDelEquipo, buscarParecidas, etiquetaDe, ayudaDe, FORMULARIOS,
   type Campo, type Encuesta, type Slug, type Solicitud,
@@ -14,6 +15,26 @@ import {
 
 /** El campo de imagen exige subida multipart aparte; queda fuera de esta versión. */
 const soportado = (c: Campo) => c.type !== 'media';
+
+/** Lista cerrada en vez de texto libre (RF-21, ADR-020). */
+const CAMPO_MUNICIPIO = 'Municipio y departamento';
+
+/**
+ * Los datos que necesita quien va en camino y que ninguna dirección da (RF-22).
+ * Van juntos, al final y plegados: son cinco preguntas más en un formulario que
+ * llena gente asustada, y sueltas alargarían la página para todo el mundo justo
+ * donde más se abandona. Ushahidi no tiene grupos de campos, así que el grupo
+ * es cosa de esta cara.
+ */
+const CAMPOS_ACCESO = [
+  'Cómo se llega',
+  'Punto de referencia comunitario',
+  '¿Hay dónde aterrizar cerca?',
+  'Tiempo desde el pueblo más cercano',
+  '¿La vía está bloqueada?',
+];
+
+const esDeAcceso = (c: Campo) => CAMPOS_ACCESO.includes(c.label);
 
 function Etiqueta({ campo }: { campo: Campo }) {
   const ayuda = ayudaDe(campo);
@@ -191,99 +212,133 @@ export default function Formulario({
     );
   }
 
+  const normales = campos.filter((c) => !esDeAcceso(c));
+  const acceso = campos.filter(esDeAcceso);
+
+  const pintar = (campo: Campo) => {
+    const v = valores[campo.id];
+
+    if (campo.label === CAMPO_MUNICIPIO) {
+      return (
+        <div className="campo" key={campo.id}>
+          <Etiqueta campo={campo} />
+          <SelectorMunicipio
+            valor={String(v ?? '')}
+            alCambiar={(s) => poner(campo.id, s)}
+            idCampo={`c${campo.id}`}
+          />
+        </div>
+      );
+    }
+
+    if (campo.input === 'location') {
+      return (
+        <div className="campo" key={campo.id} id={`c${campo.id}`}>
+          <Etiqueta campo={campo} />
+          <SelectorUbicacion
+            valor={(v as Punto) ?? null}
+            alCambiar={(p) => poner(campo.id, p)}
+          />
+        </div>
+      );
+    }
+
+    if (campo.input === 'radio') {
+      const opciones: string[] = (campo.options as string[]) ?? [];
+      const esUrgencia = campo.label === 'Urgencia';
+      return (
+        <fieldset className="campo" key={campo.id} id={`c${campo.id}`}
+                  style={{ border: 0, padding: 0, margin: '0 0 1.9rem' }}>
+          <legend className="campo__etiqueta" style={{ padding: 0 }}>
+            {etiquetaDe(campo)}
+            {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
+          </legend>
+          {ayudaDe(campo) && <span className="campo__ayuda">{ayudaDe(campo)}</span>}
+          <div className={esUrgencia ? 'urgencia' : 'opciones'}>
+            {opciones.map((o) => (
+              <label key={o} className={`opcion${v === o ? ' opcion--marcada' : ''}`}>
+                <input type="radio" name={`c${campo.id}`} value={o} checked={v === o}
+                       onChange={() => poner(campo.id, o)} />
+                <span>{o}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      );
+    }
+
+    if (campo.input === 'checkbox' || campo.input === 'tags') {
+      const esTags = campo.input === 'tags';
+      const opciones = (campo.options as any[]) ?? [];
+      const marcadas: any[] = v ?? [];
+      return (
+        <fieldset className="campo" key={campo.id} id={`c${campo.id}`}
+                  style={{ border: 0, padding: 0, margin: '0 0 1.9rem' }}>
+          <legend className="campo__etiqueta" style={{ padding: 0 }}>
+            {etiquetaDe(campo)}
+            {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
+          </legend>
+          {ayudaDe(campo) && <span className="campo__ayuda">{ayudaDe(campo)}</span>}
+          <div className="opciones">
+            {opciones.map((o) => {
+              const valorOpcion = esTags ? o.id : o;
+              const texto = esTags ? o.tag : o;
+              const marcada = marcadas.includes(valorOpcion);
+              return (
+                <label key={String(valorOpcion)}
+                       className={`opcion${marcada ? ' opcion--marcada' : ''}`}>
+                  <input type="checkbox" checked={marcada}
+                         onChange={() => alternar(campo.id, valorOpcion)} />
+                  <span>{texto}</span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+      );
+    }
+
+    const largo = campo.input === 'textarea';
+    return (
+      <div className="campo" key={campo.id}>
+        <Etiqueta campo={campo} />
+        {largo ? (
+          <textarea id={`c${campo.id}`} value={v ?? ''}
+                    onChange={(e) => poner(campo.id, e.target.value)} />
+        ) : (
+          <input id={`c${campo.id}`}
+                 type={campo.input === 'number' ? 'number' : 'text'}
+                 inputMode={campo.input === 'number' ? 'numeric' : undefined}
+                 value={v ?? ''}
+                 onChange={(e) =>
+                   poner(campo.id,
+                     campo.input === 'number'
+                       ? (e.target.value === '' ? '' : Number(e.target.value))
+                       : e.target.value)} />
+        )}
+      </div>
+    );
+  };
+
   return (
     <form onSubmit={enviar} noValidate>
-      {campos.map((campo) => {
-        const v = valores[campo.id];
+      {normales.map(pintar)}
 
-        if (campo.input === 'location') {
-          return (
-            <div className="campo" key={campo.id} id={`c${campo.id}`}>
-              <Etiqueta campo={campo} />
-              <SelectorUbicacion
-                valor={(v as Punto) ?? null}
-                alCambiar={(p) => poner(campo.id, p)}
-              />
-            </div>
-          );
-        }
-
-        if (campo.input === 'radio') {
-          const opciones: string[] = (campo.options as string[]) ?? [];
-          const esUrgencia = campo.label === 'Urgencia';
-          return (
-            <fieldset className="campo" key={campo.id} id={`c${campo.id}`}
-                      style={{ border: 0, padding: 0, margin: '0 0 1.9rem' }}>
-              <legend className="campo__etiqueta" style={{ padding: 0 }}>
-                {etiquetaDe(campo)}
-                {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
-              </legend>
-              {ayudaDe(campo) && <span className="campo__ayuda">{ayudaDe(campo)}</span>}
-              <div className={esUrgencia ? 'urgencia' : 'opciones'}>
-                {opciones.map((o) => (
-                  <label key={o} className={`opcion${v === o ? ' opcion--marcada' : ''}`}>
-                    <input type="radio" name={`c${campo.id}`} value={o} checked={v === o}
-                           onChange={() => poner(campo.id, o)} />
-                    <span>{o}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          );
-        }
-
-        if (campo.input === 'checkbox' || campo.input === 'tags') {
-          const esTags = campo.input === 'tags';
-          const opciones = (campo.options as any[]) ?? [];
-          const marcadas: any[] = v ?? [];
-          return (
-            <fieldset className="campo" key={campo.id} id={`c${campo.id}`}
-                      style={{ border: 0, padding: 0, margin: '0 0 1.9rem' }}>
-              <legend className="campo__etiqueta" style={{ padding: 0 }}>
-                {etiquetaDe(campo)}
-                {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
-              </legend>
-              {ayudaDe(campo) && <span className="campo__ayuda">{ayudaDe(campo)}</span>}
-              <div className="opciones">
-                {opciones.map((o) => {
-                  const valorOpcion = esTags ? o.id : o;
-                  const texto = esTags ? o.tag : o;
-                  const marcada = marcadas.includes(valorOpcion);
-                  return (
-                    <label key={String(valorOpcion)}
-                           className={`opcion${marcada ? ' opcion--marcada' : ''}`}>
-                      <input type="checkbox" checked={marcada}
-                             onChange={() => alternar(campo.id, valorOpcion)} />
-                      <span>{texto}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-          );
-        }
-
-        const largo = campo.input === 'textarea';
-        return (
-          <div className="campo" key={campo.id}>
-            <Etiqueta campo={campo} />
-            {largo ? (
-              <textarea id={`c${campo.id}`} value={v ?? ''}
-                        onChange={(e) => poner(campo.id, e.target.value)} />
-            ) : (
-              <input id={`c${campo.id}`}
-                     type={campo.input === 'number' ? 'number' : 'text'}
-                     inputMode={campo.input === 'number' ? 'numeric' : undefined}
-                     value={v ?? ''}
-                     onChange={(e) =>
-                       poner(campo.id,
-                         campo.input === 'number'
-                           ? (e.target.value === '' ? '' : Number(e.target.value))
-                           : e.target.value)} />
-            )}
-          </div>
-        );
-      })}
+      {/*
+        RF-22: plegado y al final. Quien está en un barrio con calle asfaltada
+        no necesita ni abrirlo; quien está donde solo entra un helicóptero tiene
+        aquí lo único que hace que ese helicóptero sepa dónde bajar.
+      */}
+      {acceso.length > 0 && (
+        <details className="acceso">
+          <summary className="acceso__titulo">Solo si tu zona es de difícil acceso</summary>
+          <p className="campo__ayuda acceso__ayuda">
+            Todo esto es opcional y <strong>público</strong>: lo lee quien va en camino.
+            Si estás en un sitio al que no se llega por carretera, es lo que más ayuda.
+          </p>
+          {acceso.map(pintar)}
+        </details>
+      )}
 
       {error && (
         <div className="aviso aviso--error" role="alert">

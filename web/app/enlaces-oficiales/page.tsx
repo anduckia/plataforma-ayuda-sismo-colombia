@@ -1,0 +1,114 @@
+import LineasEmergencia from '@/components/LineasEmergencia';
+import {
+  ADVERTENCIA, DEFENSA_CIVIL_CHOCO, DONACIONES, FAMILIARES, INFORMACION,
+  VERIFICADO, VIVIENDA, type Enlace,
+} from '@/lib/enlaces';
+
+export const metadata = {
+  title: 'Canales oficiales — SOS Sismo Colombia',
+  description:
+    'Líneas de emergencia, búsqueda de familiares por la Cruz Roja, reporte de vivienda ' +
+    'dañada, donaciones e información oficial tras el sismo. Enlaces directos, verificados.',
+};
+
+function Bloque({
+  id, titulo, entradilla, enlaces,
+}: {
+  id: string; titulo: string; entradilla: string; enlaces: Enlace[];
+}) {
+  return (
+    <section className="bloque" id={id}>
+      <h2>{titulo}</h2>
+      <p className="entradilla">{entradilla}</p>
+      <ul className="enlaces">
+        {enlaces.map((e) => (
+          <li key={e.url} className="enlace">
+            <a className="enlace__titulo" href={e.url} target="_blank" rel="noopener noreferrer">
+              {e.titulo}
+            </a>
+            <span className="enlace__que">{e.que}</span>
+            {e.detalle && <span className="enlace__detalle">{e.detalle}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export default function EnlacesOficiales() {
+  return (
+    <>
+      <h1>Canales oficiales</h1>
+      <p className="entradilla">
+        Esta plataforma no reemplaza a nadie. Para casi todo lo que necesitas, quien
+        responde está aquí abajo.
+      </p>
+
+      {/*
+        RF-25: la advertencia encabeza todo. Tras un desastre circulan más
+        cadenas que datos, y las estafas de donaciones llegan antes que la ayuda.
+      */}
+      <div className="aviso aviso--error">
+        <p className="aviso__titulo">⚠️ Antes de reenviar nada</p>
+        <p style={{ marginBottom: 0 }}>{ADVERTENCIA}</p>
+      </div>
+
+      <LineasEmergencia />
+
+      <p className="campo__ayuda" style={{ marginTop: '-0.5rem' }}>
+        En el Chocó, la Defensa Civil también atiende en los celulares{' '}
+        {DEFENSA_CIVIL_CHOCO.map((c, i) => (
+          <span key={c}>
+            {i > 0 && ' y '}
+            <a href={`tel:${c.replace(/ /g, '')}`}><strong>{c}</strong></a>
+          </span>
+        ))}
+        .
+      </p>
+
+      <Bloque
+        id="familiares"
+        titulo="No encuentro a un familiar"
+        entradilla="Empieza por la Cruz Roja: es el canal con más alcance y el que conecta con
+                    la red internacional. Después, el registro oficial del Estado."
+        enlaces={FAMILIARES}
+      />
+      <p className="campo__ayuda">
+        Puedes hacer las dos cosas: registrar el caso ahí <strong>y</strong>{' '}
+        <a href="/busco-familiar">publicarlo aquí</a> para que más ojos lo busquen. Lo
+        segundo no reemplaza a lo primero.
+      </p>
+
+      <Bloque
+        id="vivienda"
+        titulo="Mi casa quedó dañada"
+        entradilla="Si no hay nadie en peligro pero la estructura está afectada, esto es lo
+                    que sirve. Si hay alguien dentro o riesgo de colapso, llama al 123."
+        enlaces={VIVIENDA}
+      />
+
+      <Bloque
+        id="donaciones"
+        titulo="Quiero donar"
+        entradilla="Enlazamos a la página de cada organización en vez de copiar aquí sus
+                    números de cuenta: un dígito mal transcrito manda tu dinero al lugar
+                    equivocado. Nosotros nunca recibimos dinero."
+        enlaces={DONACIONES}
+      />
+
+      <Bloque
+        id="informacion"
+        titulo="Información oficial"
+        entradilla="Magnitud, réplicas, balances y estado de las vías. Si vas a mover un
+                    convoy, el reporte de Invías es obligatorio antes de salir."
+        enlaces={INFORMACION}
+      />
+
+      <p className="pie">
+        Todos los enlaces y números de esta página se comprobaron uno a uno el{' '}
+        <strong>{VERIFICADO}</strong>. Si encuentras uno que ya no funciona, escríbenos y
+        lo corregimos. · <a href="/">Volver al inicio</a>
+      </p>
+    </>
+  );
+}

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import type { Solicitud } from '@/lib/ushahidi';
 import { colorDe } from '@/lib/colores';
+import { sinConfirmar } from '@/lib/frescura';
 
 const CENTRO: [number, number] = [5.0, -76.2];
 const ZOOM = 7;
@@ -33,7 +34,11 @@ export default function MapaSolicitudes({ solicitudes }: { solicitudes: Solicitu
 
       const conPunto = solicitudes.filter((s) => s.punto);
       for (const s of conPunto) {
+        // ADR-021: el color sale SOLO de la urgencia. La antigüedad se escribe
+        // en el globo y no toca el pin: atenuar lo viejo apagaría justo el caso
+        // que lleva más horas esperando a que alguien llegue.
         const c = colorDe(s);
+        const espera = sinConfirmar(s);
         L.marker([s.punto!.lat, s.punto!.lon], {
           icon: L.divIcon({
             className: '',
@@ -50,7 +55,8 @@ export default function MapaSolicitudes({ solicitudes }: { solicitudes: Solicitu
             (s.tipo === 'busqueda' ? '<br>Busco a un familiar' : '') +
             (s.urgencia ? `<br>${escapar(s.urgencia)}` : '') +
             (s.municipio ? `<br>${escapar(s.municipio)}` : '') +
-            (s.estado ? `<br>Estado: ${escapar(s.estado)}` : ''),
+            (s.estado ? `<br>Estado: ${escapar(s.estado)}` : '') +
+            (espera ? `<br>⏳ Sin confirmar ${escapar(espera)}` : ''),
           );
       }
 
