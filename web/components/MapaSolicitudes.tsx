@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import type { Solicitud } from '@/lib/ushahidi';
+import { colorDe } from '@/lib/colores';
 
 const CENTRO: [number, number] = [5.0, -76.2];
 const ZOOM = 7;
@@ -10,15 +11,6 @@ const TESELAS = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
 const CREDITO =
   '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>, ' +
   '<a href="https://hot.openstreetmap.org/">Humanitarian OSM</a>';
-
-/** El color del punto es la urgencia: es lo único que hay que leer de un vistazo. */
-function color(urgencia: string | null): string {
-  if (!urgencia) return '#4A453E';
-  if (urgencia.includes('CRÍTICA')) return '#C1121F';
-  if (urgencia.includes('ALTA')) return '#D9541A';
-  if (urgencia.includes('MEDIA')) return '#B8860B';
-  return '#4A453E';
-}
 
 const escapar = (s: string) =>
   s.replace(/[&<>"']/g, (c) =>
@@ -41,7 +33,7 @@ export default function MapaSolicitudes({ solicitudes }: { solicitudes: Solicitu
 
       const conPunto = solicitudes.filter((s) => s.punto);
       for (const s of conPunto) {
-        const c = color(s.urgencia);
+        const c = colorDe(s);
         L.marker([s.punto!.lat, s.punto!.lon], {
           icon: L.divIcon({
             className: '',
@@ -55,6 +47,7 @@ export default function MapaSolicitudes({ solicitudes }: { solicitudes: Solicitu
           .addTo(mapa)
           .bindPopup(
             `<strong>${escapar(s.title)}</strong>` +
+            (s.tipo === 'busqueda' ? '<br>Busco a un familiar' : '') +
             (s.urgencia ? `<br>${escapar(s.urgencia)}` : '') +
             (s.municipio ? `<br>${escapar(s.municipio)}` : '') +
             (s.estado ? `<br>Estado: ${escapar(s.estado)}` : ''),

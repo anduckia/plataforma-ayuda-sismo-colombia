@@ -46,7 +46,10 @@ categorias:
   - "Transporte / evacuación"
   - "Seguridad / Policía"
   - "Búsqueda de familiares"
-  - "Iluminación / energía"          # RF-14: la noche sin luz
+  # «Iluminación / energía» se retiró el 11-ago-2026 (RF-14): hace falta luz en toda
+  # la zona, así que la marcaría casi todo el mundo y no ordenaría el triaje, lo
+  # saturaría. Sigue existiendo como opción de «Qué ofreces» en «Ofrezco recursos».
+  # En el despliegue vivo quedó creada (id 11) y sin usar: borrarla es manual.
   - "Otro"
 
 roles:
@@ -104,6 +107,7 @@ encuestas:
 
   quiero_ayudar:
     titulo: "Quiero ayudar"             # sin emoji: ADR-007
+    aprobacion_previa: true             # RF-16, ADR-016: solo la ve el equipo
     visibilidad_de_todos_los_campos: solo_admin   # RF-08 (aplica a los campos de abajo)
     # El Título y la Descripción nativos son SIEMPRE públicos en la plataforma:
     # se etiquetan para que nadie ponga ahí datos personales (P2).
@@ -130,6 +134,7 @@ encuestas:
 
   ofrezco_recursos:                     # RF-14, ADR-015
     titulo: "Ofrezco recursos"          # sin emoji: ADR-007
+    aprobacion_previa: true             # RF-16, ADR-016: solo la ve el equipo
     campos_nativos:
       titulo:      { etiqueta: "Título público (ej.: «Retroexcavadora — Pereira»)", ayuda: "NO escribas aquí tu nombre ni tu teléfono: van abajo, en campos que solo ve el equipo." }
       descripcion: { etiqueta: "Detalle del recurso (sin datos personales)", obligatorio: false, ayuda: "Ej.: retroexcavadora sobre orugas; 2 plantas de 5 kW; 40 cascos; camión de 10 t. La maquinaria solo entra a un punto de rescate cuando un organismo de socorro lo solicita: un mal movimiento puede costar una vida." }

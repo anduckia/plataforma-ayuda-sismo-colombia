@@ -165,20 +165,20 @@ export default function Formulario({
   }
 
   if (publicadoId !== null) {
+    const { titulo, palabra, detalle, verMapa } = FORMULARIOS[slug].confirmacion;
     return (
       <div className="aviso">
-        <p className="aviso__titulo">Publicado. Ya es visible para los equipos de ayuda.</p>
+        <p className="aviso__titulo">{titulo}</p>
         <p>
-          Tu número de solicitud es el <strong>{publicadoId}</strong>. Anótalo: sirve para
-          preguntar por ella.
+          Guarda este número: <strong>{publicadoId}</strong>. Con él puedes preguntar por
+          tu {palabra}.
         </p>
-        <p>
-          El equipo revisa primero las solicitudes críticas. Si dejaste un teléfono, pueden
-          llamarte para confirmar.
-        </p>
-        <p style={{ marginTop: '1.25rem' }}>
-          <a className="boton boton--secundario" href="/mapa">Ver el mapa de solicitudes</a>
-        </p>
+        <p>{detalle}</p>
+        {verMapa && (
+          <p style={{ marginTop: '1.25rem' }}>
+            <a className="boton boton--secundario" href="/mapa">Ver el mapa de solicitudes</a>
+          </p>
+        )}
       </div>
     );
   }

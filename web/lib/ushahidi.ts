@@ -41,9 +41,11 @@ export interface Encuesta {
  *
  * `meta` es la descripción propia de cada página: compartir las cuatro URLs con
  * el mismo resumen hacía que en WhatsApp todas se vieran como «Pido ayuda».
- * `pie` es lo que se promete bajo el botón, y cambia según dónde acaban los
- * datos: en «Pido ayuda» la publicación es el objetivo; en los dos formularios
- * de contacto, prometer visibilidad inmediata sería mentir (P5).
+ * `pie` es lo que se promete bajo el botón y `confirmacion` lo que se dice
+ * después; ambos cambian según dónde acaban los datos. En las dos encuestas de
+ * auxilio la publicación es el objetivo. En las dos de oferta el envío entra
+ * como borrador y solo lo ve el equipo (ADR-016): prometer ahí visibilidad
+ * inmediata, o mandar a alguien a buscarse en el mapa, sería mentirle (P5).
  */
 export const FORMULARIOS = {
   'pido-ayuda': {
@@ -55,6 +57,13 @@ export const FORMULARIOS = {
     meta: 'Publica qué necesitas y dónde estás para que los equipos de ayuda te ' +
       'encuentren. Tu teléfono y tu dirección exacta nunca son públicos. Sin cuenta y gratis.',
     pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
+    confirmacion: {
+      titulo: 'Publicado. Ya es visible para los equipos de ayuda.',
+      palabra: 'solicitud',
+      detalle: 'El equipo revisa primero las solicitudes críticas. Si dejaste un teléfono, ' +
+        'pueden llamarte para confirmar.',
+      verMapa: true,
+    },
   },
   'busco-familiar': {
     nombreApi: 'Busco a un familiar',
@@ -65,6 +74,13 @@ export const FORMULARIOS = {
     meta: 'Publica los datos de la persona que no aparece para que más ojos la busquen. ' +
       'Tu teléfono no se publica. Registra el caso también en la Cruz Roja Colombiana.',
     pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
+    confirmacion: {
+      titulo: 'Publicado. Ya es visible para quien esté buscando.',
+      palabra: 'búsqueda',
+      detalle: 'Registra el caso también en el programa de Restablecimiento del Contacto ' +
+        'entre Familiares de la Cruz Roja Colombiana.',
+      verMapa: true,
+    },
   },
   'quiero-ayudar': {
     nombreApi: 'Quiero ayudar',
@@ -75,6 +91,13 @@ export const FORMULARIOS = {
     meta: 'Regístrate como voluntario u organización. El equipo te llama para verificarte ' +
       'y luego te da acceso a los datos de contacto de quienes piden ayuda.',
     pie: 'Tus datos solo los ve el equipo; te llamaremos para verificarte.',
+    confirmacion: {
+      titulo: 'Recibido. Lo tiene el equipo.',
+      palabra: 'registro',
+      detalle: 'No aparece en el mapa público ni lo ve nadie más: tu registro queda a la ' +
+        'espera de que el equipo te llame para verificarte. Ten el teléfono a mano.',
+      verMapa: false,
+    },
   },
   'ofrezco-recursos': {
     nombreApi: 'Ofrezco recursos',
@@ -85,10 +108,34 @@ export const FORMULARIOS = {
     meta: 'Registra maquinaria, plantas eléctricas, iluminación, herramienta o transporte ' +
       'para que el equipo los cruce con quien los necesita. Tu teléfono no se publica.',
     pie: 'Tus datos de contacto solo los ve el equipo; te llamaremos para coordinar la asignación.',
+    confirmacion: {
+      titulo: 'Recibido. Lo tiene el equipo.',
+      palabra: 'recurso',
+      detalle: 'No aparece en el mapa público: el equipo lo cruza con las necesidades y te ' +
+        'llama para asignarte. Recuerda que la maquinaria solo entra a un punto de rescate ' +
+        'cuando un organismo de socorro lo pide.',
+      verMapa: false,
+    },
   },
 } as const;
 
 export type Slug = keyof typeof FORMULARIOS;
+
+/**
+ * Lo único que sale al mapa y al listado público (RF-16, ADR-016).
+ *
+ * El mapa es la herramienta de triaje: mezclar ofertas de maquinaria y
+ * registros de voluntarios con personas atrapadas lo vuelve ilegible justo
+ * cuando hay que leerlo rápido. Las dos encuestas de oferta van además con
+ * aprobación previa en el backend, porque esconderlas solo aquí no serviría
+ * de nada: `GET /api/v5/posts` responde sin token a quien lo pida.
+ */
+export const EN_EL_MAPA = {
+  'pido-ayuda': 'auxilio',
+  'busco-familiar': 'busqueda',
+} as const;
+
+export type Tipo = (typeof EN_EL_MAPA)[keyof typeof EN_EL_MAPA];
 
 /**
  * Campos que llena el equipo, no quien publica. Se envían con su valor por
@@ -156,6 +203,7 @@ export async function traerEncuesta(slug: Slug): Promise<Encuesta> {
 
 export interface Solicitud {
   id: number;
+  tipo: Tipo;
   title: string;
   content: string;
   fecha: string;
@@ -174,18 +222,44 @@ const valorDe = (campo: any): any => {
   return v ?? null;
 };
 
+/**
+ * Qué encuesta es cada `form_id`, resuelto por nombre y no por id fijo: los ids
+ * cambian de un despliegue a otro y este front tiene que servir para replicar.
+ */
+async function encuestasDelMapa(): Promise<Map<number, Tipo>> {
+  const lista = await pedir('/api/v5/surveys');
+  const porNombre = new Map<string, Tipo>(
+    (Object.keys(EN_EL_MAPA) as (keyof typeof EN_EL_MAPA)[])
+      .map((slug) => [FORMULARIOS[slug].nombreApi as string, EN_EL_MAPA[slug]]),
+  );
+  const salida = new Map<number, Tipo>();
+  for (const s of lista.results ?? []) {
+    const tipo = porNombre.get(s.name);
+    if (tipo) salida.set(s.id, tipo);
+  }
+  return salida;
+}
+
 /** Solicitudes publicadas, ya normalizadas para pintarlas en mapa y lista. */
 export async function traerSolicitudes(limite = 200): Promise<Solicitud[]> {
-  const datos = await pedir(`/api/v5/posts?limit=${limite}&order=desc&orderby=post_date`);
-  return (datos.results ?? []).map((p: any): Solicitud => {
+  const [tipoPorEncuesta, datos] = await Promise.all([
+    encuestasDelMapa(),
+    pedir(`/api/v5/posts?limit=${limite}&order=desc&orderby=post_date`),
+  ]);
+
+  return (datos.results ?? []).flatMap((p: any): Solicitud[] => {
+    // Fuera todo lo que no sea auxilio o búsqueda (RF-16).
+    const tipo = tipoPorEncuesta.get(p.form_id);
+    if (!tipo) return [];
     const campos: any[] = (p.post_content ?? []).flatMap((t: any) => t.fields ?? []);
     const porEtiqueta = (etiqueta: string) => campos.find((f) => f.label === etiqueta);
     const punto = valorDe(porEtiqueta('Ubicación (punto en el mapa)')) ??
       valorDe(porEtiqueta('Último lugar donde se le vio (mapa)'));
     const categorias = porEtiqueta('¿Qué necesitas?')?.value;
 
-    return {
+    return [{
       id: p.id,
+      tipo,
       title: p.title ?? 'Sin título',
       content: p.content ?? '',
       fecha: p.post_date ?? p.created,
@@ -197,7 +271,7 @@ export async function traerSolicitudes(limite = 200): Promise<Solicitud[]> {
       municipio: valorDe(porEtiqueta('Municipio y departamento')),
       necesidades: Array.isArray(categorias) ? categorias.map((c: any) => c.tag) : [],
       punto: punto && typeof punto === 'object' && 'lat' in punto ? punto : null,
-    };
+    }];
   });
 }
 

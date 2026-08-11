@@ -1,15 +1,46 @@
 import MapaSolicitudes from '@/components/MapaSolicitudes';
 import { traerSolicitudes, type Solicitud } from '@/lib/ushahidi';
+import { COLORES, LEYENDA, nivelDe } from '@/lib/colores';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Mapa de solicitudes — SOS Sismo Colombia' };
+export const metadata = {
+  title: 'Mapa de solicitudes — SOS Sismo Colombia',
+  description:
+    'Mapa de las solicitudes de ayuda y las búsquedas de familiares publicadas tras el ' +
+    'sismo. El color indica la urgencia. Los teléfonos y las direcciones exactas no aparecen.',
+};
 
-function clase(urgencia: string | null): string {
-  if (!urgencia) return 'sin';
-  if (urgencia.includes('CRÍTICA')) return 'critica';
-  if (urgencia.includes('ALTA')) return 'alta';
-  if (urgencia.includes('MEDIA')) return 'media';
-  return 'sin';
+const plural = (n: number, singular: string, plural_: string) =>
+  `${n} ${n === 1 ? singular : plural_}`;
+
+/**
+ * El recuento desglosado: «14 solicitudes» no le dice nada a quien tría. Lo que
+ * hace falta saber de un vistazo es cuántas están en rojo (RF-16).
+ */
+function resumen(solicitudes: Solicitud[]): string {
+  const cuenta = (nivel: string) =>
+    solicitudes.filter((s) => nivelDe(s) === nivel).length;
+
+  const busquedas = cuenta('busqueda');
+  const auxilio = solicitudes.length - busquedas;
+
+  const partes: string[] = [];
+  if (auxilio > 0) {
+    const desglose = [
+      cuenta('critica') && `${cuenta('critica')} críticas`,
+      cuenta('alta') && `${cuenta('alta')} altas`,
+      cuenta('media') && `${cuenta('media')} medias`,
+      cuenta('sin') && `${cuenta('sin')} sin urgencia indicada`,
+    ].filter(Boolean) as string[];
+    partes.push(
+      plural(auxilio, 'solicitud de ayuda', 'solicitudes de ayuda') +
+      (desglose.length ? ` (${desglose.join(', ')})` : ''),
+    );
+  }
+  if (busquedas > 0) {
+    partes.push(plural(busquedas, 'búsqueda de familiar', 'búsquedas de familiar'));
+  }
+  return partes.join(' y ') + '.';
 }
 
 const cuando = (iso: string) => {
@@ -41,11 +72,22 @@ export default async function PaginaMapa() {
           ? 'No pudimos cargar las solicitudes en este momento.'
           : solicitudes.length === 0
             ? 'Todavía no hay solicitudes publicadas.'
-            : `${solicitudes.length} solicitudes, ${conPunto} con punto en el mapa. ` +
-              'El color indica la urgencia.'}
+            : `${resumen(solicitudes)} ${conPunto} con punto en el mapa.`}
       </p>
 
-      {!fallo && solicitudes.length > 0 && <MapaSolicitudes solicitudes={solicitudes} />}
+      {!fallo && solicitudes.length > 0 && (
+        <>
+          <ul className="leyenda">
+            {LEYENDA.map(({ nivel, texto }) => (
+              <li key={nivel}>
+                <span className="leyenda__punto" style={{ background: COLORES[nivel] }} />
+                {texto}
+              </li>
+            ))}
+          </ul>
+          <MapaSolicitudes solicitudes={solicitudes} />
+        </>
+      )}
 
       {!fallo && solicitudes.length === 0 && (
         <div className="vacio">
@@ -59,10 +101,14 @@ export default async function PaginaMapa() {
           <h2>Lista</h2>
           <ul className="solicitudes">
             {solicitudes.map((s) => (
-              <li key={s.id} className={`solicitud solicitud--${clase(s.urgencia)}`}>
+              <li key={s.id} className={`solicitud solicitud--${nivelDe(s)}`}>
                 <div className="solicitud__titulo">{s.title}</div>
                 <div className="solicitud__meta">
-                  {[s.urgencia, s.municipio, cuando(s.fecha)].filter(Boolean).join(' · ')}
+                  {[
+                    s.tipo === 'busqueda' ? 'Busco a un familiar' : s.urgencia,
+                    s.municipio,
+                    cuando(s.fecha),
+                  ].filter(Boolean).join(' · ')}
                 </div>
                 <div className="etiquetas">
                   {s.estado && <span className="etiqueta">{s.estado}</span>}

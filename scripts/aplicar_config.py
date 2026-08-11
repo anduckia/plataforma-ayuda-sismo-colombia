@@ -305,7 +305,9 @@ def _construir_encuesta(spec: dict, ids_cat: dict[str, int], ocultar_autor: bool
         "name": nombre_admitido(spec["titulo"]),
         "description": " ".join((spec.get("nota_publica") or spec["titulo"]).split()),
         "type": "report",
-        "require_approval": False,      # RF-02: publicación instantánea
+        # RF-02: las de auxilio salen al aire al instante. Las de oferta piden
+        # aprobación previa y solo las ve el equipo (RF-16, ADR-016).
+        "require_approval": bool(spec.get("aprobacion_previa", False)),
         "everyone_can_create": True,
         "hide_author": ocultar_autor,   # P2: no exponer el nombre de quien publica
         "disabled": False,
@@ -336,9 +338,16 @@ def encuestas(api: Api, cfg: dict, ids_cat: dict[str, int], reg: Registro, recre
         if actual:
             reg.igual(f"Encuesta «{nombre}» ya existe (id {actual['id']}) — usa "
                       f"--recrear-encuestas para rehacerla desde el YAML")
-            if actual.get("require_approval"):
-                api.put(f"/api/v5/surveys/{actual['id']}", {**actual, "require_approval": False})
-                reg.hecho(f"  publicación instantánea activada en «{nombre}»")
+            # La aprobación previa sí se reconcilia en las encuestas que ya
+            # existen, en los dos sentidos: es lo único que separa «lo ve todo
+            # el mundo» de «lo ve solo el equipo» (ADR-016), y no vale la pena
+            # borrar una encuesta con publicaciones dentro para cambiarlo.
+            quiere = cuerpo["require_approval"]
+            if bool(actual.get("require_approval")) != quiere:
+                api.put(f"/api/v5/surveys/{actual['id']}",
+                        {**actual, "require_approval": quiere})
+                reg.hecho(f"  «{nombre}»: aprobación previa "
+                          f"{'activada — solo la ve el equipo' if quiere else 'desactivada'}")
         else:
             api.post("/api/v5/surveys", cuerpo)
             protegidos = sum(1 for f in cuerpo["tasks"][0]["fields"] if f["response_private"])
@@ -370,10 +379,21 @@ def auditar(api: Api, cfg: dict) -> int:
         detalle = api.get(f"/api/v5/surveys/{s['id']}")["result"]
         campos = {f["label"]: f for t in detalle.get("tasks", []) for f in t.get("fields", [])}
         forzada = spec.get("visibilidad_de_todos_los_campos")
-        print(f"\n  {nombre} — {len(campos)} campos · "
-              f"aprobación previa: {'SÍ ✗' if detalle.get('require_approval') else 'no ✓'}")
-        if detalle.get("require_approval"):
-            fallos.append(f"«{nombre}» exige aprobación previa (rompe RF-02)")
+        # La aprobación previa se compara contra el YAML, no contra «siempre no»:
+        # en las de oferta es justo lo que las mantiene fuera del ojo público, y
+        # que se apagara sola sería la fuga que ADR-016 viene a cerrar.
+        quiere_aprobacion = bool(spec.get("aprobacion_previa", False))
+        tiene_aprobacion = bool(detalle.get("require_approval"))
+        ok_aprobacion = tiene_aprobacion == quiere_aprobacion
+        print(f"\n  {nombre} — {len(campos)} campos · aprobación previa: "
+              f"{'sí' if tiene_aprobacion else 'no'} {'✓' if ok_aprobacion else '✗'}"
+              f"{' · solo la ve el equipo' if tiene_aprobacion else ''}")
+        if not ok_aprobacion:
+            fallos.append(
+                f"«{nombre}» exige aprobación previa y no debería (rompe RF-02)"
+                if tiene_aprobacion else
+                f"«{nombre}» publica al instante y debería exigir aprobación previa: "
+                f"queda a la vista de cualquiera (rompe RF-16, ADR-016)")
 
         for c in spec.get("campos", []):
             etiqueta = c["etiqueta"]

@@ -429,6 +429,32 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
 .solicitud--alta { border-left-color: var(--alta); }
 .solicitud--media { border-left-color: var(--media); }
 .solicitud--sin { border-left-color: var(--linea); }
+/* La búsqueda de familiar no tiene urgencia: se distingue por color, no por escala. */
+.solicitud--busqueda { border-left-color: var(--busqueda); }
+
+/*
+  Leyenda del mapa. Sin ella los colores son decoración: quien llega de nuevo
+  no tiene cómo saber que el rojo es «persona atrapada» y el azul «desaparecida».
+*/
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.leyenda li { display: flex; align-items: center; gap: 0.4rem; }
+
+.leyenda__punto {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 2px solid var(--tinta);
+  flex: none;
+}
 
 .solicitud__titulo { font-weight: 750; letter-spacing: -0.015em; margin-bottom: 0.2rem; }
 .solicitud__meta { font-size: 0.875rem; color: var(--tinta-suave); }

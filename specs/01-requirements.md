@@ -22,6 +22,7 @@
 ### RF-02 · Publicación instantánea con marca de verificación (P1, P3)
 - CUANDO se crea una solicitud, EL SISTEMA DEBERÁ publicarla de inmediato con el campo Verificación = **«Sin verificar»**.
 - CUANDO el Equipo confirma una solicitud, EL SISTEMA DEBERÁ permitir cambiar Verificación a **«Verificada por el equipo»**, visible para todos.
+- **Alcance:** esto aplica a las dos encuestas de auxilio —«Pido ayuda» y «Busco a un familiar»—, que son las que salvan tiempo saliendo al aire al instante. Las dos de oferta van con aprobación previa (RF-16, ADR-016): nadie está esperando a que se publique una retroexcavadora.
 
 ### RF-03 · Contacto protegido por rol (P2)
 - MIENTRAS un visitante no autenticado o un usuario sin rol vea una solicitud, EL SISTEMA DEBERÁ ocultar los campos **Teléfono** y **Dirección exacta y señas**.
@@ -91,7 +92,15 @@
 - EL SISTEMA DEBERÁ ofrecer el formulario «Ofrezco recursos», sin cuenta, con nombre y teléfono del oferente **protegidos** (RF-03).
 - Cada recurso DEBERÁ tener Estado —🟢 Disponible (defecto) → 🔵 Asignado → ⚪ Retirado— para evitar el doble despacho, oculto en el front y enviado por código (ADR-011).
 - El formulario DEBERÁ mostrar de forma visible la regla de seguridad: **la maquinaria solo entra a un punto de rescate cuando un organismo de socorro lo solicita**.
-- Las necesidades DEBERÁN incluir la categoría «Iluminación / energía».
+- ~~Las necesidades DEBERÁN incluir la categoría «Iluminación / energía».~~ **Retirado el 11-ago-2026 por decisión del equipo:** hace falta luz en toda la zona afectada, así que la categoría la marcaría casi todo el mundo y dejaría de discriminar nada. Saturaría la cola de triaje en vez de ordenarla. Quien necesite luz lo escribe en la descripción; el lado de la oferta sí la conserva como opción de «Qué ofreces».
+- Las publicaciones de «Ofrezco recursos» DEBERÁN ser visibles **solo para el equipo** hasta que el equipo las revise (ADR-016).
+
+### RF-16 · Las ofertas no son cartelera pública (P1, P2)
+**Historia:** como Equipo, no queremos que el mapa de emergencia se llene de ofertas y registros de voluntarios, ni que los datos de quien se ofrece queden expuestos, porque el mapa existe para encontrar a quien necesita ayuda.
+- El mapa y el listado público DEBERÁN mostrar **únicamente** «Pido ayuda» y «Busco a un familiar».
+- «Quiero ayudar» y «Ofrezco recursos» DEBERÁN entrar con aprobación previa y quedar visibles solo en el panel del equipo (ADR-016). Esconderlos únicamente en el front no basta: la API es pública y anónima.
+- El recuento bajo el mapa DEBERÁ desglosar las solicitudes por urgencia (críticas, altas, medias) y contar aparte las búsquedas de familiar.
+- Los dos formularios de oferta DEBERÁN decir la verdad al confirmar: no prometen publicación inmediata, sino revisión y llamada del equipo (P5).
 
 ### RF-15 · Cara pública propia (P1, P4, P5)
 **Historia:** como Afectado con mala señal y con miedo, quiero una página mínima, en castellano, que cargue y me deje pedir ayuda en un minuto.
