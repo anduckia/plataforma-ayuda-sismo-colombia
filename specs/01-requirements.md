@@ -48,7 +48,9 @@
 
 ### RF-08 · Registro y verificación de ayudantes por el equipo (P3)
 **Historia:** como Equipo, queremos verificar nosotros mismos a cada ayudante, para que los datos protegidos solo lleguen a manos confiables.
-- EL SISTEMA DEBERÁ ofrecer el formulario «Quiero ayudar» cuyos campos son visibles **solo para administradores**: nombre completo, organización, teléfono, municipios de acción, qué ofrece y correo de su cuenta.
+- EL SISTEMA DEBERÁ ofrecer el formulario «Quiero ayudar» cuyos campos **nunca son públicos**: nombre completo, organización, teléfono, municipios de acción, qué ofrece y correo de su cuenta.
+- **Límite conocido de la plataforma (ADR-006):** esos campos quedan visibles para el Equipo *y* para los Ayudantes verificados, porque Ushahidi ofrece un único nivel de privacidad. Es aceptable —son datos de ayudantes adultos que se registraron voluntariamente— y así se les comunica en las reglas.
+- El Título y la Descripción nativos de esa encuesta **sí son públicos** y no pueden protegerse: DEBERÁN estar etiquetados para que nadie escriba allí datos personales.
 - CUANDO un ayudante se registre, EL EQUIPO DEBERÁ llamarlo, confirmar nombre y organización (con dato contrastable si dice pertenecer a una entidad) y solo entonces asignarle el rol «Ayudante verificado».
 - EL SISTEMA NO DEBERÁ otorgar el rol ni el acceso a campos protegidos de forma automática bajo ninguna circunstancia.
 - CUANDO un ayudante incumpla las reglas de confidencialidad, EL EQUIPO DEBERÁ poder revocarle el rol de inmediato.

@@ -18,6 +18,26 @@
 
 ---
 
+## ⚡ Atajo: los pasos 2 a 7 ya están automatizados
+
+`scripts/aplicar_config.py` aplica `config/deployment-config.yml` por la API y audita el resultado. **Ya se ejecutó sobre este despliegue el 10-ago-2026**, así que los pasos 2–7 están hechos; quedan como referencia para verificar a mano o para replicar en otra región.
+
+```bash
+pip install pyyaml
+printf 'USHAHIDI_EMAIL=tu@correo\nUSHAHIDI_PASSWORD=tu-clave\n' > .env
+python scripts/aplicar_config.py            # simulacro
+python scripts/aplicar_config.py --aplicar  # aplica y audita
+```
+
+**Lo que sigue siendo tuyo y solo tuyo:** el paso 9 (SMS), el 12 (difusión), y **asignar a mano el rol «Ayudante verificado» tras la llamada de confirmación** — eso nunca se automatiza (ADR-005).
+
+### Dos límites reales de la plataforma, verificados contra la API
+
+1. **Un solo nivel de privacidad** (ADR-006). Ushahidi marca un campo como privado o público, sin grados. Quien tenga el permiso «Manage Posts» —el Equipo y los Ayudantes verificados— ve *todos* los campos privados, incluidos los de la encuesta «Quiero ayudar». Los ayudantes verán, pues, los datos de otros ayudantes. Díselo cuando les comuniques las 4 reglas.
+2. **Sin emoji en nombres de categoría ni de encuesta** (ADR-007): la API los rechaza. Sí se conservan en etiquetas de campo, opciones (🔴 CRÍTICA, 🕐 Pendiente) y textos de ayuda, que es donde más ayudan a leer rápido.
+
+---
+
 ## 1. Crear el despliegue (este paso solo puedes hacerlo tú)
 
 1. Entra a **ushahidi.com** → «Create a Deployment» y regístrate con tu correo.
@@ -78,6 +98,8 @@ Agrega estos campos **en este orden**. La columna «¿Quién lo ve?» se configu
 
 ## 5. Encuesta 2 — «🔍 Busco a un familiar»
 
+Renombra los campos nativos y úsalos como los dos primeros de la tabla: **Título → «Nombre de la persona buscada»** (con su texto de ayuda) y **Descripción → «Descripción física y ropa»**. El resto se agregan como campos nuevos.
+
 | Campo | Tipo | ¿Oblig.? | ¿Quién lo ve? | Texto de ayuda |
 |---|---|---|---|---|
 | Nombre de la persona buscada | Texto corto | Sí | Todos | Si es menor de edad, escribe solo el nombre de pila. |
@@ -97,6 +119,8 @@ Agrega estos campos **en este orden**. La columna «¿Quién lo ve?» se configu
 ## 6. Encuesta 3 — «🤝 Quiero ayudar» (registro de ayudantes)
 
 **Todos los campos de esta encuesta: visibles SOLO para administradores.**
+
+**Excepción técnica (P2):** el Título y la Descripción nativos de toda encuesta son públicos y no se pueden proteger. Renómbralos para que nadie escriba ahí datos personales: Título → «Título público (ej.: “Ofrezco rescate — Quibdó”)» con ayuda «NO escribas aquí tu nombre completo ni tu teléfono: van abajo, en campos que solo ve el equipo»; Descripción → «Detalles públicos de lo que ofreces (sin datos personales)».
 
 | Campo | Tipo | ¿Oblig.? |
 |---|---|---|
@@ -192,19 +216,22 @@ La plataforma (Ushahidi) ya es software libre. Nuestro aporte abierto es **esta 
 
 ## 14. Checklist de lanzamiento
 
-- [ ] Despliegue creado en ushahidi.io con plan Basic ($0)
-- [ ] Español, mapa centrado, descripción y aviso de privacidad
-- [ ] 10 categorías creadas
-- [ ] Encuesta «Pido ayuda» con los 14 campos y visibilidades correctas
-- [ ] Encuesta «Busco a un familiar»
-- [ ] Encuesta «Quiero ayudar» con campos solo-admin
-- [ ] Rol «Ayudante verificado» creado y aplicado a los campos protegidos
-- [ ] Publicación instantánea activada (sin aprobación previa)
-- [ ] Búsquedas guardadas de verificación
-- [ ] SMSsync instalado, conectado y probado con un SMS real
-- [ ] Prueba completa: solicitud de ensayo creada → verificada → resuelta → archivada
-- [ ] Exportación CSV probada
-- [ ] Difusión enviada a PMU, organizaciones y emisoras
+- [x] Despliegue creado en ushahidi.io con plan Basic ($0)
+- [x] Español, mapa centrado, descripción y aviso de privacidad
+- [x] 10 categorías creadas
+- [x] Encuesta «Pido ayuda» con los 14 campos y visibilidades correctas
+- [x] Encuesta «Busco a un familiar»
+- [x] Encuesta «Quiero ayudar» con campos protegidos
+- [x] Rol «Ayudante verificado» creado con permiso «Manage Posts»
+- [x] Publicación instantánea activada (sin aprobación previa)
+- [x] Ciclo de vida probado por API: ensayo → verificada → en atención → resuelta → archivada
+- [x] Comprobado que un visitante anónimo **no** recibe dirección ni teléfono
+- [ ] **Pasada humana por el navegador** (llenar el formulario como un afectado)
+- [ ] Búsquedas guardadas de verificación (T-008 — se crean desde la interfaz)
+- [ ] SMSsync instalado, conectado y probado con un SMS real (T-009)
+- [ ] Exportación CSV probada y dos ubicaciones de respaldo definidas (T-011)
+- [ ] Número SMS real reemplazando `[NUMERO_SMS]` (T-012)
+- [ ] Difusión enviada a PMU, organizaciones y emisoras (T-013)
 
 ---
 

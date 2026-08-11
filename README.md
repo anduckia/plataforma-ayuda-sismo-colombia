@@ -10,7 +10,7 @@ Plataforma abierta para que las personas afectadas por el sismo M 7,4 del 10 de 
 
 | Fase | Descripción | Estado |
 |---|---|---|
-| 0 | Lanzamiento: configurar el despliegue y difundir | 🔄 En curso — despliegue creado ✅, configuración pendiente (`specs/03-tasks.md`) |
+| 0 | Lanzamiento: configurar el despliegue y difundir | 🔄 En curso — despliegue creado ✅, **configuración aplicada y auditada ✅** (10-ago-2026); faltan SMS y difusión (`specs/03-tasks.md`) |
 | 1 | Operación diaria durante la emergencia | ⏳ |
 | 2 | Evolución: autoalojado, híbrido estricto, automatización | 💤 Solo si la operación lo exige |
 
@@ -34,9 +34,26 @@ Plataforma abierta para que las personas afectadas por el sismo M 7,4 del 10 de 
 │   └── deployment-config.yml    ← FUENTE DE VERDAD de la configuración
 ├── docs/
 │   └── guia-lanzamiento.md      ← procedimiento humano paso a paso
+├── scripts/
+│   └── aplicar_config.py        ← aplica el YAML vía API y audita privacidad
 ├── .vscode/                     ← extensiones y ajustes recomendados
 └── .gitignore                   ← blinda el repo contra datos personales
 ```
+
+## Aplicar la configuración automáticamente
+
+En vez de 60–90 minutos de clics, `scripts/aplicar_config.py` deja el despliegue listo en segundos y **audita** que ningún campo protegido quedó público.
+
+```bash
+pip install pyyaml
+printf 'USHAHIDI_EMAIL=tu@correo\nUSHAHIDI_PASSWORD=tu-clave\n' > .env   # .env está en .gitignore
+
+python scripts/aplicar_config.py                 # simulacro: no escribe nada
+python scripts/aplicar_config.py --aplicar       # aplica y audita
+python scripts/aplicar_config.py --solo-auditar  # solo verifica
+```
+
+Es idempotente (busca por nombre antes de crear) y termina con código de salida 1 si la auditoría de privacidad falla, así que sirve en CI. **Las credenciales viven solo en tu `.env` local, nunca en el repositorio.**
 
 ## Abrir en VS Code
 
@@ -54,8 +71,8 @@ Repositorio público: **https://github.com/anduckia/plataforma-ayuda-sismo-colom
 ## Replicar en otra emergencia
 
 1. Crea un despliegue en ushahidi.com (plan Basic, $0/mes).
-2. Aplica `config/deployment-config.yml` siguiendo `docs/guia-lanzamiento.md` (60–90 min).
-3. Ajusta mapa, categorías y textos a tu contexto.
+2. Ajusta mapa, categorías y textos de `config/deployment-config.yml` a tu contexto.
+3. Ejecuta `python scripts/aplicar_config.py --aplicar` (segundos) — o hazlo a mano con `docs/guia-lanzamiento.md` (60–90 min).
 4. Consigue una SIM local y monta la pasarela SMS (guía §9).
 
 ## Licencia

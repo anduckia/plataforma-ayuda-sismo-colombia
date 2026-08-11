@@ -3,6 +3,9 @@
 # La guía humana para aplicarla: docs/guia-lanzamiento.md
 # Fase 2 (RF-F2-03): aplicar este archivo automáticamente vía API.
 # Visibilidades: publico | protegido (Ayudantes verificados + admins) | solo_admin
+# OJO (ADR-006): Ushahidi tiene UN solo nivel real de privacidad, gobernado por el
+# permiso «Manage Posts». En la plataforma alojada, `protegido` y `solo_admin` se
+# aplican igual; la distinción queda documentada para el día que autoalojemos.
 # =====================================================================
 
 despliegue:
@@ -12,8 +15,9 @@ despliegue:
   zona_horaria: America/Bogota
   mapa:
     centro: { lat: 5.0, lng: -76.2 }
-    nota: "zoom que abarque Chocó, Valle del Cauca, Risaralda, Quindío y Caldas"
+    zoom: 7   # abarca Chocó, Valle del Cauca, Risaralda, Quindío y Caldas
   publicacion_instantanea: true   # RF-02: desactivar la aprobación previa
+  ocultar_autor: true             # P2: el nombre de quien publica no se muestra
   descripcion_publica: >
     Plataforma ciudadana para el sismo del 10 de agosto. Publica tu solicitud
     para que la ayuda te encuentre. Tu teléfono y tu dirección exacta NUNCA son
@@ -21,17 +25,20 @@ despliegue:
     pediremos dinero, claves ni números de cuenta. Este sitio es gratuito.
     Sin internet, envía un SMS al [NUMERO_SMS].
 
+# SIN EMOJI a propósito (ADR-007): Ushahidi valida los nombres de categoría y de
+# encuesta contra /^[\pL\pN\pP ]+$/u — letras, números, puntuación y espacios.
+# Los emoji sí se conservan en etiquetas de campo, opciones y textos de ayuda.
 categorias:
-  - "🆘 Rescate — persona atrapada"
-  - "🚑 Atención médica / paramédicos"
-  - "💊 Medicamentos"
-  - "🍞 Comida y agua"
-  - "🏠 Refugio / alojamiento"
-  - "🚜 Maquinaria / remoción de escombros"
-  - "🚐 Transporte / evacuación"
-  - "👮 Seguridad / Policía"
-  - "🔍 Búsqueda de familiares"
-  - "❓ Otro"
+  - "Rescate — persona atrapada"
+  - "Atención médica / paramédicos"
+  - "Medicamentos"
+  - "Comida y agua"
+  - "Refugio / alojamiento"
+  - "Maquinaria / remoción de escombros"
+  - "Transporte / evacuación"
+  - "Seguridad / Policía"
+  - "Búsqueda de familiares"
+  - "Otro"
 
 roles:
   - id: administrador
@@ -46,7 +53,7 @@ roles:
 encuestas:
 
   pido_ayuda:
-    titulo: "🆘 Pido ayuda"
+    titulo: "Pido ayuda"                # sin emoji: ADR-007
     campos_nativos:
       titulo:      { etiqueta: "¿Qué está pasando? (en una frase)" }
       descripcion: { etiqueta: "Cuéntanos más" }
@@ -67,11 +74,14 @@ encuestas:
       - { etiqueta: "Verificación", tipo: opcion_unica, opciones: ["Sin verificar", "✔️ Verificada por el equipo"], defecto: "Sin verificar", obligatorio: true, visibilidad: publico }
 
   busco_familiar:
-    titulo: "🔍 Busco a un familiar"
+    titulo: "Busco a un familiar"       # sin emoji: ADR-007
+    # La plataforma exige Título y Descripción nativos en toda encuesta:
+    # absorben los dos primeros campos (mismas etiquetas y ayudas).
+    campos_nativos:
+      titulo:      { etiqueta: "Nombre de la persona buscada", ayuda: "Si es menor de edad, escribe solo el nombre de pila." }
+      descripcion: { etiqueta: "Descripción física y ropa", obligatorio: false }
     campos:
-      - { etiqueta: "Nombre de la persona buscada", tipo: texto_corto, obligatorio: true, visibilidad: publico, ayuda: "Si es menor de edad, escribe solo el nombre de pila." }
       - { etiqueta: "Edad aproximada", tipo: numero, obligatorio: false, visibilidad: publico }
-      - { etiqueta: "Descripción física y ropa", tipo: texto_largo, obligatorio: false, visibilidad: publico }
       - { etiqueta: "Último lugar donde se le vio (mapa)", tipo: ubicacion, obligatorio: true, visibilidad: publico, ayuda: "Punto aproximado." }
       - { etiqueta: "Detalles del último contacto", tipo: texto_largo, obligatorio: false, visibilidad: publico, ayuda: "Fecha, hora, con quién estaba." }
       - { etiqueta: "Foto", tipo: imagen, obligatorio: false, visibilidad: publico, ayuda: "Si es menor de edad, NO publiques foto: el equipo te contactará para gestionarla en privado." }
@@ -84,8 +94,13 @@ encuestas:
       complementa, no reemplaza, los canales oficiales.
 
   quiero_ayudar:
-    titulo: "🤝 Quiero ayudar"
-    visibilidad_de_todos_los_campos: solo_admin   # RF-08
+    titulo: "Quiero ayudar"             # sin emoji: ADR-007
+    visibilidad_de_todos_los_campos: solo_admin   # RF-08 (aplica a los campos de abajo)
+    # El Título y la Descripción nativos son SIEMPRE públicos en la plataforma:
+    # se etiquetan para que nadie ponga ahí datos personales (P2).
+    campos_nativos:
+      titulo:      { etiqueta: "Título público (ej.: «Ofrezco rescate — Quibdó»)", ayuda: "NO escribas aquí tu nombre completo ni tu teléfono: van abajo, en campos que solo ve el equipo." }
+      descripcion: { etiqueta: "Detalles públicos de lo que ofreces (sin datos personales)", obligatorio: false }
     campos:
       - { etiqueta: "Nombre completo", tipo: texto_corto, obligatorio: true }
       - { etiqueta: "Organización (o «voluntario independiente»)", tipo: texto_corto, obligatorio: true }
