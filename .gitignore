@@ -29,3 +29,7 @@ platform/
 
 # Capturas de la revisión visual
 web/capturas/
+
+# Cachés de Python
+__pycache__/
+*.pyc
