@@ -58,8 +58,14 @@ TIPOS = {
     "opcion_unica":        ("radio",    "varchar"),
     "casillas":            ("checkbox", "varchar"),
     "casillas_categorias": ("tags",     "tags"),
-    "imagen":              ("upload",   "media"),
+    # OJO: el cliente espera input "image", NO "upload". Con "upload" no encuentra
+    # el tipo, obtiene null y revienta con «Cannot read properties of null
+    # (reading 'hasCaption')» al abrir el formulario. Ver ADR-008.
+    "imagen":              ("image",    "media"),
 }
+
+# Los campos de imagen necesitan config, o el cliente falla al renderizarlos.
+CONFIG_IMAGEN = {"hasCaption": True, "maxUploadSize": 2}
 
 # Ushahidi tiene UN solo nivel de privacidad por campo (response_private), que ven
 # quienes tengan el permiso «Manage Posts». No existe visibilidad por rol campo a
@@ -263,6 +269,8 @@ def _campo(spec: dict, prioridad: int, visib_forzada: str | None, ids_cat: dict[
         campo["options"] = [i for i in ids_cat.values() if i is not None]
     elif "opciones" in spec:
         campo["options"] = list(spec["opciones"])
+    if tipo == "imagen":
+        campo["config"] = dict(CONFIG_IMAGEN)
     return campo
 
 
