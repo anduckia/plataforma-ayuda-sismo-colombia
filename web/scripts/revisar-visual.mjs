@@ -27,6 +27,7 @@ const PANTALLAS = [
 
 const RUTAS = [
   '/', '/pido-ayuda', '/busco-familiar', '/quiero-ayudar', '/ofrezco-recursos', '/mapa',
+  '/enlaces-oficiales',
 ];
 
 /** Todo lo que se toca en una fila debe medir lo mismo (ver --alto-control). */

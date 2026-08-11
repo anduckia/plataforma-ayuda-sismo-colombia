@@ -471,6 +471,156 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
 
 .etiqueta--verificada { border-color: var(--apoyo); color: var(--apoyo); }
 
+/*
+  ADR-021: la espera se anota, no se degrada. Deliberadamente en tinta neutra
+  y no en la escala de urgencia — si fuera ámbar o gris claro se leería como
+  «esto vale menos», y lo que lleva 14 horas sin confirmar es justo lo que
+  nadie ha atendido todavía.
+*/
+.etiqueta--espera { border-color: var(--tinta); color: var(--tinta); font-weight: 700; }
+
+/* ------------------------------------------------ municipio en cascada */
+
+.municipio__fila { display: grid; gap: 0.75rem; }
+.municipio__detalle { margin-top: 0.75rem; }
+
+.municipio__sub {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--tinta-suave);
+  margin-bottom: 0.25rem;
+}
+
+.municipio__opcional { font-weight: 500; }
+.municipio select:disabled { opacity: 0.55; border-color: var(--linea); }
+
+/* Que se vea exactamente qué se va a guardar: es un valor compuesto. */
+.municipio__eco {
+  margin: 0.6rem 0 0;
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+}
+
+@media (min-width: 30rem) {
+  .municipio__fila { grid-template-columns: 1fr 1fr; }
+}
+
+/* -------------------------------------- bloque plegado de acceso (RF-22) */
+
+.acceso {
+  border: 2px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 0 1rem;
+  margin: 0 0 1.9rem;
+}
+
+.acceso[open] { padding-bottom: 0.5rem; }
+
+.acceso__titulo {
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  padding: 0.9rem 0;
+  cursor: pointer;
+  /* El área de toque tiene que ser cómoda con el pulgar y con mala luz. */
+  min-height: var(--alto-control);
+  display: flex;
+  align-items: center;
+}
+
+.acceso__ayuda { margin-bottom: 1.25rem; }
+
+/* ------------------------------------------------- marca de frescura */
+
+.frescura {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+  margin: 0 0 1.5rem;
+}
+
+.frescura__punto {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--apoyo);
+  flex: none;
+}
+
+/* -------------------------------------------- líneas de emergencia */
+
+.lineas {
+  border: 2px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 1.1rem 1.15rem;
+  margin: 2rem 0 0;
+}
+
+.lineas__titulo { font-size: 1.0625rem; margin: 0 0 0.75rem; }
+
+.lineas__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.lineas__lista li { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+
+.lineas__numero {
+  font-weight: 800;
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+  /* Ancho fijo para que los números formen columna y se barran de un vistazo. */
+  min-width: 2.75rem;
+}
+
+.lineas__quien { font-weight: 650; }
+
+.lineas__nota {
+  flex-basis: 100%;
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+}
+
+.lineas__pie {
+  margin: 0.9rem 0 0;
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+}
+
+/* En el pie de todas las páginas va sin notas: es un recordatorio, no la guía. */
+.lineas--compacto { margin-top: 2.5rem; }
+.lineas--compacto .lineas__lista { gap: 0.35rem; }
+
+/* ------------------------------------------------- canales oficiales */
+
+.bloque { margin-top: 2.5rem; }
+.bloque h2 { margin-bottom: 0.35rem; }
+
+.enlaces { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+
+.enlace {
+  border: 2px solid var(--linea);
+  border-left-width: 10px;
+  border-left-color: var(--foco);
+  border-radius: var(--radio);
+  padding: 0.9rem 1rem;
+}
+
+.enlace__titulo { font-weight: 750; letter-spacing: -0.015em; }
+.enlace__que { display: block; margin-top: 0.3rem; }
+
+.enlace__detalle {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+}
+
 /* --------------------------------------------------------------- varios */
 
 .vacio {

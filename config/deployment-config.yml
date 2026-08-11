@@ -10,7 +10,8 @@
 
 despliegue:
   nombre: "SOS Sismo Colombia — Ayuda ciudadana"
-  url: "https://sos-sismo-colombia.ushahidi.io/"
+  url: "https://sos-sismo-colombia.ushahidi.io/"   # backend Ushahidi: de aquí salen los scripts (base_api). NO cambiar por el dominio propio.
+  url_publica: "https://www.sossismocolombia.com.co/"   # cara pública (ADR-010): es el enlace que se difunde
   idioma: es
   zona_horaria: America/Bogota
   mapa:
@@ -31,7 +32,7 @@ despliegue:
     exacta NUNCA son públicos: solo los ven ayudantes verificados por el
     equipo. Nunca te pediremos dinero, claves ni números de cuenta. Es
     gratuito. Hay réplicas: si tu casa está dañada, no vuelvas a entrar.
-    Sin internet, envía un SMS al [NUMERO_SMS].   # RNF-06
+    Sin internet, envía un SMS al 3148071191.   # RNF-06
 
 # SIN EMOJI a propósito (ADR-007): Ushahidi valida los nombres de categoría y de
 # encuesta contra /^[\pL\pN\pP ]+$/u — letras, números, puntuación y espacios.
@@ -50,6 +51,12 @@ categorias:
   # la zona, así que la marcaría casi todo el mundo y no ordenaría el triaje, lo
   # saturaría. Sigue existiendo como opción de «Qué ofreces» en «Ofrezco recursos».
   # En el despliegue vivo quedó creada (id 11) y sin usar: borrarla es manual.
+  #
+  # T-035 (RF-22): al contrario que la anterior, esta SÍ discrimina — dice que el
+  # problema no es lo que falta sino que no se puede llegar, y eso cambia quién
+  # tiene que ir y en qué. Sin ella, «vía bloqueada» acababa escrito a mano en la
+  # descripción, donde no se puede filtrar ni contar.
+  - "Vía bloqueada / acceso"
   - "Otro"
 
 # =====================================================================
@@ -107,6 +114,18 @@ encuestas:
       # cambiar la ayuda aquí y quitar el override.
       - { etiqueta: "Otra forma de contacto (pública)", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "Ej.: usuario de Instagram/X/Facebook, o el número de un familiar fuera de la zona." }
       - { etiqueta: "Foto", tipo: imagen, obligatorio: false, visibilidad: publico, ayuda: "Solo si tu señal lo permite." }
+      # ------------------------------------------------------------------
+      # T-034 (RF-22): lo que necesita quien va en camino y ninguna dirección
+      # da. Todos opcionales y PÚBLICOS a propósito: esto no es contacto, es
+      # logística, y sirve precisamente a quien todavía no ha llegado.
+      # El front los agrupa y los pliega bajo «Solo si tu zona es de difícil
+      # acceso» (Ushahidi no tiene grupos de campos; ver Formulario.tsx).
+      # ------------------------------------------------------------------
+      - { etiqueta: "Cómo se llega", tipo: opcion_unica, opciones: ["Carretera", "Solo por río", "Solo a pie", "Necesita helicóptero", "No sé"], obligatorio: false, visibilidad: publico }
+      - { etiqueta: "Punto de referencia comunitario", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "La escuela, la cancha, la iglesia, el puente. ESTO ES PÚBLICO: no pongas la dirección de tu casa, que va en el campo con candado." }
+      - { etiqueta: "¿Hay dónde aterrizar cerca?", tipo: opcion_unica, opciones: ["Sí", "No", "No sé"], obligatorio: false, visibilidad: publico, ayuda: "Una cancha, un potrero plano o una vía ancha sin cables sirven." }
+      - { etiqueta: "Tiempo desde el pueblo más cercano", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "Ej.: 3 horas a pie desde Nóvita." }
+      - { etiqueta: "¿La vía está bloqueada?", tipo: opcion_unica, opciones: ["Sí", "No", "No sé"], obligatorio: false, visibilidad: publico }
       - { etiqueta: "Estado de la solicitud", tipo: opcion_unica, opciones: ["🕐 Pendiente", "🚧 En atención", "✅ Resuelta"], defecto: "🕐 Pendiente", obligatorio: true, visibilidad: publico, ayuda: "Lo actualiza el equipo." }
       - { etiqueta: "Verificación", tipo: opcion_unica, opciones: ["Sin verificar", "✔️ Verificada por el equipo"], defecto: "Sin verificar", obligatorio: true, visibilidad: publico }
 
@@ -173,9 +192,25 @@ encuestas:
       - { etiqueta: "Teléfono", tipo: texto_corto, obligatorio: true, visibilidad: protegido, ayuda: "Solo lo verán el equipo y los ayudantes verificados, para coordinar la asignación." }
 
 sms:
-  fuente: SMSSync
-  apk_oficial: "https://github.com/ushahidi/SMSSync/releases/download/v3.1.1/smssync-withAnalyticsRelease-v3.1.1-RELEASE.apk"
-  numero: "[NUMERO_SMS]"   # T-012: reemplazar cuando exista la SIM
+  fuente: SMSSync          # la fuente de datos de Ushahidi; la app del mismo nombre NO se usa (ADR-018)
+  numero: "3148071191"   # SIM local Claro, activa desde el 11-ago-2026 (T-012)
+  # La pasarela es cualquier app de Android que hable este protocolo. La app SMSsync
+  # de Ushahidi (v3.1.1, feb-2017, targetSdk 22) NO se instala en Android 14+.
+  pasarela:
+    endpoint: "https://sos-sismo-colombia.api.ushahidi.io/sms/smssync"
+    metodo: POST
+    campos:                # verificados contra SMSSyncController.php de ushahidi/platform
+      secret:         "la clave definida en Configuración → Fuentes de datos → SMSSync"
+      from:           "número del remitente"
+      message:        "texto del SMS"
+      sent_to:        "3148071191"
+      sent_timestamp: "epoch en MILISEGUNDOS (el servidor divide entre 1000)"
+    respuesta_ok: '{"payload":{"success":true,"error":null}}'
+    apps_candidatas: ["MacroDroid", "Tasker", "Automate"]
+    requisitos_del_telefono:
+      - "wifi o datos estables, fuera de la zona afectada, enchufado a corriente"
+      - "excluir la app de la optimización de batería, o Android la duerme"
+      - "la SIM necesita saldo o plan de SMS salientes para la respuesta automática"
   respuesta_automatica: >
     Recibimos tu mensaje y ya es visible para los equipos de ayuda. Si puedes,
     envía otro SMS con: municipio, barrio y cuántas personas son.
@@ -190,8 +225,8 @@ difusion:
   mensaje_whatsapp: >
     🆘 SISMO COLOMBIA — Si necesitas ayuda (rescate, médicos, comida, refugio)
     o buscas a un familiar, repórtalo aquí:
-    https://sos-sismo-colombia.ushahidi.io/ · Sin internet, envía un SMS al
-    [NUMERO_SMS] con: AYUDA + qué necesitas + cuántas personas + municipio y
+    https://www.sossismocolombia.com.co/ · Sin internet, envía un SMS al
+    3148071191 con: AYUDA + qué necesitas + cuántas personas + municipio y
     barrio. Tu teléfono y dirección exacta NO se publican. Es gratuito.
     Comparte 🙏
   destinatarios_prioritarios:

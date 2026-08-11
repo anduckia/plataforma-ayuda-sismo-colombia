@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import LineasEmergencia from '@/components/LineasEmergencia';
+import PieLineas from '@/components/PieLineas';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -41,8 +43,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <a href="tel:123">la línea de emergencias <strong>123</strong></a>.
         </p>
         <main id="principal" className="envoltura">{children}</main>
-        <footer className="envoltura pie">
-          <a href="/privacidad">Privacidad y borrado de datos</a>
+        {/*
+          RF-25 (T-038): las líneas van en el pie, no arriba. Arriba está el 123
+          y solo el 123 (RNF-06); apilar siete números sobre el formulario lo
+          echa fuera de la pantalla de un móvil justo cuando alguien intenta
+          pedir ayuda.
+        */}
+        <footer className="envoltura">
+          <PieLineas><LineasEmergencia compacto /></PieLineas>
+          <p className="pie">
+            <a href="/enlaces-oficiales">Canales oficiales</a> ·{' '}
+            <a href="/privacidad">Privacidad y borrado de datos</a>
+          </p>
         </footer>
       </body>
     </html>

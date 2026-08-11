@@ -1,3 +1,4 @@
+import Frescura from '@/components/Frescura';
 import { FORMULARIOS } from '@/lib/ushahidi';
 
 const SMS = process.env.NEXT_PUBLIC_SMS?.trim();
@@ -9,6 +10,10 @@ export default function Inicio() {
       <p className="entradilla">
         Elige una opción. No necesitas crear una cuenta y no cuesta nada.
       </p>
+
+      {/* RF-24: se busca la fecha él solo tras pintar, para no meter una
+          llamada de red en el camino crítico de la página más visitada. */}
+      <Frescura />
 
       <nav className="vias" aria-label="Qué quieres hacer">
         {(Object.keys(FORMULARIOS) as (keyof typeof FORMULARIOS)[]).map((slug) => {
@@ -51,7 +56,7 @@ export default function Inicio() {
         Esta plataforma es ciudadana y <strong>complementa a los organismos de socorro</strong>:
         suma visibilidad, no los reemplaza. Para personas desaparecidas, registra el caso
         además en la Cruz Roja Colombiana. Hay réplicas: si tu casa está dañada, no vuelvas
-        a entrar.
+        a entrar. · <a href="/enlaces-oficiales">Todos los canales oficiales</a>
       </p>
     </>
   );

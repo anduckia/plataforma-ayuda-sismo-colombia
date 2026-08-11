@@ -13,7 +13,7 @@ Cuando alguien levante el **puño en alto**, SILENCIO TOTAL: se está escuchando
 
 ## Si sabes quién estaba dónde
 
-Esa memoria encuentra más gente que cualquier máquina. Repórtala — aunque no estés seguro — en **plataforma-ayuda-sismo-colombia.vercel.app** o por SMS al **[NÚMERO]**. Tu teléfono y las direcciones exactas no se publican.
+Esa memoria encuentra más gente que cualquier máquina. Repórtala — aunque no estés seguro — en **www.sossismocolombia.com.co** o por SMS al **3148071191**. Tu teléfono y las direcciones exactas no se publican.
 
 ## Si tienes maquinaria, plantas eléctricas o luces
 

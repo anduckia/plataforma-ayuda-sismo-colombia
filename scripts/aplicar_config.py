@@ -347,6 +347,91 @@ def _construir_encuesta(spec: dict, ids_cat: dict[str, int], ocultar_autor: bool
     }
 
 
+def _clave_opcion(o):
+    """Las categorías se comparan por id; las demás opciones, por su texto."""
+    return o["id"] if isinstance(o, dict) else o
+
+
+def _normalizar_opciones(campo: dict) -> None:
+    """
+    La API **lee** las categorías como objetos completos y las **escribe** como
+    ids a secas. Reenviarle su propia representación de lectura es exactamente
+    lo que revienta con «Array to string conversion» en `/posts` (ADR-016), así
+    que el objeto que se va a mandar de vuelta se deja en la forma que la API
+    acepta al crear, que es la única probada.
+    """
+    ops = campo.get("options")
+    if ops and any(isinstance(o, dict) for o in ops):
+        campo["options"] = [o["id"] for o in ops
+                            if isinstance(o, dict) and o.get("id") is not None]
+
+
+def anadir_campos(api: Api, sid: int, nombre: str, cuerpo: dict, reg: Registro) -> None:
+    """
+    Reconciliación **aditiva** de una encuesta viva (T-043 · ADR-019).
+
+    Antes, toda encuesta que ya existiera se saltaba entera y ningún campo del
+    YAML llegaba nunca: es lo que dejó a T-023 a medias, con la categoría creada
+    y fuera del formulario. La única vía que sí aplicaba campos era
+    `--recrear-encuestas`, que borra la encuesta **con sus publicaciones
+    dentro** — inaceptable en cuanto entre la primera solicitud real.
+
+    Comprobado contra el despliegue el 11-ago-2026 con una encuesta desechable y
+    una publicación dentro: el PUT de objeto completo conserva los `id` de los
+    campos viejos, admite campos y opciones nuevos, y la publicación anterior
+    sobrevive con su valor intacto. Ver `docs/campos-en-encuesta-viva.md`.
+
+    Tres reglas que sostienen que esto no sea destructivo:
+      · Se envía el objeto **completo** recién leído. Un PUT parcial devuelve
+        `default_view` a fábrica (ADR-009).
+      · Las opciones se **unen**, nunca se quitan: retirar una que ya usan
+        publicaciones existentes deja esas respuestas colgando.
+      · No renombra ni borra campos. Eso sigue exigiendo recrear la encuesta, y
+        por eso existe el mecanismo `TEXTOS` de `web/lib/ushahidi.ts`.
+    """
+    vivo = (api.get(f"/api/v5/surveys/{sid}") or {}).get("result")
+    if not vivo or not vivo.get("tasks"):
+        return
+
+    tarea = vivo["tasks"][0]
+    for campo in tarea.get("fields") or []:
+        _normalizar_opciones(campo)
+
+    por_etiqueta = {c.get("label"): c for c in tarea.get("fields") or []}
+    nuevos: list[str] = []
+    opciones_nuevas: list[str] = []
+
+    for deseado in cuerpo["tasks"][0]["fields"]:
+        etiqueta = deseado["label"]
+        existente = por_etiqueta.get(etiqueta)
+
+        if existente is None:
+            # La prioridad se recalcula sobre lo que hay: el YAML numera desde
+            # cero y aquí puede haber campos que el YAML ya no lleva.
+            campo = dict(deseado)
+            campo["priority"] = len(tarea["fields"]) + 1
+            tarea["fields"].append(campo)
+            nuevos.append(etiqueta)
+            continue
+
+        ya = [_clave_opcion(o) for o in (existente.get("options") or [])]
+        faltan = [o for o in (deseado.get("options") or [])
+                  if _clave_opcion(o) not in ya]
+        if faltan:
+            existente["options"] = list(existente.get("options") or []) + faltan
+            opciones_nuevas.append(f"{etiqueta} (+{len(faltan)})")
+
+    if not nuevos and not opciones_nuevas:
+        return
+
+    api.put(f"/api/v5/surveys/{sid}", vivo)
+    if nuevos:
+        reg.hecho(f"  «{nombre}»: {len(nuevos)} campo(s) añadido(s) sin borrar nada — "
+                  + ", ".join(f"«{n}»" for n in nuevos))
+    if opciones_nuevas:
+        reg.hecho(f"  «{nombre}»: opciones añadidas en " + ", ".join(opciones_nuevas))
+
+
 def encuestas(api: Api, cfg: dict, ids_cat: dict[str, int], reg: Registro, recrear: bool) -> None:
     """T-004, T-005, T-006 · RF-01…RF-08"""
     existentes = {s["name"]: s for s in (api.get("/api/v5/surveys").get("results") or [])}
@@ -364,8 +449,7 @@ def encuestas(api: Api, cfg: dict, ids_cat: dict[str, int], reg: Registro, recre
             actual = None
 
         if actual:
-            reg.igual(f"Encuesta «{nombre}» ya existe (id {actual['id']}) — usa "
-                      f"--recrear-encuestas para rehacerla desde el YAML")
+            reg.igual(f"Encuesta «{nombre}» ya existe (id {actual['id']})")
             # La aprobación previa sí se reconcilia en las encuestas que ya
             # existen, en los dos sentidos: es lo único que separa «lo ve todo
             # el mundo» de «lo ve solo el equipo» (ADR-016), y no vale la pena
@@ -376,6 +460,7 @@ def encuestas(api: Api, cfg: dict, ids_cat: dict[str, int], reg: Registro, recre
                         {**actual, "require_approval": quiere})
                 reg.hecho(f"  «{nombre}»: aprobación previa "
                           f"{'activada — solo la ve el equipo' if quiere else 'desactivada'}")
+            anadir_campos(api, actual["id"], nombre, cuerpo, reg)
         else:
             api.post("/api/v5/surveys", cuerpo)
             protegidos = sum(1 for f in cuerpo["tasks"][0]["fields"] if f["response_private"])

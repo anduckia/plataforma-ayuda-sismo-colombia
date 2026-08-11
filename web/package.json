@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "revisar": "node scripts/revisar-visual.mjs"
+    "revisar": "node scripts/revisar-visual.mjs",
+    "probar": "node scripts/probar-formulario.mjs"
   },
   "dependencies": {
     "leaflet": "1.9.4",

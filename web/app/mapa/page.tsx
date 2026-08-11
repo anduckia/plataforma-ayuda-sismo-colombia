@@ -1,6 +1,8 @@
+import Frescura from '@/components/Frescura';
 import MapaSolicitudes from '@/components/MapaSolicitudes';
 import { traerSolicitudes, type Solicitud } from '@/lib/ushahidi';
 import { COLORES, LEYENDA, nivelDe } from '@/lib/colores';
+import { HORAS_SIN_CONFIRMAR, sinConfirmar } from '@/lib/frescura';
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
@@ -64,6 +66,10 @@ export default async function PaginaMapa() {
   }
 
   const conPunto = solicitudes.filter((s) => s.punto).length;
+  // `force-dynamic`: esta página se renderiza en cada petición, así que la hora
+  // del servidor es la hora real de la consulta y no una caché disfrazada.
+  const consultadoEn = new Date().toISOString();
+  const ultimaSolicitud = solicitudes[0]?.fecha ?? null;
 
   return (
     <>
@@ -75,6 +81,8 @@ export default async function PaginaMapa() {
             ? 'Todavía no hay solicitudes publicadas.'
             : `${resumen(solicitudes)} ${conPunto} con punto en el mapa.`}
       </p>
+
+      <Frescura consultadoEn={consultadoEn} ultimaSolicitud={ultimaSolicitud} />
 
       {/*
         RF-18: si el listado viene recortado hay que decirlo. Un mapa que
@@ -101,6 +109,13 @@ export default async function PaginaMapa() {
               está en cola de atención del equipo. <strong>No significa que la solicitud sea falsa.</strong>
               {' '}Las solicitudes se atienden prioritariamente según su nivel de Urgencia (🔴 Crítica / 🟠 Alta).
             </p>
+            <p style={{ marginBottom: 0, marginTop: '0.75rem' }}>
+              La etiqueta <strong>⏳ Sin confirmar</strong> aparece pasadas {HORAS_SIN_CONFIRMAR} horas
+              y dice cuánto lleva esperando. <strong>No significa que ya no haga falta</strong> —
+              suele significar lo contrario: que nadie ha llegado todavía. Si sabes que un caso
+              ya se resolvió, escríbenos a <strong>sossismocolombia@gmail.com</strong> con su
+              número y lo cerramos, que libera equipos hacia otros frentes.
+            </p>
           </div>
           <ul className="leyenda">
             {LEYENDA.map(({ nivel, texto }) => (
@@ -125,25 +140,36 @@ export default async function PaginaMapa() {
         <>
           <h2>Lista</h2>
           <ul className="solicitudes">
-            {solicitudes.map((s) => (
-              <li key={s.id} className={`solicitud solicitud--${nivelDe(s)}`}>
-                <div className="solicitud__titulo">{s.title}</div>
-                <div className="solicitud__meta">
-                  {[
-                    s.tipo === 'busqueda' ? 'Busco a un familiar' : s.urgencia,
-                    s.municipio,
-                    cuando(s.fecha),
-                  ].filter(Boolean).join(' · ')}
-                </div>
-                <div className="etiquetas">
-                  {s.estado && <span className="etiqueta">{s.estado}</span>}
-                  <span className={`etiqueta${s.verificada ? ' etiqueta--verificada' : ''}`}>
-                    {s.verificada ? '✔️ Verificada por el equipo' : 'Sin verificar'}
-                  </span>
-                  {s.necesidades.map((n) => <span key={n} className="etiqueta">{n}</span>)}
-                </div>
-              </li>
-            ))}
+            {solicitudes.map((s) => {
+              const espera = sinConfirmar(s);
+              return (
+                <li key={s.id} className={`solicitud solicitud--${nivelDe(s)}`}>
+                  <div className="solicitud__titulo">{s.title}</div>
+                  <div className="solicitud__meta">
+                    {[
+                      s.tipo === 'busqueda' ? 'Busco a un familiar' : s.urgencia,
+                      s.municipio,
+                      cuando(s.fecha),
+                    ].filter(Boolean).join(' · ')}
+                  </div>
+                  <div className="etiquetas">
+                    {s.estado && <span className="etiqueta">{s.estado}</span>}
+                    <span className={`etiqueta${s.verificada ? ' etiqueta--verificada' : ''}`}>
+                      {s.verificada ? '✔️ Verificada por el equipo' : 'Sin verificar'}
+                    </span>
+                    {/*
+                      RF-23 y ADR-021: se anota el tiempo y NO se toca ni el
+                      color ni el orden. Una crítica que lleva 14 horas sin que
+                      nadie confirme es la que peor está, no la que sobra.
+                    */}
+                    {espera && (
+                      <span className="etiqueta etiqueta--espera">⏳ Sin confirmar {espera}</span>
+                    )}
+                    {s.necesidades.map((n) => <span key={n} className="etiqueta">{n}</span>)}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </>
       )}
