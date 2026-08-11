@@ -21,6 +21,7 @@ Cada tarea traza a requisitos (RF/RNF) y a la sección de la guía (`docs/guia-l
 - [x] **T-014** 🤝 Cara pública propia (`web/`, Next.js) con los 3 formularios, mapa Leaflet + Humanitarian OSM y aviso de privacidad · (RF-01…RF-08, ADR-010, ADR-011) — *Hecho 10-ago-2026:* lee el esquema de la API en vivo, publica anónimo (201), oculta «Estado»/«Verificación» y los envía por código. Falta subir a Vercel (T-015).
 - [ ] **T-015** 👤 Desplegar `web/` en Vercel y decidir qué enlace se difunde · (P1)
 - [ ] **T-016** 🤝 Subida de fotos en el front propio (requiere multipart a `/api/v5/media`) · (RF-01)
+- [ ] **T-019** 👤 **Revisión del backend a las 72 h — 13-ago-2026** · (ADR-013) — decidir si seguimos con Ushahidi o migramos a Postgres propio. **Se migra si se cumple cualquiera:** (a) el equipo no usó el panel para triar; (b) el SMS quedó descartado; (c) 2+ rarezas nuevas bloquearon la operación. Si toca migrar: specs primero (P8).
 
 ## Fase 1 · Operación diaria (mientras dure la emergencia)
 

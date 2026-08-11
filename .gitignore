@@ -26,3 +26,6 @@ node_modules/
 
 # Clon del backend de Ushahidi: no forma parte de este repo (decisión: API alojada)
 platform/
+
+# Capturas de la revisión visual
+web/capturas/
