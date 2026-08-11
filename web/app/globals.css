@@ -25,6 +25,17 @@
   --foco: #23479B;
   --radio: 4px;
 
+  /*
+    Una sola altura para todo lo que se toca en una fila: campos, selectores y
+    botones secundarios. Fijándola (no `min-height`) los renglones cuadran solos
+    y ningún control queda más bajo que el de al lado. 52 px supera con holgura
+    los 44 px mínimos de área táctil, contando con un pulgar y una mano temblando.
+  */
+  --alto-control: 3.25rem;
+  /* La acción principal es lo más alto de la página: jerarquía por tamaño. */
+  --alto-boton: 3.75rem;
+  --pad-control: 0.75rem;
+
   --texto: clamp(1.0625rem, 0.98rem + 0.42vw, 1.1875rem);
   --ancho: 34rem;
 
@@ -190,15 +201,25 @@ p { margin: 0 0 1rem; }
 input[type="text"], input[type="number"], textarea, select {
   width: 100%;
   font: inherit;
+  /* Nunca por debajo de 16 px: menos que eso hace que iOS haga zoom al enfocar. */
   font-size: 1.0625rem;
   color: var(--tinta);
   background: var(--fondo);
   border: 2px solid var(--tinta);
   border-radius: var(--radio);
-  padding: 0.7rem 0.75rem;
 }
 
-textarea { min-height: 6rem; resize: vertical; }
+input[type="text"], input[type="number"], select {
+  height: var(--alto-control);
+  /* Sin relleno vertical: con altura fija, el navegador centra el texto solo. */
+  padding: 0 var(--pad-control);
+}
+
+textarea {
+  min-height: 6.5rem;
+  padding: 0.7rem var(--pad-control);
+  resize: vertical;
+}
 
 input:focus-visible, textarea:focus-visible, select:focus-visible,
 button:focus-visible, a:focus-visible, .opcion:focus-within {
@@ -212,9 +233,10 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
 
 .opcion {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.7rem;
-  padding: 0.8rem 0.9rem;
+  min-height: var(--alto-control);
+  padding: 0.7rem 0.9rem;
   border: 2px solid var(--linea);
   border-radius: var(--radio);
   cursor: pointer;
@@ -260,11 +282,13 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
   margin-bottom: 0.6rem;
 }
 
-/* Tres formas de fijar el punto: por nombre, tocando el mapa, o a mano. */
+/* Cuatro formas de fijar el punto: por nombre, tocándolo, con el GPS, o a mano. */
 .buscador { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; }
-.buscador input { flex: 1; min-width: 0; }
 
-.boton--angosto { width: auto; flex: none; padding-inline: 1.1rem; }
+/* `min-width: 0` deja que el campo se encoja: sin él, su ancho mínimo por
+   contenido empuja al botón y desborda la fila en pantallas angostas. */
+.buscador input { flex: 1 1 auto; min-width: 0; }
+.buscador .boton { flex: 0 0 auto; }
 
 .resultados {
   list-style: none;
@@ -291,25 +315,32 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
 
 .resultados button:hover { background: var(--fondo-hueco); }
 
+/*
+  En un teléfono angosto, latitud + longitud + botón en un solo renglón dejaba
+  ~108 px por campo, y «-76.6611» ya pide unos 98. Van en dos columnas y el
+  botón debajo, a lo ancho. Desde 30rem sí caben los tres en línea.
+*/
 .coordenadas-manuales {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem 0.6rem;
+  margin-top: 1rem;
 }
-
-.coordenadas-manuales > div { flex: 1; min-width: 0; }
 
 .coordenadas-manuales label {
   display: block;
   font-size: 0.8125rem;
   font-weight: 650;
   color: var(--tinta-suave);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
 }
 
-.coordenadas-manuales input { font-size: 1rem; padding: 0.6rem 0.6rem; }
-.coordenadas-manuales .boton { min-height: 2.9rem; }
+.coordenadas-manuales .boton { grid-column: 1 / -1; width: 100%; }
+
+@media (min-width: 30rem) {
+  .coordenadas-manuales { grid-template-columns: 1fr 1fr auto; align-items: end; }
+  .coordenadas-manuales .boton { grid-column: auto; width: auto; }
+}
 
 /* -------------------------------------------------------------- botones */
 
@@ -318,7 +349,7 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 3.5rem;
+  height: var(--alto-boton);
   font: inherit;
   font-size: 1.125rem;
   font-weight: 750;
@@ -327,19 +358,27 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
   background: var(--tinta);
   border: 2px solid var(--tinta);
   border-radius: var(--radio);
-  padding: 0.85rem 1.25rem;
+  padding: 0 1.25rem;
   cursor: pointer;
 }
 
 .boton:hover:not(:disabled) { background: #000; }
 .boton:disabled { opacity: 0.55; cursor: progress; }
 
+/* Los secundarios comparten altura con los campos: van a su lado en una fila. */
 .boton--secundario {
   color: var(--tinta);
   background: var(--fondo);
-  font-size: 1rem;
-  min-height: 3rem;
+  font-size: 1.0625rem;
+  height: var(--alto-control);
 }
+
+/*
+  Va DESPUÉS de `.boton` a propósito: misma especificidad, así que gana el que
+  se declara al final. Estando antes, el `width: 100%` de `.boton` lo anulaba y
+  el botón se comía la fila entera dejando el campo sin espacio.
+*/
+.boton--angosto { width: auto; padding-inline: 1.25rem; }
 
 .boton--secundario:hover:not(:disabled) { background: var(--fondo-hueco); }
 
