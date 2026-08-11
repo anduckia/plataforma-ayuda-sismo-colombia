@@ -16,6 +16,11 @@ despliegue:
   mapa:
     centro: { lat: 5.0, lng: -76.2 }
     zoom: 7   # abarca Chocó, Valle del Cauca, Risaralda, Quindío y Caldas
+    # hOSM = Humanitarian OpenStreetMap: única capa SIN clave de Mapbox, y la
+    # mejor para zonas rurales en crisis. Las demás (streets, satellite) usan la
+    # cuenta compartida de Ushahidi, que hoy devuelve 403. Ver ADR-009.
+    capa_base: hOSM
+    autoencuadrar: false   # con 0 publicaciones el autoencuadre ignora el centro
   publicacion_instantanea: true   # RF-02: desactivar la aprobación previa
   ocultar_autor: true             # P2: el nombre de quien publica no se muestra
   descripcion_publica: >

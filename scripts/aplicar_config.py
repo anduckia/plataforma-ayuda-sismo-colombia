@@ -197,13 +197,18 @@ def ajustes_generales(api: Api, cfg: dict, reg: Registro) -> None:
         "lat": float(d["mapa"]["centro"]["lat"]),
         "lon": float(d["mapa"]["centro"]["lng"]),
         "zoom": int(d["mapa"].get("zoom", 7)),
+        "baselayer": d["mapa"].get("capa_base", "hOSM"),
+        "fit_map_boundaries": bool(d["mapa"].get("autoencuadrar", False)),
     }
     if any(vista.get(k) != v for k, v in quiero.items()):
+        # Un PUT parcial de default_view devuelve el resto a los valores de
+        # fábrica (Nairobi, zoom 2), así que se envía completo siempre.
         vista.update(quiero)
-        api.put("/api/v5/config/map", {"default_view": vista})
-        reg.hecho(f"Mapa centrado en {quiero['lat']}, {quiero['lon']} (zoom {quiero['zoom']})")
+        api.put("/api/v5/config/map", {**mapa, "default_view": vista})
+        reg.hecho(f"Mapa: centro {quiero['lat']}, {quiero['lon']} · zoom {quiero['zoom']} · "
+                  f"capa {quiero['baselayer']}")
     else:
-        reg.igual("Mapa ya centrado")
+        reg.igual("Mapa ya configurado")
 
 
 def categorias(api: Api, cfg: dict, reg: Registro) -> dict[str, int]:
@@ -388,6 +393,18 @@ def auditar(api: Api, cfg: dict) -> int:
     sitio = api.get("/api/v5/config/site")["result"]
     print(f"\n  Sitio: «{sitio.get('name')}» · idioma {sitio.get('language')} · "
           f"zona {sitio.get('timezone')}")
+
+    # El mapa se resetea solo ante PUT parciales; comprobarlo evita difundir un
+    # enlace con el mapa apuntando a otro continente (ADR-009).
+    d = cfg["despliegue"]["mapa"]
+    vista = api.get("/api/v5/config/map")["result"].get("default_view") or {}
+    esperado = {"lat": float(d["centro"]["lat"]), "lon": float(d["centro"]["lng"]),
+                "zoom": int(d.get("zoom", 7)), "baselayer": d.get("capa_base", "hOSM")}
+    mal = {k: (vista.get(k), v) for k, v in esperado.items() if vista.get(k) != v}
+    print(f"  Mapa: {vista.get('lat')}, {vista.get('lon')} · zoom {vista.get('zoom')} · "
+          f"capa {vista.get('baselayer')}")
+    for k, (real, quiero) in mal.items():
+        fallos.append(f"mapa → {k} es {real!r}, debería ser {quiero!r}")
     # OJO: /roles devuelve permissions=null; hay que pedir cada rol por separado.
     roles = {r["name"]: r["id"] for r in (api.get("/api/v5/roles").get("results") or [])}
     print(f"  Roles: {', '.join(roles)}")
