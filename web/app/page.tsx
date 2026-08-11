@@ -8,7 +8,7 @@ export default function Inicio() {
     <>
       <h1>¿Qué necesitas hacer?</h1>
       <p className="entradilla">
-        Elige una opción. No necesitas crear una cuenta y no cuesta nada.
+        Elige una opción. Es gratis y no hace falta crear una cuenta.
       </p>
 
       {/* RF-24: se busca la fecha él solo tras pintar, para no meter una
@@ -22,19 +22,16 @@ export default function Inicio() {
             <a key={slug} className={`via via--${f.tono}`} href={`/${slug}`}>
               <span className="via__titulo">{f.titulo}</span>
               <span className="via__desc">{f.descripcion}</span>
-              <span className="via__meta" style={{ fontSize: '0.8rem', opacity: 0.85, marginTop: '0.4rem', display: 'block' }}>
-                {f.visibilidad}
-              </span>
+              <span className="via__meta">{f.visibilidad}</span>
             </a>
           );
         })}
       </nav>
 
       <div className="aviso aviso--privacidad">
-        <p className="aviso__titulo">Tus datos de contacto no se publican</p>
+        <p className="aviso__titulo">Tu teléfono y tu dirección no se publican</p>
         <p>
-          Tu teléfono y tu dirección exacta <strong>nunca son públicos</strong>: solo los ven
-          los ayudantes que el equipo verificó uno por uno, por teléfono.
+          Solo los ven los ayudantes que el equipo verificó uno por uno, por teléfono.
         </p>
         <p>
           <strong>Nunca te pediremos dinero, claves ni números de cuenta.</strong> Si alguien
@@ -45,18 +42,23 @@ export default function Inicio() {
       {SMS && (
         <div className="aviso">
           <p className="aviso__titulo">¿Sin internet?</p>
-          <p>
-            Envía un SMS al <strong>{SMS}</strong> con: AYUDA + qué necesitas + cuántas
-            personas son + municipio y barrio.
+          <p style={{ marginBottom: 0 }}>
+            Manda un SMS al <strong>{SMS}</strong> así:<br />
+            <strong>AYUDA</strong> + qué necesitas + cuántas personas son + municipio y barrio.
           </p>
         </div>
       )}
 
+      {/*
+        El pie era una lista de cuatro avisos sin relación entre sí. Se queda lo
+        que solo se puede decir aquí: qué es este sitio, y el riesgo de réplicas
+        —lo de la Cruz Roja ya encabeza «Busco a un familiar», que es donde le
+        sirve a quien lo necesita.
+      */}
       <p className="pie">
-        Esta plataforma es ciudadana y <strong>complementa a los organismos de socorro</strong>:
-        suma visibilidad, no los reemplaza. Para personas desaparecidas, registra el caso
-        además en la Cruz Roja Colombiana. Hay réplicas: si tu casa está dañada, no vuelvas
-        a entrar. · <a href="/enlaces-oficiales">Todos los canales oficiales</a>
+        Somos una plataforma ciudadana: <strong>sumamos visibilidad a los organismos de
+        socorro, no los reemplazamos</strong>. Y hay réplicas: si tu casa quedó dañada, no
+        vuelvas a entrar. · <a href="/enlaces-oficiales">Todos los canales oficiales</a>
       </p>
     </>
   );

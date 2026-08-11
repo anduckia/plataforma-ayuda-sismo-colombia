@@ -36,11 +36,18 @@ export function nivelDe(s: Pick<Solicitud, 'tipo' | 'urgencia'>): Nivel {
 
 export const colorDe = (s: Pick<Solicitud, 'tipo' | 'urgencia'>) => COLORES[nivelDe(s)];
 
-/** Lo que dice la leyenda, en el orden en que se lee la gravedad. */
-export const LEYENDA: { nivel: Nivel; texto: string }[] = [
-  { nivel: 'critica', texto: 'Crítica' },
-  { nivel: 'alta', texto: 'Alta' },
-  { nivel: 'media', texto: 'Media' },
-  { nivel: 'sin', texto: 'Sin urgencia indicada' },
-  { nivel: 'busqueda', texto: 'Busco a un familiar' },
+/**
+ * Lo que dice la leyenda, en el orden en que se lee la gravedad.
+ *
+ * Lleva el nombre en singular y en plural porque la leyenda y el recuento son
+ * la misma pieza: cada ficha explica un color y dice cuántos hay de ese color
+ * («3 críticas»). Antes eran dos filas —una lista de colores y una frase con
+ * los números— que decían lo mismo con distintas palabras encima del mapa.
+ */
+export const LEYENDA: { nivel: Nivel; uno: string; varios: string }[] = [
+  { nivel: 'critica', uno: 'crítica', varios: 'críticas' },
+  { nivel: 'alta', uno: 'alta', varios: 'altas' },
+  { nivel: 'media', uno: 'media', varios: 'medias' },
+  { nivel: 'sin', uno: 'sin urgencia indicada', varios: 'sin urgencia indicada' },
+  { nivel: 'busqueda', uno: 'búsqueda de familiar', varios: 'búsquedas de familiar' },
 ];

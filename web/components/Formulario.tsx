@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import SelectorUbicacion from './SelectorUbicacion';
 import SelectorMunicipio from './SelectorMunicipio';
+import { CONTACTO } from '@/lib/contacto';
 import {
   publicar, esDelEquipo, buscarParecidas, etiquetaDe, ayudaDe, FORMULARIOS,
   type Campo, type Encuesta, type Slug, type Solicitud,
@@ -45,8 +46,14 @@ function Etiqueta({ campo }: { campo: Campo }) {
         {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
         {campo.required && <span className="saltar">(obligatorio)</span>}
       </label>
+      {/*
+        La insignia se repite en cada campo con candado, así que dice lo justo:
+        con la frase entera —«solo lo ven los ayudantes verificados por el
+        equipo para poder llegar hasta ti»— el formulario acababa con el mismo
+        párrafo cuatro veces. Esa explicación está una vez, arriba de todo.
+      */}
       {campo.response_private && (
-        <span className="campo__candado">🔒 Dato privado — nunca sale en el mapa. Solo lo ven los ayudantes verificados por el equipo para poder llegar hasta ti.</span>
+        <span className="campo__candado">🔒 No se publica</span>
       )}
       {ayuda && <span className="campo__ayuda">{ayuda}</span>}
     </>
@@ -197,12 +204,16 @@ export default function Formulario({
         <p>{detalle}</p>
         {verMapa && (
           <>
+            {/*
+              «¿Qué sigue?» empezaba repitiendo el número que se acaba de dar
+              dos renglones antes. Quedan las dos cosas que sí dependen de quien
+              publica y que aún no se han dicho.
+            */}
             <p style={{ marginTop: '1.25rem', marginBottom: '0.5rem' }}><strong>¿Qué sigue?</strong></p>
-            <ol style={{ margin: '0 0 1.25rem', paddingLeft: '1.4rem', lineHeight: 1.6 }}>
-              <li><strong>Guarda el número {publicadoId}</strong> — es tu referencia si quieres corregir algo o que lo borremos.</li>
-              <li><strong>Ten el teléfono a mano</strong> — si dejaste número, un ayudante verificado puede llamarte para confirmar el caso.</li>
-              <li><strong>Si la ayuda llega o el caso se resuelve</strong>, escríbenos a <strong>sossismocolombia@gmail.com</strong> para marcarlo como «Resuelta» y liberar a los rescatistas hacia otros frentes.</li>
-            </ol>
+            <ul style={{ margin: '0 0 1.25rem', paddingLeft: '1.4rem', lineHeight: 1.6 }}>
+              <li><strong>Ten el teléfono a mano.</strong> Si dejaste número, un ayudante verificado puede llamarte para confirmar el caso.</li>
+              <li><strong>Si la ayuda llega, avísanos</strong> a <strong>{CONTACTO}</strong>: lo marcamos como resuelto y eso libera equipos hacia otros frentes.</li>
+            </ul>
             <p style={{ marginTop: '0.5rem' }}>
               <a className="boton boton--secundario" href="/mapa">Ver el mapa de solicitudes</a>
             </p>
@@ -350,7 +361,7 @@ export default function Formulario({
       {bloqueos.length > 0 && (
         <div className="aviso aviso--error" role="alert">
           <p className="aviso__titulo">
-            {bloqueos.length === 1 ? 'Corrige esto para publicar' : 'Corrige esto para publicar'}
+            {bloqueos.length === 1 ? 'Corrige esto para publicar' : 'Corrige estos datos para publicar'}
           </p>
           <ul className="lista-hallazgos">
             {bloqueos.map((h, i) => <li key={i}>{h.texto}</li>)}
