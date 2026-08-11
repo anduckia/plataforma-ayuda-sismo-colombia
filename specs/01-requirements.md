@@ -57,9 +57,13 @@
 - CUANDO un ayudante incumpla las reglas de confidencialidad, EL EQUIPO DEBERÁ poder revocarle el rol de inmediato.
 
 ### RF-09 · Canal SMS (P4)
-- EL SISTEMA DEBERÁ recibir solicitudes por SMS a un número local colombiano mediante un Android con la app SMSsync como pasarela.
-- CUANDO llegue un SMS, EL SISTEMA DEBERÁ crearlo como publicación y responder automáticamente confirmando la recepción y pidiendo municipio, barrio y número de personas.
+- EL SISTEMA DEBERÁ recibir solicitudes por SMS a un número local colombiano mediante un Android con una **pasarela SMS→HTTP** que reenvíe cada mensaje al endpoint SMSSync del despliegue (ADR-018).
+- La pasarela DEBERÁ enviar por POST a `/sms/smssync` los campos `secret`, `from`, `message`, `sent_to` y `sent_timestamp` (milisegundos por contrato, aunque **comprobado el 11-ago-2026 que el valor no altera la fecha guardada**: tanto la publicación como el mensaje quedan fechados con la hora de llegada).
+- La pasarela DEBERÁ **codificar el cuerpo del POST** (`application/x-www-form-urlencoded` con los campos como pares clave/valor). Comprobado el 11-ago-2026: un cliente que pega el texto sin codificar hace que el mensaje «casa 3 & 4 personas + luz» se guarde como «casa 3» **y el servidor responde 200 `success:true`**. Es pérdida de datos silenciosa sobre el mensaje de alguien que pide auxilio, así que la prueba del canal DEBERÁ incluir un SMS con `&` y `+`.
+- CUANDO llegue un SMS, EL SISTEMA DEBERÁ crearlo como publicación y responder automáticamente confirmando la recepción y pidiendo municipio, barrio y número de personas. La respuesta automática PUEDE salir de la propia pasarela como SMS local, sin pasar por el protocolo de tareas de SMSsync.
 - El Equipo DEBERÁ estructurar manualmente los SMS entrantes (categoría, urgencia, pin).
+- EL EQUIPO NO DEBERÁ dar por supuesta la app **SMSsync** de Ushahidi: su última versión (v3.1.1, feb-2017) declara `targetSdkVersion 22` y **Android 14 se niega a instalar cualquier APK con `targetSdk < 23`** (Android 15, `< 24`). Solo sirve en Android 13 o anterior.
+- El canal DEBERÁ considerarse probado únicamente cuando un SMS real se convierta en publicación con `source: sms` **y** la auditoría de RF-20 vuelva a pasar en verde.
 
 ### RF-10 · Página liviana (P4)
 - La portada y el formulario DEBERÁN funcionar en conexiones 2G/3G inestables: sin video, fotos opcionales y comprimidas.
@@ -137,6 +141,42 @@
 - NUNCA DEBERÁ imprimir el valor de un campo: una auditoría que vuelca teléfonos en la consola —y en los registros de CI— es la fuga que venía a buscar.
 - Mientras no exista ninguna publicación por SMS, la auditoría DEBERÁ advertir que **no ha probado el canal SMS**: el número del remitente viaja pegado a la publicación y eso hay que verificarlo con un SMS real antes de difundir el número.
 - La cara pública DEBERÁ servirse con cabeceras que acoten a dónde puede hablar el navegador (`connect-src`), impidan empotrar el sitio (`frame-ancestors`) y no filtren la URL de origen a los servidores de mapas (`Referrer-Policy`).
+
+### RF-21 · El municipio se elige de una lista, no se escribe (P1, P3)
+**Historia:** como Equipo, necesito saber cuántas solicitudes hay en cada municipio para ver **dónde no llega ninguna**, y con texto libre no puedo: «Dosquebradas» escrito de tres formas son tres municipios distintos, «Pereira» aparece en Antioquia y «No se, Choco» no es un lugar.
+- El municipio DEBERÁ elegirse de una lista cerrada de los cinco departamentos afectados (Chocó, Valle del Cauca, Risaralda, Quindío y Caldas), en cascada departamento → municipio.
+- DEBERÁ existir la opción «Otro / no está en la lista» con texto libre: quien está desplazado o en el borde de la zona tiene que poder publicar igual. Cerrar la lista sin salida es dejar fuera a alguien.
+- La lista cerrada NO DEBERÁ costar precisión rural: el barrio o la vereda siguen siendo texto libre, en el mismo campo y separados por un guion largo, de forma que el prefijo siga siendo agrupable.
+- La **capa de silencio** —qué municipios no han reportado nada— se calcula contra esa lista: sin denominador canónico no existe.
+
+### RF-22 · Datos de acceso para las zonas de difícil llegada (P1, P4)
+**Historia:** como piloto de helicóptero o conductor de convoy, una dirección no me sirve: necesito saber si se llega por carretera, por río o solo a pie, y si hay dónde aterrizar.
+- «Pido ayuda» DEBERÁ ofrecer, **al final y en un bloque plegado y opcional**, cómo se llega, un punto de referencia comunitario, si hay dónde aterrizar cerca, el tiempo desde el pueblo más cercano y si la vía está bloqueada.
+- Todos esos campos son opcionales y **públicos**: es información que sirve a quien va en camino, no datos de contacto.
+- El punto de referencia DEBERÁ empujar hacia referencias comunitarias (la escuela, la cancha, la iglesia) y nunca hacia la dirección de la casa, que sigue viviendo en el campo protegido (P2).
+- La lista de necesidades DEBERÁ incluir «Vía bloqueada / acceso»: hoy no hay forma de decir que el problema **es** el camino.
+
+### RF-23 · Una solicitud sin confirmar dice cuánto lleva esperando (P3, P5)
+**Historia:** como equipo de convoy, no quiero llevar mercado a un sitio donde ya llegó ayuda hace dos días, pero tampoco quiero que se descarte a alguien que sigue esperando.
+- Pasadas 12 horas sin confirmación, la solicitud DEBERÁ mostrar cuánto lleva sin confirmar, en el mapa y en el listado.
+- La antigüedad NUNCA DEBERÁ atenuar, ocultar ni bajar de prioridad la solicitud. Una crítica de 14 horas sin confirmar es la que **peor** está: nadie ha llegado. Invertir esa señal mata gente.
+- «Confirmada» significa pertenecer a la colección del equipo (RF-17). El campo «Verificación» no cuenta: es falsificable.
+- El aviso DEBERÁ ofrecer la vía para cerrarla, porque quien puede decir «ya llegó» es quien publicó.
+
+### RF-24 · El sitio dice cuándo miró los datos por última vez (P5)
+**Historia:** como alguien que abre el mapa a las 3 de la madrugada, no sé si lo que veo es de hace un minuto o de hace seis horas, y esa duda es exactamente lo que le quita credibilidad a una plataforma en emergencia.
+- La portada y el mapa DEBERÁN mostrar cuándo se consultaron los datos por última vez.
+- DEBERÁ distinguirse **cuándo se consultó la plataforma** de **cuándo entró la última solicitud**: son cosas distintas y la segunda no prueba que la primera esté fresca.
+- El cálculo DEBERÁ hacerse en el navegador a partir de una marca de tiempo del servidor. Una marca renderizada en servidor y servida desde caché afirma una frescura que no tiene, que es justo la mentira que este requisito viene a evitar.
+
+### RF-25 · Puente hacia los canales oficiales (P1, P4, RNF-06)
+**Historia:** como persona que acaba de perder la casa, no sé a quién llamar, y esta plataforma no es la respuesta a casi nada de lo que necesito.
+- DEBERÁ existir `/enlaces-oficiales` como centro de todas las salidas, enlazada desde todas las páginas.
+- El bloque de líneas de emergencia DEBERÁ estar visible en todas las páginas. El 123 sigue arriba y solo (RNF-06): repetir seis números sobre el formulario empuja el formulario fuera de la pantalla.
+- Búsqueda de familiares, vivienda dañada, donaciones e información oficial DEBERÁN tener salida contextual desde la página donde aparece la necesidad, no solo desde el centro.
+- Los canales de donación DEBERÁN **enlazarse, nunca transcribirse**. Ningún número de cuenta bancaria se copia a este sitio: un dígito mal copiado manda dinero al lugar equivocado, y refuerza que aquí nunca se toca dinero (RNF-03).
+- Cada dato de contacto DEBERÁ llevar su fuente y la fecha en que se verificó. Publicar un teléfono de emergencia equivocado en un desastre es un daño propio, no un error de copia.
+- `/busco-familiar` **sigue activo**: se encabeza con los canales oficiales, pero no se redirige. Mandar a la gente a un canal saturado y cerrarle el propio es peor que duplicar.
 
 ## Backlog — Fase 2 (no bloquea el lanzamiento)
 
