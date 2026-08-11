@@ -252,6 +252,34 @@ def rol_ayudante(api: Api, cfg: dict, reg: Registro) -> None:
         reg.hecho(f"Rol «{nombre}» creado con permiso «Manage Posts»")
 
 
+def colecciones(api: Api, cfg: dict, reg: Registro) -> None:
+    """T-008 · RF-17, ADR-017 — la señal de verificación que no se puede falsificar.
+
+    La cara pública pinta la insignia verde leyendo `sets` de cada publicación,
+    no el campo «Verificación»: ese campo lo puede rellenar cualquiera, porque
+    publicar es anónimo a propósito. Meterse en una colección, no.
+
+    Si esta colección no existe, el front falla cerrado y NADIE sale verificado.
+    """
+    especificadas = cfg.get("colecciones") or []
+    if not especificadas:
+        return
+    existentes = {c["name"]: c for c in (api.get("/api/v5/collections").get("results") or [])}
+    for spec in especificadas:
+        nombre = spec["nombre"]
+        if nombre in existentes:
+            reg.igual(f"Colección «{nombre}» (id {existentes[nombre]['id']})")
+            continue
+        cuerpo = {
+            "name": nombre,
+            "description": " ".join((spec.get("descripcion") or "").split()),
+            "view": spec.get("vista", "map"),
+            "featured": False,
+        }
+        r = api.post("/api/v5/collections", cuerpo)
+        reg.hecho(f"Colección «{nombre}» creada (id {(r.get('result') or {}).get('id')})")
+
+
 def _campo(spec: dict, prioridad: int, visib_forzada: str | None, ids_cat: dict[str, int]) -> dict:
     tipo = spec["tipo"]
     if tipo not in TIPOS:
@@ -410,6 +438,17 @@ def auditar(api: Api, cfg: dict) -> int:
                 fallos.append(f"«{nombre}» → «{etiqueta}» debería ser "
                               f"{'privado' if esperado else 'público'}")
 
+    # RF-17: sin la colección, la cara pública falla cerrado y no verifica a
+    # nadie. Eso es seguro, pero deja al equipo sin poder señalar lo confirmado.
+    nombres_col = {c["name"] for c in (api.get("/api/v5/collections").get("results") or [])}
+    for spec in (cfg.get("colecciones") or []):
+        if spec["nombre"] in nombres_col:
+            print(f"\n  ✓ Colección «{spec['nombre']}»")
+        else:
+            print(f"\n  ✗ FALTA la colección «{spec['nombre']}»")
+            fallos.append(f"falta la colección «{spec['nombre']}»: sin ella el mapa no "
+                          f"puede marcar nada como verificado (RF-17, ADR-017)")
+
     sitio = api.get("/api/v5/config/site")["result"]
     print(f"\n  Sitio: «{sitio.get('name')}» · idioma {sitio.get('language')} · "
           f"zona {sitio.get('timezone')}")
@@ -473,6 +512,7 @@ def main() -> int:
         print("\n[T-002] Ajustes generales y mapa");      ajustes_generales(api, cfg, reg)
         print("\n[T-003] Categorías");                    ids = categorias(api, cfg, reg)
         print("\n[T-007] Rol «Ayudante verificado»");     rol_ayudante(api, cfg, reg)
+        print("\n[T-008] Colecciones");                   colecciones(api, cfg, reg)
         print("\n[T-004…T-006] Encuestas")
         encuestas(api, cfg, ids, reg, args.recrear_encuestas)
         print(f"\n{len(reg.cambios)} cambio(s) {'simulados' if simulacro else 'aplicados'}.")

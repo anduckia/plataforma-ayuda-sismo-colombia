@@ -55,9 +55,10 @@ const cuando = (iso: string) => {
 
 export default async function PaginaMapa() {
   let solicitudes: Solicitud[] = [];
+  let completo = true;
   let fallo = false;
   try {
-    solicitudes = await traerSolicitudes();
+    ({ solicitudes, completo } = await traerSolicitudes());
   } catch {
     fallo = true;
   }
@@ -74,6 +75,22 @@ export default async function PaginaMapa() {
             ? 'Todavía no hay solicitudes publicadas.'
             : `${resumen(solicitudes)} ${conPunto} con punto en el mapa.`}
       </p>
+
+      {/*
+        RF-18: si el listado viene recortado hay que decirlo. Un mapa que
+        enseña 5000 de 7000 sin avisar hace creer que los 2000 que faltan no
+        existen, y las que se caen son justamente las más viejas: las que
+        llevan más tiempo esperando a que alguien llegue.
+      */}
+      {!fallo && !completo && (
+        <div className="aviso aviso--error" role="alert">
+          <p className="aviso__titulo">Esta página no las está mostrando todas</p>
+          <p>
+            Hay más solicitudes de las que caben aquí y faltan las más antiguas. Para
+            trabajar con el listado completo, usa el panel de la plataforma.
+          </p>
+        </div>
+      )}
 
       {!fallo && solicitudes.length > 0 && (
         <>
@@ -125,7 +142,20 @@ export default async function PaginaMapa() {
 
       <p className="pie">
         Los teléfonos y las direcciones exactas no aparecen aquí: solo los ven los ayudantes
-        verificados por el equipo. · <a href="/">Volver al inicio</a>
+        verificados por el equipo.
+      </p>
+      {/*
+        RF-17: qué significa exactamente la insignia. «Sin verificar» es lo
+        normal y no quiere decir «falsa»: quiere decir que todavía nadie del
+        equipo la ha confirmado, y que hay que tratarla como lo que es, el
+        aviso de una persona a la que aún no se ha llamado.
+      */}
+      <p className="pie">
+        Cualquiera puede publicar sin cuenta, así que <strong>casi todo aparece «sin
+        verificar»</strong>: nadie del equipo lo ha confirmado todavía. La insignia verde
+        solo la pone el equipo tras comprobar el caso, y no se puede poner desde el
+        formulario. · <a href="/privacidad">Privacidad y borrado de datos</a> ·{' '}
+        <a href="/">Volver al inicio</a>
       </p>
     </>
   );
