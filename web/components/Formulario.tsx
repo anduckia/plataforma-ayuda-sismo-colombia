@@ -3,8 +3,8 @@
 import { useMemo, useState } from 'react';
 import SelectorUbicacion from './SelectorUbicacion';
 import {
-  publicar, esDelEquipo, buscarParecidas,
-  type Campo, type Encuesta, type Solicitud,
+  publicar, esDelEquipo, buscarParecidas, etiquetaDe, ayudaDe, FORMULARIOS,
+  type Campo, type Encuesta, type Slug, type Solicitud,
 } from '@/lib/ushahidi';
 import {
   revisarPunto, revisarTelefono, revisarCantidad, revisarDatosEnPublico,
@@ -16,22 +16,29 @@ import {
 const soportado = (c: Campo) => c.type !== 'media';
 
 function Etiqueta({ campo }: { campo: Campo }) {
+  const ayuda = ayudaDe(campo);
   return (
     <>
       <label className="campo__etiqueta" htmlFor={`c${campo.id}`}>
-        {campo.label}
+        {etiquetaDe(campo)}
         {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
         {campo.required && <span className="saltar">(obligatorio)</span>}
       </label>
       {campo.response_private && (
         <span className="campo__candado">🔒 Solo lo ve el equipo verificado</span>
       )}
-      {campo.instructions && <span className="campo__ayuda">{campo.instructions}</span>}
+      {ayuda && <span className="campo__ayuda">{ayuda}</span>}
     </>
   );
 }
 
-export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
+export default function Formulario({
+  encuesta,
+  slug,
+}: {
+  encuesta: Encuesta;
+  slug: Slug;
+}) {
   const campos = useMemo(
     () => encuesta.campos.filter((c) => !esDelEquipo(c) && soportado(c)),
     [encuesta],
@@ -114,7 +121,7 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
       return v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0);
     });
     if (falta) {
-      setError(`Falta un dato obligatorio: «${falta.label}».`);
+      setError(`Falta un dato obligatorio: «${etiquetaDe(falta)}».`);
       document.getElementById(`c${falta.id}`)?.scrollIntoView({ block: 'center' });
       return;
     }
@@ -200,10 +207,10 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
             <fieldset className="campo" key={campo.id} id={`c${campo.id}`}
                       style={{ border: 0, padding: 0, margin: '0 0 1.9rem' }}>
               <legend className="campo__etiqueta" style={{ padding: 0 }}>
-                {campo.label}
+                {etiquetaDe(campo)}
                 {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
               </legend>
-              {campo.instructions && <span className="campo__ayuda">{campo.instructions}</span>}
+              {ayudaDe(campo) && <span className="campo__ayuda">{ayudaDe(campo)}</span>}
               <div className={esUrgencia ? 'urgencia' : 'opciones'}>
                 {opciones.map((o) => (
                   <label key={o} className={`opcion${v === o ? ' opcion--marcada' : ''}`}>
@@ -225,10 +232,10 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
             <fieldset className="campo" key={campo.id} id={`c${campo.id}`}
                       style={{ border: 0, padding: 0, margin: '0 0 1.9rem' }}>
               <legend className="campo__etiqueta" style={{ padding: 0 }}>
-                {campo.label}
+                {etiquetaDe(campo)}
                 {campo.required && <span className="campo__obligatorio" aria-hidden="true"> *</span>}
               </legend>
-              {campo.instructions && <span className="campo__ayuda">{campo.instructions}</span>}
+              {ayudaDe(campo) && <span className="campo__ayuda">{ayudaDe(campo)}</span>}
               <div className="opciones">
                 {opciones.map((o) => {
                   const valorOpcion = esTags ? o.id : o;
@@ -341,8 +348,7 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
             {enviando ? 'Comprobando…' : 'Publicar'}
           </button>
           <p className="campo__ayuda" style={{ marginTop: '0.75rem' }}>
-            Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo
-            confirme.
+            {FORMULARIOS[slug].pie}
           </p>
         </>
       )}

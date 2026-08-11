@@ -25,7 +25,9 @@ const PANTALLAS = [
   { nombre: 'escritorio', width: 1280, height: 900 },
 ];
 
-const RUTAS = ['/', '/pido-ayuda', '/busco-familiar', '/quiero-ayudar', '/mapa'];
+const RUTAS = [
+  '/', '/pido-ayuda', '/busco-familiar', '/quiero-ayudar', '/ofrezco-recursos', '/mapa',
+];
 
 /** Todo lo que se toca en una fila debe medir lo mismo (ver --alto-control). */
 const ALTO_CONTROL = 52;

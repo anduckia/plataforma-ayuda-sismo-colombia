@@ -25,6 +25,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a className="barra__enlace" href="/mapa">Ver el mapa</a>
           </div>
         </header>
+        {/*
+          RNF-06: va antes que cualquier formulario y en todas las páginas.
+          Esta plataforma complementa a los organismos de socorro; quien tiene
+          una vida en riesgo delante no debería estar llenando un formulario.
+          El número es un enlace `tel:` para que se marque de un toque.
+        */}
+        <p className="linea123">
+          <span aria-hidden="true">⚠️ </span>
+          ¿Hay una vida en riesgo <strong>ahora</strong>? Llama primero a{' '}
+          <a href="tel:123">la línea de emergencias <strong>123</strong></a>.
+        </p>
         <main id="principal" className="envoltura">{children}</main>
       </body>
     </html>

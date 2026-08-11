@@ -20,6 +20,7 @@
   --auxilio: #C1121F;
   --busqueda: #23479B;
   --apoyo: #0B6244;
+  --recurso: #7A4E00;
   --privado: #3A4A5B;
 
   --foco: #23479B;
@@ -94,6 +95,27 @@ body {
   color: var(--tinta);
 }
 
+/*
+  RNF-06 · La línea 123 va antes que todo lo demás, en rojo de urgencia y con
+  el número como área táctil: es la única acción de esta página que puede
+  salvar a alguien en los próximos minutos. No se cierra ni se desplaza.
+*/
+.linea123 {
+  margin: 0;
+  padding: 0.8rem 1.15rem;
+  background: var(--critica);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.linea123 a {
+  color: #fff;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+
 h1 {
   font-size: clamp(1.9rem, 1.4rem + 2.4vw, 2.75rem);
   line-height: 1.08;
@@ -137,6 +159,7 @@ p { margin: 0 0 1rem; }
 .via--auxilio { border-left-color: var(--auxilio); }
 .via--busqueda { border-left-color: var(--busqueda); }
 .via--apoyo { border-left-color: var(--apoyo); }
+.via--recurso { border-left-color: var(--recurso); }
 
 .via__titulo {
   display: block;

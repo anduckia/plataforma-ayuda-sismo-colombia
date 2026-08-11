@@ -45,9 +45,10 @@ export default function Inicio() {
       )}
 
       <p className="pie">
-        Esta plataforma suma visibilidad; no reemplaza a los canales oficiales. Si hay vidas
-        en riesgo inmediato, llama también al <strong>123</strong>. Para personas
-        desaparecidas, registra el caso además en la Cruz Roja Colombiana.
+        Esta plataforma es ciudadana y <strong>complementa a los organismos de socorro</strong>:
+        suma visibilidad, no los reemplaza. Para personas desaparecidas, registra el caso
+        además en la Cruz Roja Colombiana. Hay réplicas: si tu casa está dañada, no vuelvas
+        a entrar.
       </p>
     </>
   );

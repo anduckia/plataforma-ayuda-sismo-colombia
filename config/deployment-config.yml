@@ -116,6 +116,11 @@ encuestas:
       - { etiqueta: "Teléfono", tipo: texto_corto, obligatorio: true }
       - { etiqueta: "Municipios donde puedes actuar", tipo: texto_corto, obligatorio: true }
       - { etiqueta: "Qué ofreces", tipo: casillas, opciones: ["Rescate", "Médico", "Transporte", "Maquinaria", "Alimentos", "Refugio", "Comunicaciones", "Otro"], obligatorio: true }
+      # RF-15: el texto engaña —en la cara pública nadie crea cuenta— pero la etiqueta
+      # NO se renombra aquí: la encuesta ya existe con ayudantes dentro y renombrarla
+      # exige borrarla y rehacerla. El front la muestra como «Tu correo» (ver TEXTOS
+      # en web/lib/ushahidi.ts) y envía a la API la original. Al recrear el despliegue
+      # desde cero: renombrar aquí y quitar el override.
       - { etiqueta: "Correo con el que creaste tu cuenta aquí", tipo: texto_corto, obligatorio: true, ayuda: "Para asignarte el rol tras la llamada de verificación." }
     reglas_para_ayudantes:
       - "Direcciones y teléfonos son confidenciales: prohibido sacarlos de la operación."

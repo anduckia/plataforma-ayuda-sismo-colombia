@@ -36,7 +36,15 @@ export interface Encuesta {
   campos: Campo[];
 }
 
-/** Los tres formularios, con URLs que se pueden dictar por radio. */
+/**
+ * Los cuatro formularios, con URLs que se pueden dictar por radio (RF-15).
+ *
+ * `meta` es la descripción propia de cada página: compartir las cuatro URLs con
+ * el mismo resumen hacía que en WhatsApp todas se vieran como «Pido ayuda».
+ * `pie` es lo que se promete bajo el botón, y cambia según dónde acaban los
+ * datos: en «Pido ayuda» la publicación es el objetivo; en los dos formularios
+ * de contacto, prometer visibilidad inmediata sería mentir (P5).
+ */
 export const FORMULARIOS = {
   'pido-ayuda': {
     nombreApi: 'Pido ayuda',
@@ -44,6 +52,9 @@ export const FORMULARIOS = {
     gancho: 'Para que la ayuda te encuentre',
     descripcion: 'Rescate, salud, comida, agua, refugio o transporte.',
     tono: 'auxilio',
+    meta: 'Publica qué necesitas y dónde estás para que los equipos de ayuda te ' +
+      'encuentren. Tu teléfono y tu dirección exacta nunca son públicos. Sin cuenta y gratis.',
+    pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
   },
   'busco-familiar': {
     nombreApi: 'Busco a un familiar',
@@ -51,13 +62,29 @@ export const FORMULARIOS = {
     gancho: 'Para que más ojos lo busquen',
     descripcion: 'Publica los datos de la persona que no aparece.',
     tono: 'busqueda',
+    meta: 'Publica los datos de la persona que no aparece para que más ojos la busquen. ' +
+      'Tu teléfono no se publica. Registra el caso también en la Cruz Roja Colombiana.',
+    pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
   },
   'quiero-ayudar': {
     nombreApi: 'Quiero ayudar',
     titulo: 'Quiero ayudar',
-    gancho: 'Para sumarte a los equipos',
+    gancho: 'Para entrar al equipo verificado',
     descripcion: 'Regístrate como voluntario u organización.',
     tono: 'apoyo',
+    meta: 'Regístrate como voluntario u organización. El equipo te llama para verificarte ' +
+      'y luego te da acceso a los datos de contacto de quienes piden ayuda.',
+    pie: 'Tus datos solo los ve el equipo; te llamaremos para verificarte.',
+  },
+  'ofrezco-recursos': {
+    nombreApi: 'Ofrezco recursos',
+    titulo: 'Ofrezco recursos',
+    gancho: 'Para cruzar tu recurso con quien lo necesita',
+    descripcion: 'Maquinaria, plantas eléctricas, luces, herramienta o transporte.',
+    tono: 'recurso',
+    meta: 'Registra maquinaria, plantas eléctricas, iluminación, herramienta o transporte ' +
+      'para que el equipo los cruce con quien los necesita. Tu teléfono no se publica.',
+    pie: 'Tus datos de contacto solo los ve el equipo; te llamaremos para coordinar la asignación.',
   },
 } as const;
 
@@ -69,9 +96,34 @@ export type Slug = keyof typeof FORMULARIOS;
  * muestran: si «Verificación» apareciera en el formulario, cualquiera podría
  * marcarse a sí mismo como verificado por el equipo.
  */
-const DEL_EQUIPO = ['Estado de la solicitud', 'Estado de la búsqueda', 'Verificación'];
+const DEL_EQUIPO = [
+  'Estado de la solicitud', 'Estado de la búsqueda', 'Verificación',
+  // ADR-011: lo mueve el equipo al asignar el recurso. Si el oferente pudiera
+  // marcarse «Asignado» a sí mismo, el mapa dejaría de servir para despachar.
+  'Estado del recurso',
+];
 
 export const esDelEquipo = (c: Campo) => DEL_EQUIPO.includes(c.label);
+
+/**
+ * Textos que se corrigen sobre la marcha, sin tocar la etiqueta real del campo:
+ * el POST tiene que seguir enviando el `label` que la API conoce, y las
+ * encuestas ya creadas no se pueden reetiquetar sin borrarlas (con sus
+ * publicaciones dentro). La auditoría de `aplicar_config.py` compara etiquetas
+ * contra el despliegue vivo, así que el YAML conserva la original y lleva la
+ * nota de qué quitar cuando se recree desde cero.
+ */
+const TEXTOS: Record<string, { etiqueta?: string; ayuda?: string }> = {
+  // En esta cara nadie crea cuenta: pedir «el correo con el que creaste tu
+  // cuenta» dejaba al voluntario buscando una cuenta que no existe (RF-15).
+  'Correo con el que creaste tu cuenta aquí': {
+    etiqueta: 'Tu correo',
+    ayuda: 'Ahí te enviaremos el acceso cuando te verifiquemos. No necesitas crear ninguna cuenta ahora.',
+  },
+};
+
+export const etiquetaDe = (c: Campo) => TEXTOS[c.label]?.etiqueta ?? c.label;
+export const ayudaDe = (c: Campo) => TEXTOS[c.label]?.ayuda ?? c.instructions;
 
 async function pedir(ruta: string) {
   const r = await fetch(API + ruta, {
