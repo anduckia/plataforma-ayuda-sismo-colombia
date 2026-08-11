@@ -25,7 +25,7 @@ function Etiqueta({ campo }: { campo: Campo }) {
         {campo.required && <span className="saltar">(obligatorio)</span>}
       </label>
       {campo.response_private && (
-        <span className="campo__candado">🔒 Solo lo ve el equipo verificado</span>
+        <span className="campo__candado">🔒 Dato privado — nunca sale en el mapa. Solo lo ven los ayudantes verificados por el equipo para poder llegar hasta ti.</span>
       )}
       {ayuda && <span className="campo__ayuda">{ayuda}</span>}
     </>
@@ -170,14 +170,22 @@ export default function Formulario({
       <div className="aviso">
         <p className="aviso__titulo">{titulo}</p>
         <p>
-          Guarda este número: <strong>{publicadoId}</strong>. Con él puedes preguntar por
-          tu {palabra}.
+          Guarda este número: <strong>{publicadoId}</strong>. Con él puedes pedir
+          actualizaciones o el borrado de tu {palabra}.
         </p>
         <p>{detalle}</p>
         {verMapa && (
-          <p style={{ marginTop: '1.25rem' }}>
-            <a className="boton boton--secundario" href="/mapa">Ver el mapa de solicitudes</a>
-          </p>
+          <>
+            <p style={{ marginTop: '1.25rem', marginBottom: '0.5rem' }}><strong>¿Qué sigue?</strong></p>
+            <ol style={{ margin: '0 0 1.25rem', paddingLeft: '1.4rem', lineHeight: 1.6 }}>
+              <li><strong>Guarda el número {publicadoId}</strong> — es tu referencia si quieres corregir algo o que lo borremos.</li>
+              <li><strong>Ten el teléfono a mano</strong> — si dejaste número, un ayudante verificado puede llamarte para confirmar el caso.</li>
+              <li><strong>Si la ayuda llega o el caso se resuelve</strong>, escríbenos a <strong>sossismocolombia@gmail.com</strong> para marcarlo como «Resuelta» y liberar a los rescatistas hacia otros frentes.</li>
+            </ol>
+            <p style={{ marginTop: '0.5rem' }}>
+              <a className="boton boton--secundario" href="/mapa">Ver el mapa de solicitudes</a>
+            </p>
+          </>
         )}
       </div>
     );

@@ -94,6 +94,14 @@ export default async function PaginaMapa() {
 
       {!fallo && solicitudes.length > 0 && (
         <>
+          <div className="aviso" style={{ marginBottom: '1.25rem' }}>
+            <p className="aviso__titulo">ℹ️ ¿Qué significa «Sin verificar»?</p>
+            <p style={{ marginBottom: 0 }}>
+              Es el estado inicial automático de todo reporte al ingresar. Significa que el caso
+              está en cola de atención del equipo. <strong>No significa que la solicitud sea falsa.</strong>
+              {' '}Las solicitudes se atienden prioritariamente según su nivel de Urgencia (🔴 Crítica / 🟠 Alta).
+            </p>
+          </div>
           <ul className="leyenda">
             {LEYENDA.map(({ nivel, texto }) => (
               <li key={nivel}>

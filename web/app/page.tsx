@@ -17,6 +17,9 @@ export default function Inicio() {
             <a key={slug} className={`via via--${f.tono}`} href={`/${slug}`}>
               <span className="via__titulo">{f.titulo}</span>
               <span className="via__desc">{f.descripcion}</span>
+              <span className="via__meta" style={{ fontSize: '0.8rem', opacity: 0.85, marginTop: '0.4rem', display: 'block' }}>
+                {f.visibilidad}
+              </span>
             </a>
           );
         })}

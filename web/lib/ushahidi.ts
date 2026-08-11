@@ -54,6 +54,7 @@ export const FORMULARIOS = {
     gancho: 'Para que la ayuda te encuentre',
     descripcion: 'Rescate, salud, comida, agua, refugio o transporte.',
     tono: 'auxilio',
+    visibilidad: '🌐 Aparece de inmediato en el mapa público',
     meta: 'Publica qué necesitas y dónde estás para que los equipos de ayuda te ' +
       'encuentren. Tu teléfono y tu dirección exacta nunca son públicos. Sin cuenta y gratis.',
     pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
@@ -71,6 +72,7 @@ export const FORMULARIOS = {
     gancho: 'Para que más ojos lo busquen',
     descripcion: 'Publica los datos de la persona que no aparece.',
     tono: 'busqueda',
+    visibilidad: '🌐 Aparece de inmediato en el mapa público',
     meta: 'Publica los datos de la persona que no aparece para que más ojos la busquen. ' +
       'Tu teléfono no se publica. Registra el caso también en la Cruz Roja Colombiana.',
     pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
@@ -88,6 +90,7 @@ export const FORMULARIOS = {
     gancho: 'Para entrar al equipo verificado',
     descripcion: 'Regístrate como voluntario u organización.',
     tono: 'apoyo',
+    visibilidad: '🔒 Registro privado: solo lo revisa el equipo',
     meta: 'Regístrate como voluntario u organización. El equipo te llama para verificarte ' +
       'y luego te da acceso a los datos de contacto de quienes piden ayuda.',
     pie: 'Tus datos solo los ve el equipo; te llamaremos para verificarte.',
@@ -105,6 +108,7 @@ export const FORMULARIOS = {
     gancho: 'Para cruzar tu recurso con quien lo necesita',
     descripcion: 'Maquinaria, plantas eléctricas, luces, herramienta o transporte.',
     tono: 'recurso',
+    visibilidad: '🔒 Registro privado: solo lo revisa el equipo',
     meta: 'Registra maquinaria, plantas eléctricas, iluminación, herramienta o transporte ' +
       'para que el equipo los cruce con quien los necesita. Tu teléfono no se publica.',
     pie: 'Tus datos de contacto solo los ve el equipo; te llamaremos para coordinar la asignación.',
