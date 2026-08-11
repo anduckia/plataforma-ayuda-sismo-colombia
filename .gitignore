@@ -18,3 +18,11 @@ datos/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Front público (Next.js)
+node_modules/
+.next/
+.vercel/
+
+# Clon del backend de Ushahidi: no forma parte de este repo (decisión: API alojada)
+platform/

@@ -1,0 +1,350 @@
+/*
+  Lenguaje visual: señalética de emergencia, no diseño web.
+  Quien lee esto puede estar asustado, a media luz, con un teléfono barato y
+  mala señal. Por eso: contraste máximo, cuerpo grande, áreas táctiles de
+  pulgar, cero webfonts (la página aparece en 2G) y casi nada de movimiento.
+*/
+
+:root {
+  --tinta: #141210;
+  --tinta-suave: #4A453E;
+  --fondo: #ffffff;
+  --fondo-hueco: #F1EFEB;
+  --linea: #D6D1C8;
+
+  /* La escala de urgencia es el sistema de señales del sitio. */
+  --critica: #C1121F;
+  --alta: #D9541A;
+  --media: #B8860B;
+
+  --auxilio: #C1121F;
+  --busqueda: #23479B;
+  --apoyo: #0B6244;
+  --privado: #3A4A5B;
+
+  --foco: #23479B;
+  --radio: 4px;
+
+  --texto: clamp(1.0625rem, 0.98rem + 0.42vw, 1.1875rem);
+  --ancho: 34rem;
+
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: var(--texto);
+  line-height: 1.55;
+  /* Evita el zoom automático de iOS al enfocar un campo. */
+  text-rendering: optimizeLegibility;
+}
+
+/* ------------------------------------------------------------ estructura */
+
+.envoltura {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 1.25rem 1.15rem 4rem;
+}
+
+.barra {
+  border-bottom: 3px solid var(--tinta);
+  background: var(--fondo);
+}
+
+.barra__interior {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.barra__marca {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.barra__enlace {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--tinta);
+}
+
+h1 {
+  font-size: clamp(1.9rem, 1.4rem + 2.4vw, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  margin: 1.5rem 0 0.65rem;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  font-weight: 750;
+  margin: 2.25rem 0 0.75rem;
+}
+
+p { margin: 0 0 1rem; }
+
+.entradilla {
+  font-size: 1.0625em;
+  color: var(--tinta-suave);
+  margin-bottom: 1.75rem;
+}
+
+/* ------------------------------------------------- tarjetas de las 3 vías */
+
+.vias { display: grid; gap: 0.85rem; margin: 0 0 2rem; }
+
+.via {
+  display: block;
+  padding: 1.15rem 1.25rem;
+  border: 2px solid var(--tinta);
+  border-left-width: 10px;
+  border-radius: var(--radio);
+  background: var(--fondo);
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.via:hover, .via:focus-visible { background: var(--fondo-hueco); }
+.via--auxilio { border-left-color: var(--auxilio); }
+.via--busqueda { border-left-color: var(--busqueda); }
+.via--apoyo { border-left-color: var(--apoyo); }
+
+.via__titulo {
+  display: block;
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.15rem;
+}
+
+.via__desc { display: block; color: var(--tinta-suave); font-size: 0.9688rem; }
+
+/* --------------------------------------------------------------- avisos */
+
+.aviso {
+  border: 2px solid var(--tinta);
+  border-radius: var(--radio);
+  padding: 1rem 1.15rem;
+  margin: 0 0 1.5rem;
+  background: var(--fondo-hueco);
+}
+
+.aviso--privacidad { border-color: var(--privado); }
+.aviso--error { border-color: var(--critica); background: #FDF0F1; }
+.aviso__titulo { font-weight: 750; margin-bottom: 0.35rem; }
+.aviso p:last-child { margin-bottom: 0; }
+.aviso small { font-size: 0.875rem; }
+
+/* ------------------------------------------------------------ formulario */
+
+.campo { margin-bottom: 1.9rem; }
+
+.campo__etiqueta {
+  display: block;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.3rem;
+}
+
+.campo__obligatorio { color: var(--critica); font-weight: 800; }
+
+.campo__ayuda {
+  display: block;
+  font-size: 0.9375rem;
+  color: var(--tinta-suave);
+  margin-bottom: 0.6rem;
+}
+
+.campo__candado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8438rem;
+  font-weight: 650;
+  color: var(--privado);
+  border: 1.5px solid var(--privado);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+input[type="text"], input[type="number"], textarea, select {
+  width: 100%;
+  font: inherit;
+  font-size: 1.0625rem;
+  color: var(--tinta);
+  background: var(--fondo);
+  border: 2px solid var(--tinta);
+  border-radius: var(--radio);
+  padding: 0.7rem 0.75rem;
+}
+
+textarea { min-height: 6rem; resize: vertical; }
+
+input:focus-visible, textarea:focus-visible, select:focus-visible,
+button:focus-visible, a:focus-visible, .opcion:focus-within {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+/* ----------------------------------------------- opciones y la urgencia */
+
+.opciones { display: grid; gap: 0.5rem; }
+
+.opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  border: 2px solid var(--linea);
+  border-radius: var(--radio);
+  cursor: pointer;
+}
+
+.opcion:hover { border-color: var(--tinta); }
+.opcion input { margin: 0.2rem 0 0; width: 1.15rem; height: 1.15rem; flex: none; accent-color: var(--tinta); }
+.opcion--marcada { border-color: var(--tinta); background: var(--fondo-hueco); }
+
+/* La firma del sitio: la urgencia como bandas de señal a ancho completo. */
+.urgencia { display: grid; gap: 0.5rem; }
+
+.urgencia .opcion {
+  border-width: 2px;
+  border-left-width: 12px;
+  font-weight: 650;
+  min-height: 3.5rem;
+  align-items: center;
+}
+
+.urgencia .opcion:nth-child(1) { border-left-color: var(--critica); }
+.urgencia .opcion:nth-child(2) { border-left-color: var(--alta); }
+.urgencia .opcion:nth-child(3) { border-left-color: var(--media); }
+.urgencia .opcion--marcada:nth-child(1) { background: #FBEFF0; border-color: var(--critica); }
+.urgencia .opcion--marcada:nth-child(2) { background: #FCF2EC; border-color: var(--alta); }
+.urgencia .opcion--marcada:nth-child(3) { background: #FAF5E6; border-color: var(--media); }
+
+/* ----------------------------------------------------------------- mapa */
+
+.mapa {
+  height: 60vh;
+  min-height: 20rem;
+  border: 2px solid var(--tinta);
+  border-radius: var(--radio);
+  background: var(--fondo-hueco);
+}
+
+.mapa--selector { height: 17rem; margin-bottom: 0.6rem; }
+
+.coordenadas {
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+  margin-bottom: 0.6rem;
+}
+
+/* -------------------------------------------------------------- botones */
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3.5rem;
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  color: var(--fondo);
+  background: var(--tinta);
+  border: 2px solid var(--tinta);
+  border-radius: var(--radio);
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+}
+
+.boton:hover:not(:disabled) { background: #000; }
+.boton:disabled { opacity: 0.55; cursor: progress; }
+
+.boton--secundario {
+  color: var(--tinta);
+  background: var(--fondo);
+  font-size: 1rem;
+  min-height: 3rem;
+}
+
+.boton--secundario:hover:not(:disabled) { background: var(--fondo-hueco); }
+
+/* ------------------------------------------------ lista de solicitudes */
+
+.solicitudes { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+
+.solicitud {
+  border: 2px solid var(--linea);
+  border-left-width: 10px;
+  border-radius: var(--radio);
+  padding: 0.9rem 1rem;
+}
+
+.solicitud--critica { border-left-color: var(--critica); }
+.solicitud--alta { border-left-color: var(--alta); }
+.solicitud--media { border-left-color: var(--media); }
+.solicitud--sin { border-left-color: var(--linea); }
+
+.solicitud__titulo { font-weight: 750; letter-spacing: -0.015em; margin-bottom: 0.2rem; }
+.solicitud__meta { font-size: 0.875rem; color: var(--tinta-suave); }
+
+.etiquetas { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+
+.etiqueta {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1.5px solid var(--linea);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+}
+
+.etiqueta--verificada { border-color: var(--apoyo); color: var(--apoyo); }
+
+/* --------------------------------------------------------------- varios */
+
+.vacio {
+  border: 2px dashed var(--linea);
+  border-radius: var(--radio);
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--tinta-suave);
+}
+
+.pie {
+  border-top: 2px solid var(--linea);
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  font-size: 0.9062rem;
+  color: var(--tinta-suave);
+}
+
+a { color: var(--foco); }
+.saltar { position: absolute; left: -9999px; }
+.saltar:focus { left: 0.5rem; top: 0.5rem; background: var(--fondo); padding: 0.5rem; z-index: 10; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

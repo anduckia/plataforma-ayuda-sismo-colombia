@@ -18,6 +18,10 @@ Cada tarea traza a requisitos (RF/RNF) y a la sección de la guía (`docs/guia-l
 - [ ] **T-012** 👤 Reemplazar `[NUMERO_SMS]` en la descripción del sitio y en los textos de difusión cuando exista el número · (RF-09 · Guía §12)
 - [ ] **T-013** 👤 Difusión: enviar el texto de WhatsApp a PMU (Bogotá, Cali, Armenia, Quibdó), UNGRD, Cruz Roja, Defensa Civil, Bomberos, alcaldías afectadas y emisoras locales (que lean el número SMS al aire) · (RF-10, P1 · Guía §12)
 
+- [x] **T-014** 🤝 Cara pública propia (`web/`, Next.js) con los 3 formularios, mapa Leaflet + Humanitarian OSM y aviso de privacidad · (RF-01…RF-08, ADR-010, ADR-011) — *Hecho 10-ago-2026:* lee el esquema de la API en vivo, publica anónimo (201), oculta «Estado»/«Verificación» y los envía por código. Falta subir a Vercel (T-015).
+- [ ] **T-015** 👤 Desplegar `web/` en Vercel y decidir qué enlace se difunde · (P1)
+- [ ] **T-016** 🤝 Subida de fotos en el front propio (requiere multipart a `/api/v5/media`) · (RF-01)
+
 ## Fase 1 · Operación diaria (mientras dure la emergencia)
 
 - [ ] **T-101** 👤 Ritual de verificación: Críticas → Altas → Medias, cada pocas horas · (RF-05 · Guía §8)
