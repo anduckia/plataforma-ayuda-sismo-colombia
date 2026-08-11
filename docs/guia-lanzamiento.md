@@ -1,6 +1,8 @@
 # Guía de lanzamiento · Plataforma de ayuda — Sismo en Colombia
 
-**🌐 Despliegue en producción:** https://sos-sismo-colombia.ushahidi.io/
+**🌐 Enlace que se difunde:** https://www.sossismocolombia.com.co/ — es la cara pública (ADR-010).
+**🔧 Backend Ushahidi (panel del equipo):** https://sos-sismo-colombia.ushahidi.io/
+**📱 SMS:** 3148071191
 
 **Objetivo:** tener al aire HOY una plataforma donde los afectados pidan ayuda con visibilidad pública, contacto protegido y verificación manual, replicable como proyecto abierto.
 
@@ -11,7 +13,7 @@
 | Base | Ushahidi alojado por ellos (plan Basic, $0/mes, publicaciones ilimitadas) |
 | Publicación | Instantánea, con etiqueta visible «Sin verificar»; tú verificas por orden de gravedad |
 | Privacidad | Zona/barrio públicos · teléfono y dirección exacta solo para «Ayudantes verificados» (dar el número = dar consentimiento, explicado junto al campo) |
-| SMS | SIM local colombiana + Android con la app SMSsync |
+| SMS | SIM local colombiana (3148071191) + Android con pasarela SMS→HTTP (ADR-018; la app SMSsync no instala en Android 14+) |
 | Verificación de ayudantes | Nombre + organización + teléfono (tú llamas y confirmas) |
 
 **Tiempo estimado:** 60–90 minutos. **Necesitas:** un correo, un navegador, y (para el paso 9) un teléfono Android con SIM local con SMS, cargador y buena señal.
@@ -56,7 +58,7 @@ python scripts/aplicar_config.py --aplicar  # aplica y audita
 - **Descripción del sitio** (pega este texto):
 
 > ⚠️ **¿Hay una vida en riesgo AHORA? Llama primero a la línea de emergencias 123.**
-> Esta plataforma es ciudadana y complementa a los organismos de socorro: publica aquí tu solicitud —o la de otra persona que no pueda hacerlo— para que la ayuda sepa dónde ir. **Tu teléfono y tu dirección exacta NUNCA son públicos**: solo los ven ayudantes verificados por el equipo. **Nunca te pediremos dinero, claves ni números de cuenta.** Es gratuito. Hay réplicas: si tu casa está dañada, no vuelvas a entrar. Sin internet, envía un SMS al [NÚMERO — paso 9].
+> Esta plataforma es ciudadana y complementa a los organismos de socorro: publica aquí tu solicitud —o la de otra persona que no pueda hacerlo— para que la ayuda sepa dónde ir. **Tu teléfono y tu dirección exacta NUNCA son públicos**: solo los ven ayudantes verificados por el equipo. **Nunca te pediremos dinero, claves ni números de cuenta.** Es gratuito. Hay réplicas: si tu casa está dañada, no vuelvas a entrar. Sin internet, envía un SMS al 3148071191.
 
 ---
 
@@ -167,15 +169,45 @@ Renombra los campos nativos y úsalos como los dos primeros de la tabla: **Títu
 
 Con las intermitencias de datos reportadas en Chocó, Valle, Risaralda, Quindío y Caldas, **el SMS puede ser la única vía para quien más lo necesita**.
 
-**Materiales:** un Android (sirve casi cualquiera) con SIM colombiana con SMS activo, enchufado a corriente, con señal estable, y modo «No molestar» apagado. Idealmente un teléfono dedicado solo a esto.
+> **Olvida la app SMSsync (ADR-018).** Está congelada desde febrero de 2017 con `targetSdkVersion 22`, y **Android 14 se niega a instalar cualquier APK con `targetSdk < 23`** (Android 15, `< 24`). No es tu teléfono: no hay versión más nueva, v3.1.1 es la última que existe. Lo que sí sigue vivo es **el endpoint del servidor**, y su protocolo son cinco campos — así que cualquier automatizador moderno hace de pasarela.
+
+**Materiales:** un Android con SIM colombiana con SMS activo y saldo para SMS salientes, enchufado a corriente, con wifi o datos estables **fuera de la zona afectada**, y modo «No molestar» apagado. Idealmente dedicado solo a esto.
 
 **Pasos:**
-1. En la plataforma: Configuración → **Fuentes de datos (Data Sources)** → **SMSSync** → actívalo. Copia la **Sync URL** y define una **clave secreta**.
-2. En el Android: instala **SMSsync**. Por problemas con Play Store, Ushahidi publica el APK oficial v3.1.1 en GitHub: `https://github.com/ushahidi/SMSSync/releases/download/v3.1.1/smssync-withAnalyticsRelease-v3.1.1-RELEASE.apk` (habilita «instalar de origen desconocido» solo para esta instalación).
-3. En SMSsync: agrega la **Sync URL** con la **misma clave secreta**, inicia el servicio y activa **Auto Sync**. Configura la respuesta automática: «Recibimos tu mensaje y ya es visible para los equipos de ayuda. Si puedes, envía otro SMS con: municipio, barrio y cuántas personas son.»
-4. **Prueba** desde otro celular y confirma que el SMS aparece como publicación en la plataforma.
 
-**Formato a difundir:** «Sin internet, envía un SMS al **[NÚMERO]**: AYUDA + qué necesitas + cuántas personas + municipio y barrio.»
+1. En la plataforma: Configuración → **Fuentes de datos (Data Sources)** → **SMSSync** → actívalo y define una **clave secreta**. (La «Sync URL» que muestra ahí es la del paso 3.)
+2. En el Android: instala desde Play Store un automatizador que sepa disparar una petición HTTP al recibir un SMS — **MacroDroid** (gratis, suficiente), Tasker o Automate.
+3. Crea **una** macro con disparador «SMS recibido» (de cualquier remitente) y dos acciones:
+
+   **a) Petición HTTP POST** a `https://sos-sismo-colombia.api.ushahidi.io/sms/smssync` con cinco campos:
+
+   | campo | valor |
+   |---|---|
+   | `secret` | la clave del paso 1 |
+   | `from` | el número del remitente |
+   | `message` | el texto del SMS |
+   | `sent_to` | tu número (el de la SIM) |
+   | `sent_timestamp` | la hora en epoch **de milisegundos** |
+
+   ⚠️ **Lo que de verdad importa aquí es la codificación, no la hora.** Mete los cinco campos como pares clave/valor separados, no como un cuadro de texto libre. Probado el 11-ago-2026: un cliente que no codifica convierte «casa 3 & 4 personas + luz» en «casa 3» **y el servidor contesta 200 `success:true`** — pierdes media petición de auxilio sin que salte ningún error. (El `sent_timestamp` va en milisegundos por contrato, pero se comprobó que su valor no cambia la fecha guardada: manda y sirve la hora de llegada.)
+
+   **b) Enviar SMS** al remitente: «Recibimos tu mensaje y ya es visible para los equipos de ayuda. Si puedes, envía otro SMS con: municipio, barrio y cuántas personas son.»
+
+4. Excluye la app de la **optimización de batería** (Ajustes → Batería → sin restricciones). Si no, Android la duerme y el canal muere en silencio justo cuando hace falta.
+5. **Prueba** desde otro celular, con datos ficticios obvios: `AYUDA prueba tecnica - 0 personas - municipio PRUEBA`. Confirma que aparece como publicación y que te llega la respuesta automática.
+
+**Cómo saber que el POST llegó bien** (códigos comprobados contra el despliegue el 11-ago-2026):
+
+| respuesta | qué pasó |
+|---|---|
+| `200` `{"payload":{"success":true,"error":null}}` | aceptado |
+| `403` `Incorrect or missing secret key` | el `secret` no coincide con el del panel |
+| `400` `Missing from value` | el magic text del remitente no se sustituyó |
+| `400` `Missing message` | el magic text del mensaje no se sustituyó |
+
+**Dónde aparece el SMS:** entra como **borrador**, no en el mapa público. El equipo lo abre en el panel, lo estructura (categoría, urgencia, pin) y lo publica. Es decisión de arquitectura del equipo, no un fallo — pero significa que **alguien tiene que estar mirando esa cola**, porque un SMS sin publicar no lo ve nadie.
+
+**Formato a difundir:** «Sin internet, envía un SMS al **3148071191**: AYUDA + qué necesitas + cuántas personas + municipio y barrio.»
 
 **Realidad operativa:** los SMS entran como texto libre; tú (o un ayudante de confianza) deben ponerles categoría, urgencia y punto en el mapa. Reserva tiempo para esa tarea.
 
@@ -215,7 +247,7 @@ No pide credenciales a propósito: comprueba lo que ve **cualquiera**, que es lo
 
 **Texto para WhatsApp (pégalo y completa):**
 
-> 🆘 SISMO COLOMBIA — Si necesitas ayuda (rescate, médicos, comida, refugio) o buscas a un familiar, repórtalo aquí: **https://sos-sismo-colombia.ushahidi.io/**. Sin internet, envía un SMS al **[NÚMERO]** con: AYUDA + qué necesitas + cuántas personas + municipio y barrio. Tu teléfono y dirección exacta NO se publican. Es gratuito. Comparte 🙏
+> 🆘 SISMO COLOMBIA — Si necesitas ayuda (rescate, médicos, comida, refugio) o buscas a un familiar, repórtalo aquí: **https://www.sossismocolombia.com.co/**. Sin internet, envía un SMS al **3148071191** con: AYUDA + qué necesitas + cuántas personas + municipio y barrio. Tu teléfono y dirección exacta NO se publican. Es gratuito. Comparte 🙏
 
 **A quién enviarlo primero:** los Puestos de Mando Unificado activados (Bogotá, Cali, Armenia y Quibdó), la UNGRD, Cruz Roja Colombiana, Defensa Civil, Bomberos, las alcaldías de los municipios afectados en Chocó, Caldas, Valle del Cauca, Risaralda y Quindío, y las **emisoras comunitarias y de radio locales** — la radio funciona cuando internet no: pide que lean el número SMS al aire.
 
@@ -248,12 +280,12 @@ La plataforma (Ushahidi) ya es software libre. Nuestro aporte abierto es **esta 
 - [ ] **`NEXT_PUBLIC_CONTACTO` configurado en Vercel** — sin esto, `/privacidad` enseña un marcador y el canal de borrado no existe
 - [ ] **Pasada humana por el navegador** (llenar el formulario como un afectado)
 - [ ] Búsquedas guardadas de verificación (T-008 — se crean desde la interfaz)
-- [ ] SMSsync instalado, conectado y probado con un SMS real (T-009)
+- [ ] Pasarela SMS→HTTP montada y probada con un SMS real (T-009, ADR-018)
 - [ ] **Tras el primer SMS real:** volver a correr `auditar_publico.py` y confirmar que el número del remitente no sale al público
 - [ ] Rotar la contraseña de administrador (está en claro en `.env` y es la cuenta superadministradora)
 - [ ] Retirar los ensayos antes de difundir: `python scripts/ensayos.py borrar`
 - [ ] Exportación CSV probada y dos ubicaciones de respaldo definidas (T-011)
-- [ ] Número SMS real reemplazando `[NUMERO_SMS]` (T-012)
+- [x] Número SMS real (3148071191) en YAML, guía y textos de difusión (T-012) — **falta `NEXT_PUBLIC_SMS` en Vercel**
 - [ ] Difusión enviada a PMU, organizaciones y emisoras (T-013)
 
 ---

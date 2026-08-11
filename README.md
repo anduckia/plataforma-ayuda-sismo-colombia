@@ -1,6 +1,7 @@
 # SOS Sismo Colombia — Plataforma ciudadana de ayuda
 
-**🌐 En producción:** https://sos-sismo-colombia.ushahidi.io/
+**🌐 En producción:** https://www.sossismocolombia.com.co/ · **📱 SMS:** 3148071191
+**🔧 Backend (panel del equipo):** https://sos-sismo-colombia.ushahidi.io/
 
 Plataforma abierta para que las personas afectadas por el sismo M 7,4 del 10 de agosto de 2026 (epicentro en San José del Palmar, Chocó) pidan ayuda con visibilidad pública, contacto protegido y verificación humana — y para que rescatistas y voluntarios verificados la encuentren y actúen.
 
