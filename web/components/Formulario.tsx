@@ -1,8 +1,16 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import SelectorUbicacion, { type Punto } from './SelectorUbicacion';
-import { publicar, esDelEquipo, type Campo, type Encuesta } from '@/lib/ushahidi';
+import SelectorUbicacion from './SelectorUbicacion';
+import {
+  publicar, esDelEquipo, buscarParecidas,
+  type Campo, type Encuesta, type Solicitud,
+} from '@/lib/ushahidi';
+import {
+  revisarPunto, revisarTelefono, revisarCantidad, revisarDatosEnPublico,
+  revisarDinero, revisarTitulo, revisarRafaga, registrarPublicacion,
+  type Hallazgo, type Punto,
+} from '@/lib/validacion';
 
 /** El campo de imagen exige subida multipart aparte; queda fuera de esta versión. */
 const soportado = (c: Campo) => c.type !== 'media';
@@ -33,6 +41,39 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [publicadoId, setPublicadoId] = useState<number | null>(null);
+  const [bloqueos, setBloqueos] = useState<Hallazgo[]>([]);
+  const [revision, setRevision] = useState<
+    { avisos: Hallazgo[]; parecidas: Solicitud[] } | null
+  >(null);
+
+  /**
+   * Aplica a cada campo la validación que le corresponde. Casi todo avisa en
+   * vez de bloquear: cada obstáculo es fricción para alguien asustado (P1).
+   */
+  function revisarTodo(titulo: string): Hallazgo[] {
+    const hallazgos: Hallazgo[] = [...revisarTitulo(titulo), ...revisarRafaga()];
+
+    for (const c of campos) {
+      const v = valores[c.id];
+      if (v === undefined || v === null || v === '') continue;
+
+      if (c.input === 'location') {
+        hallazgos.push(...revisarPunto(v as Punto));
+      } else if (c.input === 'number' && /personas/i.test(c.label)) {
+        hallazgos.push(...revisarCantidad(v, c.label));
+      } else if (/tel[eé]fono/i.test(c.label)) {
+        hallazgos.push(...revisarTelefono(String(v), c.label));
+      }
+
+      // Solo en lo que se publica: en los campos con candado el dato está a salvo.
+      const esTexto = c.input === 'text' || c.input === 'textarea';
+      if (esTexto && !c.response_private && !/tel[eé]fono/i.test(c.label)) {
+        hallazgos.push(...revisarDatosEnPublico(String(v), c.label));
+        hallazgos.push(...revisarDinero(String(v), c.label));
+      }
+    }
+    return hallazgos;
+  }
 
   const poner = (id: number, v: any) => setValores((prev) => ({ ...prev, [id]: v }));
 
@@ -41,17 +82,30 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
     poner(id, actual.includes(opcion) ? actual.filter((x) => x !== opcion) : [...actual, opcion]);
   };
 
+  async function publicarYa(titulo: string, descripcion: string) {
+    setEnviando(true);
+    try {
+      const id = await publicar(encuesta, valores, titulo, descripcion);
+      registrarPublicacion();
+      setPublicadoId(id);
+      window.scrollTo({ top: 0 });
+    } catch (err: any) {
+      setError(err?.message ?? 'No se pudo publicar. Revisa tu conexión e inténtalo otra vez.');
+      setRevision(null);
+    } finally {
+      setEnviando(false);
+    }
+  }
+
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setBloqueos([]);
 
     const campoTitulo = encuesta.campos.find((c) => c.type === 'title');
     const campoDesc = encuesta.campos.find((c) => c.type === 'description');
     const titulo = String(valores[campoTitulo?.id ?? -1] ?? '').trim();
-    if (!titulo) {
-      setError('Escribe el primer campo para poder publicar.');
-      return;
-    }
+    const descripcion = String(valores[campoDesc?.id ?? -1] ?? '').trim();
 
     // Validación propia: la del navegador no cubre mapa ni casillas.
     const falta = campos.find((c) => {
@@ -65,21 +119,42 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
       return;
     }
 
-    setEnviando(true);
-    try {
-      const id = await publicar(
-        encuesta,
-        valores,
-        titulo,
-        String(valores[campoDesc?.id ?? -1] ?? '').trim(),
-      );
-      setPublicadoId(id);
-      window.scrollTo({ top: 0 });
-    } catch (err: any) {
-      setError(err?.message ?? 'No se pudo publicar. Revisa tu conexión e inténtalo otra vez.');
-    } finally {
-      setEnviando(false);
+    const hallazgos = revisarTodo(titulo);
+    const paran = hallazgos.filter((h) => h.nivel === 'bloquea');
+    if (paran.length) {
+      setBloqueos(paran);
+      window.scrollTo({ top: document.body.scrollHeight });
+      return;
     }
+
+    const avisos = hallazgos.filter((h) => h.nivel === 'avisa');
+
+    // Duplicados: tres familiares reportando lo mismo mandan tres equipos al
+    // mismo sitio. Se buscan solo si hay punto con el que comparar.
+    const campoPunto = campos.find((c) => c.input === 'location');
+    const punto = campoPunto ? (valores[campoPunto.id] as Punto | undefined) : undefined;
+
+    setEnviando(true);
+    const parecidas = punto ? await buscarParecidas(punto) : [];
+    setEnviando(false);
+
+    if (avisos.length || parecidas.length) {
+      setRevision({ avisos, parecidas });
+      window.scrollTo({ top: document.body.scrollHeight });
+      return;
+    }
+
+    await publicarYa(titulo, descripcion);
+  }
+
+  function confirmarYPublicar() {
+    const campoTitulo = encuesta.campos.find((c) => c.type === 'title');
+    const campoDesc = encuesta.campos.find((c) => c.type === 'description');
+    setRevision(null);
+    void publicarYa(
+      String(valores[campoTitulo?.id ?? -1] ?? '').trim(),
+      String(valores[campoDesc?.id ?? -1] ?? '').trim(),
+    );
   }
 
   if (publicadoId !== null) {
@@ -202,12 +277,75 @@ export default function Formulario({ encuesta }: { encuesta: Encuesta }) {
         </div>
       )}
 
-      <button className="boton" type="submit" disabled={enviando}>
-        {enviando ? 'Publicando…' : 'Publicar'}
-      </button>
-      <p className="campo__ayuda" style={{ marginTop: '0.75rem' }}>
-        Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.
-      </p>
+      {bloqueos.length > 0 && (
+        <div className="aviso aviso--error" role="alert">
+          <p className="aviso__titulo">
+            {bloqueos.length === 1 ? 'Corrige esto para publicar' : 'Corrige esto para publicar'}
+          </p>
+          <ul className="lista-hallazgos">
+            {bloqueos.map((h, i) => <li key={i}>{h.texto}</li>)}
+          </ul>
+        </div>
+      )}
+
+      {revision && (
+        <div className="aviso aviso--revision" role="alert">
+          {revision.parecidas.length > 0 && (
+            <>
+              <p className="aviso__titulo">
+                Ya hay {revision.parecidas.length === 1 ? 'una solicitud publicada' :
+                        `${revision.parecidas.length} solicitudes publicadas`} muy cerca
+              </p>
+              <p>
+                Si es el mismo caso, no lo publiques otra vez: los duplicados hacen que dos
+                equipos viajen al mismo sitio.
+              </p>
+              <ul className="solicitudes">
+                {revision.parecidas.map((s) => (
+                  <li key={s.id} className="solicitud solicitud--sin">
+                    <div className="solicitud__titulo">{s.title}</div>
+                    <div className="solicitud__meta">
+                      {[s.urgencia, s.municipio].filter(Boolean).join(' · ')}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {revision.avisos.length > 0 && (
+            <>
+              <p className="aviso__titulo">Revisa antes de publicar</p>
+              <ul className="lista-hallazgos">
+                {revision.avisos.map((h, i) => <li key={i}>{h.texto}</li>)}
+              </ul>
+            </>
+          )}
+
+          <div className="decision">
+            <button type="button" className="boton" onClick={confirmarYPublicar}
+                    disabled={enviando}>
+              {enviando ? 'Publicando…' : 'Es distinta, publicar'}
+            </button>
+            <button type="button" className="boton boton--secundario"
+                    onClick={() => { setRevision(null); window.scrollTo({ top: 0 }); }}>
+              Volver a revisar mis datos
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!revision && (
+        <>
+          <button className="boton" type="submit" disabled={enviando}>
+            {enviando ? 'Comprobando…' : 'Publicar'}
+          </button>
+          <p className="campo__ayuda" style={{ marginTop: '0.75rem' }}>
+            Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo
+            confirme.
+          </p>
+        </>
+      )}
     </form>
   );
 }

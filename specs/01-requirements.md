@@ -69,6 +69,14 @@
 ### RF-12 · Replicabilidad (P7)
 - Este repositorio DEBERÁ contener todo lo necesario (specs + guía + configuración) para que un tercero replique el despliegue en horas sin ayuda del equipo original.
 
+### RF-13 · Validación de entrada y aviso de duplicados (P1, P2, P3)
+**Historia:** como Equipo, queremos que la cola llegue con datos utilizables, para no gastar rescates en solicitudes imposibles de atender.
+- EL SISTEMA DEBERÁ **impedir publicar** cuando el punto del mapa caiga fuera de Colombia, cuando el número de personas no sea un entero positivo, o cuando el primer campo no contenga una frase legible.
+- EL SISTEMA DEBERÁ **avisar sin impedir** cuando: el punto caiga dentro de Colombia pero fuera de los cinco departamentos afectados; el teléfono no tenga formato colombiano; se escriban números largos o datos bancarios en un campo público; o se publiquen más de 3 solicitudes en 10 minutos desde el mismo navegador.
+- CUANDO exista una solicitud publicada a menos de **600 m** y con menos de **24 h**, EL SISTEMA DEBERÁ mostrarla antes de publicar y dejar que quien reporta decida si es la misma.
+- **Límite explícito:** `POST /api/v5/posts` acepta publicaciones anónimas sin token, así que cualquiera puede saltarse estas comprobaciones. NO son un control de seguridad: sirven para que quien actúa de buena fe entregue datos utilizables. Contra la falsedad deliberada actúan la etiqueta «Sin verificar», la cola de verificación (RF-05) y el archivado con rastro.
+- Ninguna validación DEBERÁ impedir publicar a quien tenga una necesidad real (P1): en la duda, se avisa y se deja seguir.
+
 ## Requisitos no funcionales
 
 - **RNF-01 Disponibilidad:** la infraestructura la opera Ushahidi (plan Basic alojado); el canal SMS actúa como contingencia de captura si la web se degrada.

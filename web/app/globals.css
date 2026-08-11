@@ -160,6 +160,15 @@ p { margin: 0 0 1rem; }
 
 .aviso--privacidad { border-color: var(--privado); }
 .aviso--error { border-color: var(--critica); background: #FDF0F1; }
+
+/* Alto en la publicación: hay que decidir, no es un error. */
+.aviso--revision { border-color: var(--alta); background: #FCF3EC; }
+
+.lista-hallazgos { margin: 0 0 1rem; padding-left: 1.15rem; }
+.lista-hallazgos li + li { margin-top: 0.5rem; }
+
+.decision { display: grid; gap: 0.5rem; margin-top: 1.25rem; }
+.aviso--revision .solicitudes { margin: 0 0 1.25rem; }
 .aviso__titulo { font-weight: 750; margin-bottom: 0.35rem; }
 .aviso p:last-child { margin-bottom: 0; }
 .aviso small { font-size: 0.875rem; }

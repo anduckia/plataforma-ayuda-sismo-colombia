@@ -7,6 +7,10 @@
  * que este front nunca ve el teléfono ni la dirección exacta de nadie.
  */
 
+import {
+  metrosEntre, RADIO_DUPLICADO_M, VENTANA_DUPLICADO_H, type Punto,
+} from './validacion';
+
 export const API =
   process.env.NEXT_PUBLIC_USHAHIDI_API ?? 'https://sos-sismo-colombia.api.ushahidi.io';
 
@@ -143,6 +147,29 @@ export async function traerSolicitudes(limite = 200): Promise<Solicitud[]> {
       punto: punto && typeof punto === 'object' && 'lat' in punto ? punto : null,
     };
   });
+}
+
+/**
+ * Solicitudes recientes cerca de un punto: tres familiares reportando a la
+ * misma persona atrapada mandan tres equipos al mismo sitio. Se le enseñan a
+ * quien publica para que decida, porque es quien sabe si es el mismo caso.
+ */
+export async function buscarParecidas(punto: Punto): Promise<Solicitud[]> {
+  const desde = Date.now() - VENTANA_DUPLICADO_H * 3600 * 1000;
+  try {
+    const todas = await traerSolicitudes(200);
+    return todas
+      .filter((s) => {
+        if (!s.punto) return false;
+        const fecha = new Date(s.fecha).getTime();
+        if (Number.isFinite(fecha) && fecha < desde) return false;
+        return metrosEntre(punto, s.punto) <= RADIO_DUPLICADO_M;
+      })
+      .slice(0, 5);
+  } catch {
+    // Si la búsqueda falla, no se bloquea la publicación: publicar importa más.
+    return [];
+  }
 }
 
 /** Publica. Devuelve el id para poder mostrárselo a la persona. */
