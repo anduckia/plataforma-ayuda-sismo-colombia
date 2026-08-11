@@ -52,7 +52,7 @@ export default function PaginaPrivacidad() {
       <p>
         Le pedimos a los buscadores que no indexen el sitio, para que el nombre de una
         persona desaparecida no quede colgado en internet después de que aparezca. La
-        plataforma se difunde por WhatsApp, radio y SMS.
+        plataforma se difunde de forma consciente y selectiva por canales de emergencia (ejem. WhatsApp, radio y SMS), evitando la viralidad para no saturar el sistema con reportes falsos que entorpezcan a los organismos de control.
       </p>
 
       <h2>Si publicas por otra persona</h2>

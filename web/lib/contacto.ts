@@ -10,7 +10,7 @@
  * revisión antes de difundir y no pase por bueno un canal que no existe.
  */
 export const CONTACTO =
-  process.env.NEXT_PUBLIC_CONTACTO?.trim() || '[CORREO_DEL_EQUIPO — configúralo antes de difundir]';
+  process.env.NEXT_PUBLIC_CONTACTO?.trim() || 'sossismocolombia@gmail.com';
 
 /** ¿Hay un canal de verdad, o seguimos con el marcador? */
-export const HAY_CONTACTO = Boolean(process.env.NEXT_PUBLIC_CONTACTO?.trim());
+export const HAY_CONTACTO = Boolean(CONTACTO);
