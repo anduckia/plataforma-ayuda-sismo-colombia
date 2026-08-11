@@ -84,6 +84,22 @@
 - **RNF-03 Anti-fraude:** el sitio declara visiblemente que nunca se pide dinero ni datos bancarios (P6).
 - **RNF-04 Auditabilidad:** nada se borra durante la emergencia; lo inválido se archiva.
 - **RNF-05 Costo:** operación en $0/mes durante la Fase 1 (plan Basic + SIM local con SMS).
+- **RNF-06 Subordinación a los canales oficiales:** toda cara pública DEBERÁ abrir con «⚠️ ¿Vida en riesgo AHORA? Llama al 123» —arriba, antes de los formularios— y presentarse como complemento de los organismos de socorro, nunca como sustituto.
+
+### RF-14 · Mapa de recursos ofrecidos (P1)
+**Historia:** como Equipo, queremos ver en el mismo mapa quién ofrece maquinaria, energía, iluminación o transporte y dónde, para cruzar necesidad↔recurso sin cadenas de WhatsApp.
+- EL SISTEMA DEBERÁ ofrecer el formulario «Ofrezco recursos», sin cuenta, con nombre y teléfono del oferente **protegidos** (RF-03).
+- Cada recurso DEBERÁ tener Estado —🟢 Disponible (defecto) → 🔵 Asignado → ⚪ Retirado— para evitar el doble despacho, oculto en el front y enviado por código (ADR-011).
+- El formulario DEBERÁ mostrar de forma visible la regla de seguridad: **la maquinaria solo entra a un punto de rescate cuando un organismo de socorro lo solicita**.
+- Las necesidades DEBERÁN incluir la categoría «Iluminación / energía».
+
+### RF-15 · Cara pública propia (P1, P4, P5)
+**Historia:** como Afectado con mala señal y con miedo, quiero una página mínima, en castellano, que cargue y me deje pedir ayuda en un minuto.
+- La cara pública DEBERÁ publicar de forma anónima contra la API y no mostrar jamás campos protegidos.
+- DEBERÁ ocultar «Estado» y «Verificación» y enviarlos por código con su valor por defecto (ADR-011).
+- Sus URLs DEBERÁN poder dictarse por radio: `/pido-ayuda`, `/busco-familiar`, `/quiero-ayudar`, `/ofrezco-recursos`.
+- Cada página DEBERÁ tener su propia meta-descripción (hoy las tres comparten la de «Pido ayuda»).
+- «Quiero ayudar» DEBERÁ explicar su propósito —entrar al equipo verificado tras una llamada— y no pedir «el correo con el que creaste tu cuenta», porque en esta cara nadie crea cuenta.
 
 ## Backlog — Fase 2 (no bloquea el lanzamiento)
 

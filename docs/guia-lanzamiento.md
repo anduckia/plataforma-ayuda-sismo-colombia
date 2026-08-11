@@ -55,7 +55,8 @@ python scripts/aplicar_config.py --aplicar  # aplica y audita
 - **Publicación instantánea:** en Configuración, **desactiva la aprobación previa** de publicaciones («Require posts to be reviewed» o similar; el nombre exacto varía según versión — está en Settings → General o Surveys). Así todo sale al aire de inmediato y la verificación se marca con el campo del paso 4.
 - **Descripción del sitio** (pega este texto):
 
-> Plataforma ciudadana para el sismo del 10 de agosto. Publica tu solicitud para que la ayuda te encuentre. **Tu teléfono y tu dirección exacta NUNCA son públicos**: solo los ven ayudantes verificados por el equipo. **Nunca te pediremos dinero, claves ni números de cuenta.** Este sitio es gratuito. Sin internet, envía un SMS al [NÚMERO — paso 9].
+> ⚠️ **¿Hay una vida en riesgo AHORA? Llama primero a la línea de emergencias 123.**
+> Esta plataforma es ciudadana y complementa a los organismos de socorro: publica aquí tu solicitud —o la de otra persona que no pueda hacerlo— para que la ayuda sepa dónde ir. **Tu teléfono y tu dirección exacta NUNCA son públicos**: solo los ven ayudantes verificados por el equipo. **Nunca te pediremos dinero, claves ni números de cuenta.** Es gratuito. Hay réplicas: si tu casa está dañada, no vuelvas a entrar. Sin internet, envía un SMS al [NÚMERO — paso 9].
 
 ---
 

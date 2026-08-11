@@ -24,11 +24,14 @@ despliegue:
   publicacion_instantanea: true   # RF-02: desactivar la aprobación previa
   ocultar_autor: true             # P2: el nombre de quien publica no se muestra
   descripcion_publica: >
-    Plataforma ciudadana para el sismo del 10 de agosto. Publica tu solicitud
-    para que la ayuda te encuentre. Tu teléfono y tu dirección exacta NUNCA son
-    públicos: solo los ven ayudantes verificados por el equipo. Nunca te
-    pediremos dinero, claves ni números de cuenta. Este sitio es gratuito.
-    Sin internet, envía un SMS al [NUMERO_SMS].
+    ⚠️ ¿Hay una vida en riesgo AHORA? Llama primero a la línea de emergencias
+    123. Esta plataforma es ciudadana y complementa a los organismos de
+    socorro: publica aquí tu solicitud —o la de otra persona que no pueda
+    hacerlo— para que la ayuda sepa dónde ir. Tu teléfono y tu dirección
+    exacta NUNCA son públicos: solo los ven ayudantes verificados por el
+    equipo. Nunca te pediremos dinero, claves ni números de cuenta. Es
+    gratuito. Hay réplicas: si tu casa está dañada, no vuelvas a entrar.
+    Sin internet, envía un SMS al [NUMERO_SMS].   # RNF-06
 
 # SIN EMOJI a propósito (ADR-007): Ushahidi valida los nombres de categoría y de
 # encuesta contra /^[\pL\pN\pP ]+$/u — letras, números, puntuación y espacios.
@@ -43,6 +46,7 @@ categorias:
   - "Transporte / evacuación"
   - "Seguridad / Policía"
   - "Búsqueda de familiares"
+  - "Iluminación / energía"          # RF-14: la noche sin luz
   - "Otro"
 
 roles:
@@ -118,6 +122,20 @@ encuestas:
       - "Al tomar un caso, cámbialo a «En atención»."
       - "Al terminarlo, márcalo «Resuelta»."
       - "Jamás pedir dinero ni datos bancarios a los afectados."
+
+  ofrezco_recursos:                     # RF-14, ADR-015
+    titulo: "Ofrezco recursos"          # sin emoji: ADR-007
+    campos_nativos:
+      titulo:      { etiqueta: "Título público (ej.: «Retroexcavadora — Pereira»)", ayuda: "NO escribas aquí tu nombre ni tu teléfono: van abajo, en campos que solo ve el equipo." }
+      descripcion: { etiqueta: "Detalle del recurso (sin datos personales)", obligatorio: false, ayuda: "Ej.: retroexcavadora sobre orugas; 2 plantas de 5 kW; 40 cascos; camión de 10 t. La maquinaria solo entra a un punto de rescate cuando un organismo de socorro lo solicita: un mal movimiento puede costar una vida." }
+    campos:
+      - { etiqueta: "Qué ofreces", tipo: casillas, opciones: ["Maquinaria amarilla", "Planta eléctrica o combustible", "Iluminación", "Herramienta especializada", "Transporte", "Dron con cámara", "Alimentos o agua en volumen", "Otro"], obligatorio: true, visibilidad: publico }
+      - { etiqueta: "Municipio donde está el recurso", tipo: texto_corto, obligatorio: true, visibilidad: publico }
+      - { etiqueta: "Ubicación aproximada", tipo: ubicacion, obligatorio: false, visibilidad: publico, ayuda: "Punto aproximado; sirve para asignarte al frente más cercano." }
+      - { etiqueta: "Disponibilidad", tipo: opcion_unica, opciones: ["🟢 Inmediata", "🕐 En unas horas", "🌅 Mañana"], obligatorio: true, visibilidad: publico }
+      - { etiqueta: "Estado del recurso", tipo: opcion_unica, opciones: ["🟢 Disponible", "🔵 Asignado", "⚪ Retirado"], defecto: "🟢 Disponible", obligatorio: true, visibilidad: publico, ayuda: "Lo actualiza el equipo al asignarlo. El front lo oculta y lo envía por código (ADR-011)." }
+      - { etiqueta: "Nombre de contacto", tipo: texto_corto, obligatorio: true, visibilidad: protegido }
+      - { etiqueta: "Teléfono", tipo: texto_corto, obligatorio: true, visibilidad: protegido, ayuda: "Solo lo verán el equipo y los ayudantes verificados, para coordinar la asignación." }
 
 sms:
   fuente: SMSSync
