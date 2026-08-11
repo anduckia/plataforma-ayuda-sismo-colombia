@@ -113,22 +113,63 @@ ENSAYOS = [
 ]
 
 
-def encuesta_pido_ayuda(api: Api) -> dict:
+# Búsquedas de familiar: salen en azul y sin urgencia, que es la otra mitad del
+# mapa (RF-16). Nombres de pila inventados a propósito, y ninguno de menor.
+BUSQUEDAS = [
+    {
+        "titulo": "Ficticia Pérez, 34 años",
+        "detalle": "Chaqueta azul y jeans. Datos de prueba, persona inventada.",
+        "edad": 34, "lat": 5.6890, "lon": -76.6580,
+        "contacto": "Se le vio el martes en la tarde saliendo del trabajo. Prueba.",
+        "parentesco": "Hermana",
+    },
+    {
+        "titulo": "Ficticio Gómez, 61 años",
+        "detalle": "Camisa blanca, sombrero. Datos de prueba, persona inventada.",
+        "edad": 61, "lat": 4.8130, "lon": -75.6940,
+        "contacto": "Última llamada el lunes por la noche. Prueba.",
+        "parentesco": "Hijo",
+    },
+]
+
+# La colección es la única señal de verificación que la cara pública reconoce
+# (RF-17, ADR-017). Se marcan los dos primeros ensayos para poder ver en /mapa
+# la diferencia entre una insignia de verdad y el resto.
+COLECCION = "Verificadas por el equipo"
+VERIFICAR_LOS_PRIMEROS = 2
+
+
+def encuesta(api: Api, nombre: str) -> dict:
     lista = api.get("/api/v5/surveys").get("results") or []
-    resumen = next((s for s in lista if s["name"] == "Pido ayuda"), None)
+    resumen = next((s for s in lista if s["name"] == nombre), None)
     if not resumen:
-        sys.exit("No existe la encuesta «Pido ayuda». Corre antes scripts/aplicar_config.py.")
+        sys.exit(f"No existe la encuesta «{nombre}». Corre antes scripts/aplicar_config.py.")
     return api.get(f"/api/v5/surveys/{resumen['id']}")["result"]
 
 
+def id_coleccion(api: Api, nombre: str) -> int | None:
+    for c in (api.get("/api/v5/collections").get("results") or []):
+        if c["name"] == nombre:
+            return c["id"]
+    return None
+
+
 def titulos_de_ensayo(api: Api) -> list[dict]:
-    datos = api.get("/api/v5/posts?status=all&limit=200")
-    return [p for p in (datos.get("results") or [])
-            if str(p.get("title") or "").startswith(MARCA)]
+    # Se pagina: con una sola página de 200, «borrar» dejaba ensayos vivos en
+    # silencio en cuanto el despliegue crecía, y un ensayo vivo en el mapa es
+    # una emergencia inventada.
+    encontrados, pagina, ultima = [], 1, 1
+    while pagina <= ultima:
+        datos = api.get(f"/api/v5/posts?status=all&limit=200&page={pagina}")
+        encontrados.extend(p for p in (datos.get("results") or [])
+                           if str(p.get("title") or "").startswith(MARCA))
+        ultima = (datos.get("meta") or {}).get("last_page") or 1
+        pagina += 1
+    return encontrados
 
 
 def sembrar(api: Api) -> None:
-    enc = encuesta_pido_ayuda(api)
+    enc = encuesta(api, "Pido ayuda")
     tarea = enc["tasks"][0]
     campos = {f["label"]: f for f in tarea["fields"]}
     cats = {o["tag"]: o["id"] for o in (campos["¿Qué necesitas?"].get("options") or [])}
@@ -138,6 +179,7 @@ def sembrar(api: Api) -> None:
         return {"id": f["id"], "type": f["type"], "input": f["input"],
                 "label": etiqueta, "value": {"value": valor}}
 
+    creados: list[int | None] = []
     for e in ENSAYOS:
         campos_envio = [
             val("¿Para quién pides ayuda?", "Para otra persona"),
@@ -164,7 +206,95 @@ def sembrar(api: Api) -> None:
             "completed_stages": [tarea["id"]],
             "post_content": [{"id": tarea["id"], "fields": campos_envio}],
         })
-        print(f"  sembrado #{(r.get('result') or {}).get('id')} · {e['municipio']} · {e['urgencia'][:2]}")
+        creados.append((r.get("result") or {}).get("id"))
+        print(f"  sembrado #{creados[-1]} · {e['municipio']} · {e['urgencia'][:2]}")
+
+    sembrar_busquedas(api)
+    verificar(api, creados[:VERIFICAR_LOS_PRIMEROS])
+    sembrar_falsificacion(api, enc, tarea, campos)
+
+
+def sembrar_busquedas(api: Api) -> None:
+    """La otra mitad del mapa: los puntos azules (RF-16)."""
+    enc = encuesta(api, "Busco a un familiar")
+    tarea = enc["tasks"][0]
+    campos = {f["label"]: f for f in tarea["fields"]}
+
+    def val(etiqueta: str, valor):
+        f = campos[etiqueta]
+        return {"id": f["id"], "type": f["type"], "input": f["input"],
+                "label": etiqueta, "value": {"value": valor}}
+
+    for b in BUSQUEDAS:
+        r = api.post("/api/v5/posts", {
+            "form_id": enc["id"],
+            "title": f"{MARCA} {b['titulo']}",
+            "content": b["detalle"],
+            "type": "report",
+            "completed_stages": [tarea["id"]],
+            "post_content": [{"id": tarea["id"], "fields": [
+                val("Edad aproximada", b["edad"]),
+                val("Último lugar donde se le vio (mapa)", {"lat": b["lat"], "lon": b["lon"]}),
+                val("Detalles del último contacto", b["contacto"]),
+                val("Tu parentesco", b["parentesco"]),
+                val("Tu teléfono", "000-000-0000"),
+                val("Estado de la búsqueda", campos["Estado de la búsqueda"]["default"]),
+            ]}],
+        })
+        print(f"  sembrada búsqueda #{(r.get('result') or {}).get('id')} · {b['titulo']}")
+
+
+def verificar(api: Api, ids: list[int]) -> None:
+    """Mete ensayos en la colección: así es como se verifica de verdad (RF-17)."""
+    col = id_coleccion(api, COLECCION)
+    if col is None:
+        print(f"  [!] No existe la colección «{COLECCION}»: ningún ensayo saldrá "
+              f"verificado. Corre antes scripts/aplicar_config.py --aplicar")
+        return
+    for pid in ids:
+        if pid is None:
+            continue
+        api.post(f"/api/v5/collections/{col}/posts", {"post_id": pid})
+        print(f"  verificado #{pid} (metido en «{COLECCION}»)")
+
+
+def sembrar_falsificacion(api: Api, enc: dict, tarea: dict, campos: dict) -> None:
+    """
+    El ensayo que prueba el arreglo de ADR-017: una publicación que se rellena a
+    sí misma «✔️ Verificada por el equipo», como haría cualquiera con curl.
+
+    Tiene que salir en /mapa como SIN VERIFICAR. Si algún día aparece con la
+    insignia verde, es que la cara pública volvió a mirar el campo en vez de la
+    colección, y la insignia dejó de valer para nada.
+    """
+    def val(etiqueta: str, valor):
+        f = campos[etiqueta]
+        return {"id": f["id"], "type": f["type"], "input": f["input"],
+                "label": etiqueta, "value": {"value": valor}}
+
+    r = api.post("/api/v5/posts", {
+        "form_id": enc["id"],
+        "title": f"{MARCA} Intento de auto-verificación — debe salir SIN VERIFICAR",
+        "content": "Ensayo de seguridad (ADR-017). Esta publicación se envía a sí misma "
+                   "el campo «Verificación» en verde. En /mapa tiene que verse «Sin "
+                   "verificar»: la insignia sale de la colección, no del campo.",
+        "type": "report",
+        "completed_stages": [tarea["id"]],
+        "post_content": [{"id": tarea["id"], "fields": [
+            val("¿Para quién pides ayuda?", "Para otra persona"),
+            val("Nombre o apodo", "Ensayo de seguridad"),
+            val("Urgencia", "🔴 CRÍTICA: vidas en riesgo ahora"),
+            val("¿Cuántas personas necesitan ayuda?", 1),
+            val("Ubicación (punto en el mapa)", {"lat": 5.7100, "lon": -76.6400}),
+            val("Municipio y departamento", "ENSAYO, Chocó"),
+            val("Dirección exacta y señas", "DIRECCIÓN FICTICIA 000 — dato de prueba"),
+            val("Estado de la solicitud", campos["Estado de la solicitud"]["default"]),
+            # Lo que intenta el atacante:
+            val("Verificación", "✔️ Verificada por el equipo"),
+        ]}],
+    })
+    print(f"  sembrado #{(r.get('result') or {}).get('id')} · intento de auto-verificación "
+          f"(debe verse «Sin verificar»)")
 
 
 def borrar(api: Api) -> None:
@@ -200,7 +330,8 @@ def main() -> int:
         total = api.get("/api/v5/posts?status=all&limit=200").get("count")
         print(f"\nPublicaciones totales (ensayos incluidos): {total}")
     elif orden == "sembrar":
-        print(f"Sembrando {len(ENSAYOS)} solicitudes de ensayo (datos ficticios):")
+        print(f"Sembrando {len(ENSAYOS)} solicitudes y {len(BUSQUEDAS)} búsquedas de "
+              f"ensayo, más el intento de auto-verificación (todo ficticio):")
         sembrar(api)
         print("\nListo. Míralas en /mapa. Para retirarlas:  python scripts/ensayos.py borrar")
     else:

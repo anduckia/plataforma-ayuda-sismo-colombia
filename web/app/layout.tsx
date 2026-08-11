@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   description:
     'Publica tu solicitud para que la ayuda te encuentre. Tu teléfono y tu dirección exacta ' +
     'nunca son públicos. Es gratuito y no necesitas crear una cuenta.',
+  // RF-19: además de robots.txt, la cabecera en cada página. El archivo pide
+  // no rastrear; esto pide no indexar, que no es lo mismo: una URL compartida
+  // por WhatsApp puede acabar indexada sin que nadie rastree el sitio.
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
@@ -37,6 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <a href="tel:123">la línea de emergencias <strong>123</strong></a>.
         </p>
         <main id="principal" className="envoltura">{children}</main>
+        <footer className="envoltura pie">
+          <a href="/privacidad">Privacidad y borrado de datos</a>
+        </footer>
       </body>
     </html>
   );

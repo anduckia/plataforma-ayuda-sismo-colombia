@@ -110,6 +110,34 @@
 - Cada página DEBERÁ tener su propia meta-descripción (hoy las tres comparten la de «Pido ayuda»).
 - «Quiero ayudar» DEBERÁ explicar su propósito —entrar al equipo verificado tras una llamada— y no pedir «el correo con el que creaste tu cuenta», porque en esta cara nadie crea cuenta.
 
+### RF-17 · La insignia de verificado no se puede falsificar (P2, P5)
+**Historia:** como Equipo de rescate leyendo el mapa, necesito que «✔️ Verificada por el equipo» signifique que alguien llamó y confirmó el caso, porque es la única señal con la que decido a dónde mando gente primero.
+- **Comprobado el 11-ago-2026 en el despliegue vivo:** `POST /api/v5/posts` acepta publicaciones anónimas y guarda tal cual el campo «Verificación» que le manden. Cualquiera con `curl` podía darse la insignia verde. Esconder el campo en el formulario (ADR-011) no lo impedía: el formulario no es la frontera.
+- La cara pública DEBERÁ deducir la insignia **únicamente** de la pertenencia a la colección «Verificadas por el equipo», nunca del campo (ADR-017).
+- Si la colección no se puede resolver, NADIE saldrá verificado: ante la duda, la insignia no se pinta.
+- El mapa DEBERÁ explicar qué significa «Sin verificar», que es el estado normal y no quiere decir «falsa».
+- El sembrador de ensayos DEBERÁ incluir una publicación que **intente** auto-verificarse, para que la regresión se vea en `/mapa` sin tener que buscarla.
+
+### RF-18 · El mapa no miente sobre lo que muestra (P5)
+**Historia:** como Equipo, necesito saber si estoy viendo todas las solicitudes o solo un recorte, porque un mapa incompleto que se presenta como completo hace creer que lo que falta no existe.
+- El listado DEBERÁ paginar hasta agotar las publicaciones, no quedarse en las 200 más recientes. Las que se caían eran las más antiguas: las que llevan más tiempo esperando.
+- Si aun así se agota el tope, la página DEBERÁ decirlo de forma visible y remitir al panel de la plataforma.
+- El aviso de duplicados puede seguir mirando solo la primera página: ahí lo que importa es la velocidad, y solo interesan las recientes.
+
+### RF-19 · Derechos sobre lo publicado (P2)
+**Historia:** como persona que publicó a su hermana desaparecida y ya la encontró, quiero que su nombre deje de estar en internet, y hasta ahora no tenía ni a quién escribirle.
+- El sitio DEBERÁ pedir a los buscadores que no lo indexen, por `robots.txt` **y** por cabecera en cada página. Se difunde por WhatsApp, radio y SMS; ninguno necesita a Google, y una huella indexada no la borra retirar la publicación.
+- DEBERÁ existir una página `/privacidad`, enlazada desde todas las páginas, que diga en castellano llano qué se ve, qué no, cuánto dura y **a qué correo se escribe para corregir o borrar** (Ley 1581 de 2012).
+- El canal de contacto DEBERÁ venir de configuración, y mostrar un marcador evidente mientras no esté puesto, para que no pase por bueno un canal que no existe.
+- La ayuda del campo «Otra forma de contacto (pública)» DEBERÁ dejar de invitar a publicar el teléfono de un tercero sin permiso.
+
+### RF-20 · Se audita lo que ve un desconocido, no lo que ve el admin (P2, P8)
+**Historia:** como Equipo, antes de difundir el enlace quiero una comprobación de que la promesa de la portada es cierta, hecha como la haría cualquiera: sin cuenta.
+- DEBERÁ existir `scripts/auditar_publico.py`, **sin credenciales**, que compruebe contra la API pública: que ningún campo protegido llega con valor, que no viaja el contacto de quien reporta, que lo cerrado responde 401/403, que no se puede editar ni borrar publicaciones ajenas y que un anónimo no puede meterse en la colección de verificadas. Termina con código 1 si algo falla.
+- NUNCA DEBERÁ imprimir el valor de un campo: una auditoría que vuelca teléfonos en la consola —y en los registros de CI— es la fuga que venía a buscar.
+- Mientras no exista ninguna publicación por SMS, la auditoría DEBERÁ advertir que **no ha probado el canal SMS**: el número del remitente viaja pegado a la publicación y eso hay que verificarlo con un SMS real antes de difundir el número.
+- La cara pública DEBERÁ servirse con cabeceras que acoten a dónde puede hablar el navegador (`connect-src`), impidan empotrar el sitio (`frame-ancestors`) y no filtren la URL de origen a los servidores de mapas (`Referrer-Policy`).
+
 ## Backlog — Fase 2 (no bloquea el lanzamiento)
 
 - **RF-F2-01 Híbrido estricto:** publicar automáticamente solo las urgencias críticas/altas y retener las medias hasta verificación (requiere autoalojar y modificar código).

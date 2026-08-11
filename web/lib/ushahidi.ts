@@ -167,6 +167,15 @@ const TEXTOS: Record<string, { etiqueta?: string; ayuda?: string }> = {
     etiqueta: 'Tu correo',
     ayuda: 'Ahí te enviaremos el acceso cuando te verifiquemos. No necesitas crear ninguna cuenta ahora.',
   },
+  // RF-18: la ayuda original invitaba a publicar «el número de un familiar
+  // fuera de la zona» —el teléfono de una tercera persona que nunca dio
+  // permiso, en un campo que ve cualquiera, y que es la materia prima de la
+  // estafa post-desastre. Se puede seguir usando, pero pidiendo permiso y
+  // sabiendo que es público.
+  'Otra forma de contacto (pública)': {
+    ayuda: 'Esto lo ve CUALQUIERA. Tu teléfono va en el campo con candado, no aquí. ' +
+      'Si pones el contacto de otra persona, pídele permiso antes: quedará a la vista de todos.',
+  },
 };
 
 export const etiquetaDe = (c: Campo) => TEXTOS[c.label]?.etiqueta ?? c.label;
@@ -209,10 +218,26 @@ export interface Solicitud {
   fecha: string;
   urgencia: string | null;
   estado: string | null;
+  /** Pertenece a la colección del equipo. Ver COLECCION_VERIFICADAS (RF-17). */
   verificada: boolean;
   municipio: string | null;
   necesidades: string[];
   punto: { lat: number; lon: number } | null;
+}
+
+/**
+ * Un listado, con la honestidad de decir si está completo (RF-18).
+ *
+ * `traerSolicitudes` pagina hasta agotar el listado, pero con un tope: si el
+ * despliegue crece más que el tope, el mapa NO puede seguir afirmando que
+ * enseña todo. Quien tría necesita saber que está mirando un recorte.
+ */
+export interface Listado {
+  solicitudes: Solicitud[];
+  /** Publicaciones que la API dice tener, incluidas las que no van al mapa. */
+  totalApi: number;
+  /** false si se agotó el tope de páginas antes que el listado. */
+  completo: boolean;
 }
 
 const valorDe = (campo: any): any => {
@@ -240,14 +265,76 @@ async function encuestasDelMapa(): Promise<Map<number, Tipo>> {
   return salida;
 }
 
-/** Solicitudes publicadas, ya normalizadas para pintarlas en mapa y lista. */
-export async function traerSolicitudes(limite = 200): Promise<Solicitud[]> {
-  const [tipoPorEncuesta, datos] = await Promise.all([
+/**
+ * La ÚNICA señal de verificación que esta cara reconoce (RF-17, ADR-017).
+ *
+ * El campo «Verificación» de la encuesta no sirve para esto y no se mira: es
+ * un campo más del formulario, y `POST /api/v5/posts` acepta publicaciones
+ * anónimas, así que cualquiera con `curl` puede enviarse a sí mismo
+ * «✔️ Verificada por el equipo». Comprobado contra el despliegue vivo el
+ * 11-ago-2026: la API devuelve 201 y guarda el valor tal cual.
+ *
+ * La pertenencia a una colección, en cambio, no se puede falsificar: `sets`
+ * llega en la respuesta pública, pero se ignora en el POST anónimo y
+ * `POST /api/v5/collections/{id}/posts` responde 401 sin token. Solo el equipo
+ * mete publicaciones ahí, y por eso la insignia vale algo.
+ */
+export const COLECCION_VERIFICADAS = 'Verificadas por el equipo';
+
+/**
+ * Id de la colección, resuelto por nombre para no fijar un número que cambia
+ * en cada despliegue. Si no se puede resolver devuelve null y NADIE sale
+ * verificado: ante la duda, la insignia no se pinta (falla cerrado).
+ */
+async function idColeccionVerificadas(): Promise<number | null> {
+  try {
+    const lista = await pedir('/api/v5/collections');
+    const c = (lista.results ?? []).find((x: any) => x.name === COLECCION_VERIFICADAS);
+    return c?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Tope de páginas. 25 × 200 = 5000 publicaciones antes de recortar. */
+const MAX_PAGINAS = 25;
+const POR_PAGINA = 200;
+
+/**
+ * Solicitudes publicadas, ya normalizadas para pintarlas en mapa y lista.
+ *
+ * Pagina hasta agotar el listado: pedir solo las 200 más recientes hacía que,
+ * pasado ese número, las solicitudes viejas —las que llevan más tiempo sin que
+ * nadie llegue— desaparecieran del mapa sin decirlo.
+ */
+export async function traerSolicitudes(
+  { maxPaginas = MAX_PAGINAS }: { maxPaginas?: number } = {},
+): Promise<Listado> {
+  const [tipoPorEncuesta, idVerificadas] = await Promise.all([
     encuestasDelMapa(),
-    pedir(`/api/v5/posts?limit=${limite}&order=desc&orderby=post_date`),
+    idColeccionVerificadas(),
   ]);
 
-  return (datos.results ?? []).flatMap((p: any): Solicitud[] => {
+  const crudas: any[] = [];
+  let totalApi = 0;
+  let completo = true;
+  let pagina = 1;
+
+  for (;;) {
+    const datos = await pedir(
+      `/api/v5/posts?limit=${POR_PAGINA}&page=${pagina}&order=desc&orderby=post_date`,
+    );
+    const lote: any[] = datos.results ?? [];
+    crudas.push(...lote);
+    totalApi = datos.meta?.total ?? totalApi;
+
+    const ultima = datos.meta?.last_page ?? pagina;
+    if (pagina >= ultima || lote.length === 0) break;
+    if (pagina >= maxPaginas) { completo = false; break; }
+    pagina += 1;
+  }
+
+  const solicitudes = crudas.flatMap((p: any): Solicitud[] => {
     // Fuera todo lo que no sea auxilio o búsqueda (RF-16).
     const tipo = tipoPorEncuesta.get(p.form_id);
     if (!tipo) return [];
@@ -267,12 +354,15 @@ export async function traerSolicitudes(limite = 200): Promise<Solicitud[]> {
       estado:
         valorDe(porEtiqueta('Estado de la solicitud')) ??
         valorDe(porEtiqueta('Estado de la búsqueda')),
-      verificada: String(valorDe(porEtiqueta('Verificación')) ?? '').includes('Verificada'),
+      // Nunca el campo «Verificación»: es falsificable. Solo la colección.
+      verificada: idVerificadas !== null && (p.sets ?? []).includes(idVerificadas),
       municipio: valorDe(porEtiqueta('Municipio y departamento')),
       necesidades: Array.isArray(categorias) ? categorias.map((c: any) => c.tag) : [],
       punto: punto && typeof punto === 'object' && 'lat' in punto ? punto : null,
     }];
   });
+
+  return { solicitudes, totalApi, completo };
 }
 
 /**
@@ -283,8 +373,10 @@ export async function traerSolicitudes(limite = 200): Promise<Solicitud[]> {
 export async function buscarParecidas(punto: Punto): Promise<Solicitud[]> {
   const desde = Date.now() - VENTANA_DUPLICADO_H * 3600 * 1000;
   try {
-    const todas = await traerSolicitudes(200);
-    return todas
+    // Una sola página: aquí solo interesan las recientes, y quien está
+    // publicando con miedo no puede esperar a que se paginen cinco mil.
+    const { solicitudes } = await traerSolicitudes({ maxPaginas: 1 });
+    return solicitudes
       .filter((s) => {
         if (!s.punto) return false;
         const fecha = new Date(s.fecha).getTime();

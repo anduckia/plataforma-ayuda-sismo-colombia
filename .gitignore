@@ -33,3 +33,6 @@ web/capturas/
 # Cachés de Python
 __pycache__/
 *.pyc
+
+# Caché incremental de TypeScript
+*.tsbuildinfo

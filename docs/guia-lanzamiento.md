@@ -153,7 +153,11 @@ Renombra los campos nativos y úsalos como los dos primeros de la tabla: **Títu
 - Crea **búsquedas guardadas**: «🔴 Críticas sin verificar» (Urgencia = Crítica + Verificación = Sin verificar), «Pendientes por municipio», «Resueltas hoy».
 - Orden de trabajo: Críticas → Altas → Medias.
 - Cómo verificar: llama si dejó teléfono; cruza pin, municipio y descripción; si hay un ayudante en la zona, pídele confirmación.
-- Verificada → campo 14 a «✔️ Verificada por el equipo».
+- Verificada → **añade la publicación a la colección «Verificadas por el equipo»** (en la publicación: *Add to collection*). Es lo único que enciende la insignia verde en el mapa público.
+
+> **Cambió el gesto de verificar (ADR-017).** Antes bastaba con poner el campo 14 en «✔️ Verificada por el equipo». Ese campo **ya no significa nada para el público**: se comprobó que cualquiera puede enviárselo a sí mismo con `curl`, sin cuenta, y la plataforma lo guarda. La cara pública ahora solo mira la colección, porque meter algo ahí requiere estar autenticado.
+>
+> Puedes seguir usando el campo 14 para tus búsquedas guardadas —para eso sirve— pero **si no metes la publicación en la colección, en el mapa seguirá saliendo «Sin verificar»**. Y al revés: no metas nada en la colección «por si acaso». Estar ahí significa que alguien del equipo llamó y el caso es real.
 - Falsa o broma → **no la borres**: pásala a estado de revisión/archivada (queda rastro).
 - Duplicada → conserva la más completa y archiva la otra.
 
@@ -194,6 +198,16 @@ Con las intermitencias de datos reportadas en Chocó, Valle, Risaralda, Quindío
 - Al marcar una solicitud como **Resuelta**, considera borrar o anonimizar su dirección y teléfono.
 - **Al cierre de la emergencia:** exporta un histórico anonimizado y elimina los datos de contacto de la plataforma.
 - Revoca de inmediato el rol a cualquier ayudante que incumpla las reglas.
+- **Peticiones de borrado:** llegan al correo de `NEXT_PUBLIC_CONTACTO`, publicado en `/privacidad`. Alguien tiene que leer ese buzón todos los días. Es un derecho (Ley 1581 de 2012), no un favor: si alguien pide que quitemos el nombre de su familiar, se quita.
+- **El sitio no se indexa** (`robots.txt` + cabecera `noindex`): el nombre de una persona desaparecida no debe quedar colgado en Google después de que aparezca. Si algún día se quiere indexar, esa decisión pasa por spec (P8) y no por un `robots.txt`.
+
+### Antes de cada difusión: la auditoría del desconocido
+
+```bash
+python scripts/auditar_publico.py
+```
+
+No pide credenciales a propósito: comprueba lo que ve **cualquiera**, que es lo que promete la portada. Si termina con «AUDITORÍA PÚBLICA FALLIDA», **no difundas el enlace** hasta arreglarlo. `aplicar_config.py --solo-auditar` no sustituye a esto: aquella entra como administrador y solo mira que las banderas estén bien puestas.
 
 ---
 
@@ -227,9 +241,17 @@ La plataforma (Ushahidi) ya es software libre. Nuestro aporte abierto es **esta 
 - [x] Publicación instantánea activada (sin aprobación previa)
 - [x] Ciclo de vida probado por API: ensayo → verificada → en atención → resuelta → archivada
 - [x] Comprobado que un visitante anónimo **no** recibe dirección ni teléfono
+- [x] Colección «Verificadas por el equipo» creada; la insignia del mapa sale de ahí y no del campo (ADR-017)
+- [x] Comprobado que un anónimo **no** puede auto-verificarse, ni editar o borrar publicaciones ajenas
+- [x] `scripts/auditar_publico.py` en verde
+- [x] Sitio fuera de los buscadores y página `/privacidad` con canal de borrado
+- [ ] **`NEXT_PUBLIC_CONTACTO` configurado en Vercel** — sin esto, `/privacidad` enseña un marcador y el canal de borrado no existe
 - [ ] **Pasada humana por el navegador** (llenar el formulario como un afectado)
 - [ ] Búsquedas guardadas de verificación (T-008 — se crean desde la interfaz)
 - [ ] SMSsync instalado, conectado y probado con un SMS real (T-009)
+- [ ] **Tras el primer SMS real:** volver a correr `auditar_publico.py` y confirmar que el número del remitente no sale al público
+- [ ] Rotar la contraseña de administrador (está en claro en `.env` y es la cuenta superadministradora)
+- [ ] Retirar los ensayos antes de difundir: `python scripts/ensayos.py borrar`
 - [ ] Exportación CSV probada y dos ubicaciones de respaldo definidas (T-011)
 - [ ] Número SMS real reemplazando `[NUMERO_SMS]` (T-012)
 - [ ] Difusión enviada a PMU, organizaciones y emisoras (T-013)

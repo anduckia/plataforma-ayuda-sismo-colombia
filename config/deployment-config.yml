@@ -52,6 +52,24 @@ categorias:
   # En el despliegue vivo quedó creada (id 11) y sin usar: borrarla es manual.
   - "Otro"
 
+# =====================================================================
+# LA SEÑAL DE VERIFICACIÓN (RF-17, ADR-017).
+# Comprobado contra el despliegue vivo el 11-ago-2026:
+#   - POST /api/v5/posts es anónimo -> cualquiera con curl puede enviarse a sí
+#     mismo «Verificación: ✔️ Verificada por el equipo». Devuelve 201 y lo guarda.
+#   - `sets` se IGNORA en ese POST, y POST /api/v5/collections/{id}/posts
+#     responde 401 sin token.
+# Por eso la insignia del mapa se lee de la colección y NUNCA del campo. El campo
+# se conserva porque el equipo lo usa en su panel, pero la cara pública no lo mira.
+# =====================================================================
+colecciones:
+  - nombre: "Verificadas por el equipo"
+    vista: map
+    descripcion: >
+      Solo el equipo mete publicaciones aquí, y es la única señal de verificación
+      que reconoce la cara pública. Meter una publicación equivale a decir «llamamos
+      y el caso es real»: no se hace por si acaso.
+
 roles:
   - id: administrador
     tipo: nativo
@@ -80,6 +98,13 @@ encuestas:
       - { etiqueta: "Municipio y departamento", tipo: texto_corto, obligatorio: true, visibilidad: publico, ayuda: "Ej.: San José del Palmar, Chocó." }
       - { etiqueta: "Dirección exacta y señas", tipo: texto_largo, obligatorio: true, visibilidad: protegido, ayuda: "Solo la verán ayudantes verificados por el equipo. Da señas claras: color de la casa, referencias, piso." }
       - { etiqueta: "Teléfono de contacto", tipo: texto_corto, obligatorio: false, visibilidad: protegido, ayuda: "Opcional. Solo lo verán ayudantes verificados por el equipo; si lo escribes, autorizas que te llamen." }  # ADR-004
+      # RF-19: la ayuda de este campo invitaba a publicar «el número de un familiar
+      # fuera de la zona» —el teléfono de una tercera persona que no dio permiso, en
+      # un campo que ve cualquiera, y que es la materia prima de la estafa que sigue
+      # a un desastre. El front lo muestra reescrito (ver TEXTOS en web/lib/ushahidi.ts)
+      # y manda a la API la etiqueta original, que no se puede renombrar sin borrar la
+      # encuesta con sus publicaciones dentro. Al recrear el despliegue desde cero:
+      # cambiar la ayuda aquí y quitar el override.
       - { etiqueta: "Otra forma de contacto (pública)", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "Ej.: usuario de Instagram/X/Facebook, o el número de un familiar fuera de la zona." }
       - { etiqueta: "Foto", tipo: imagen, obligatorio: false, visibilidad: publico, ayuda: "Solo si tu señal lo permite." }
       - { etiqueta: "Estado de la solicitud", tipo: opcion_unica, opciones: ["🕐 Pendiente", "🚧 En atención", "✅ Resuelta"], defecto: "🕐 Pendiente", obligatorio: true, visibilidad: publico, ayuda: "Lo actualiza el equipo." }
