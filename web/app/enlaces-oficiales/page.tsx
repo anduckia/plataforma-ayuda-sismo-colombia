@@ -40,8 +40,7 @@ export default function EnlacesOficiales() {
     <>
       <h1>Canales oficiales</h1>
       <p className="entradilla">
-        Esta plataforma no reemplaza a nadie. Para casi todo lo que necesitas, quien
-        responde está aquí abajo.
+        No reemplazamos a nadie. Para casi todo lo que necesitas, quien responde está aquí.
       </p>
 
       {/*
@@ -69,28 +68,27 @@ export default function EnlacesOficiales() {
       <Bloque
         id="familiares"
         titulo="No encuentro a un familiar"
-        entradilla="Empieza por la Cruz Roja: es el canal con más alcance y el que conecta con
-                    la red internacional. Después, el registro oficial del Estado."
+        entradilla="Empieza por la Cruz Roja: es el canal con más alcance y el único que
+                    conecta con la red internacional. Después, el registro oficial del Estado."
         enlaces={FAMILIARES}
       />
       <p className="campo__ayuda">
-        Puedes hacer las dos cosas: registrar el caso ahí <strong>y</strong>{' '}
-        <a href="/busco-familiar">publicarlo aquí</a> para que más ojos lo busquen. Lo
-        segundo no reemplaza a lo primero.
+        Haz las dos cosas: registra el caso ahí <strong>y</strong>{' '}
+        <a href="/busco-familiar">publícalo aquí</a> para que más ojos lo busquen.
       </p>
 
       <Bloque
         id="vivienda"
         titulo="Mi casa quedó dañada"
-        entradilla="Si no hay nadie en peligro pero la estructura está afectada, esto es lo
-                    que sirve. Si hay alguien dentro o riesgo de colapso, llama al 123."
+        entradilla="Para cuando la estructura está afectada pero no hay nadie en peligro. Si
+                    hay alguien dentro o riesgo de colapso, llama al 123."
         enlaces={VIVIENDA}
       />
 
       <Bloque
         id="donaciones"
         titulo="Quiero donar"
-        entradilla="Enlazamos a la página de cada organización en vez de copiar aquí sus
+        entradilla="Te enlazamos a la página de cada organización en vez de copiar aquí sus
                     números de cuenta: un dígito mal transcrito manda tu dinero al lugar
                     equivocado. Nosotros nunca recibimos dinero."
         enlaces={DONACIONES}
@@ -100,13 +98,13 @@ export default function EnlacesOficiales() {
         id="informacion"
         titulo="Información oficial"
         entradilla="Magnitud, réplicas, balances y estado de las vías. Si vas a mover un
-                    convoy, el reporte de Invías es obligatorio antes de salir."
+                    convoy, mira el reporte de Invías antes de salir."
         enlaces={INFORMACION}
       />
 
       <p className="pie">
-        Todos los enlaces y números de esta página se comprobaron uno a uno el{' '}
-        <strong>{VERIFICADO}</strong>. Si encuentras uno que ya no funciona, escríbenos y
+        Comprobamos uno a uno todos los enlaces y números de esta página el{' '}
+        <strong>{VERIFICADO}</strong>. Si encuentras alguno que ya no funciona, escríbenos y
         lo corregimos. · <a href="/">Volver al inicio</a>
       </p>
     </>

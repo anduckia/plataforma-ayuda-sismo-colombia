@@ -171,6 +171,16 @@ p { margin: 0 0 1rem; }
 
 .via__desc { display: block; color: var(--tinta-suave); font-size: 0.9688rem; }
 
+/* Dónde acaba lo que envías: público o solo para el equipo. Es la diferencia
+   que hay que ver ANTES de elegir la tarjeta, no después de llenarla. */
+.via__meta {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--tinta-suave);
+}
+
 /* --------------------------------------------------------------- avisos */
 
 .aviso {
@@ -433,27 +443,50 @@ button:focus-visible, a:focus-visible, .opcion:focus-within {
 .solicitud--busqueda { border-left-color: var(--busqueda); }
 
 /*
-  Leyenda del mapa. Sin ella los colores son decoración: quien llega de nuevo
-  no tiene cómo saber que el rojo es «persona atrapada» y el azul «desaparecida».
+  Leyenda y recuento en una sola pieza. Sin ella los colores son decoración:
+  quien llega de nuevo no tiene cómo saber que el rojo es «persona atrapada» y
+  el azul «desaparecida». Cada ficha lleva además cuántas hay de ese color, que
+  es lo que antes decía —en prosa y aparte— una frase de tres renglones.
 */
-.leyenda {
+.recuento {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  margin: 0 0 1.5rem;
+  gap: 0.45rem;
+  margin: 0 0 1.25rem;
   padding: 0;
   list-style: none;
   font-size: 0.9375rem;
 }
 
-.leyenda li { display: flex; align-items: center; gap: 0.4rem; }
+.recuento li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 2px solid var(--linea);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem 0.25rem 0.6rem;
+}
 
-.leyenda__punto {
+.recuento strong { font-weight: 800; }
+
+.recuento__punto {
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 50%;
   border: 2px solid var(--tinta);
   flex: none;
+}
+
+/*
+  El apunte al margen: cuántas tienen punto, cómo avanza la cola del equipo.
+  Es contexto para quien lo busque, en tinta suave y sin caja. Metido en un
+  `.aviso` —con su borde y su título en negrita— el mismo texto pasa de nota a
+  advertencia, y una advertencia sobre los reportes hace dudar de los reportes.
+*/
+.nota {
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+  margin: 0.6rem 0 1.5rem;
 }
 
 .solicitud__titulo { font-weight: 750; letter-spacing: -0.015em; margin-bottom: 0.2rem; }

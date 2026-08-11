@@ -27,14 +27,12 @@ function Proposito({ slug }: { slug: Slug }) {
       <div className="aviso">
         <p className="aviso__titulo">Para qué es este formulario</p>
         <p>
-          Es la puerta de entrada al <strong>equipo verificado</strong>. Cuando lo envíes, el
-          equipo <strong>te llamará</strong> para confirmar quién eres y con qué organización
-          vienes. Solo después tendrás acceso a los teléfonos y las direcciones de quienes
-          piden ayuda.
+          Es la entrada al <strong>equipo verificado</strong>. Al enviarlo, el equipo{' '}
+          <strong>te llama</strong> para confirmar quién eres. Solo después verás los
+          teléfonos y las direcciones de quienes piden ayuda.
         </p>
-        <p>
-          <strong>No necesitas crear ninguna cuenta.</strong> Si lo que quieres es ofrecer
-          maquinaria, plantas eléctricas o luces, usa{' '}
+        <p style={{ marginBottom: 0 }}>
+          ¿Lo que ofreces es maquinaria, plantas eléctricas o luces? Usa{' '}
           <a href="/ofrezco-recursos">Ofrezco recursos</a>.
         </p>
       </div>
@@ -47,18 +45,18 @@ function Proposito({ slug }: { slug: Slug }) {
   if (slug === 'busco-familiar') {
     return (
       <div className="aviso">
-        <p className="aviso__titulo">Primero, los canales oficiales</p>
+        <p className="aviso__titulo">Empieza por la Cruz Roja</p>
         <p>
-          El programa de <strong>Restablecimiento del Contacto entre Familiares</strong> de la
-          Cruz Roja Colombiana es el que más alcance tiene y el que conecta con la red
-          internacional. Escríbeles a <strong>rcf@cruzrojacolombiana.org</strong> o por
-          WhatsApp al <a href="tel:3212139525"><strong>321 213 9525</strong></a>. Registra el
-          caso además en el <a href="https://www.medicinalegal.gov.co/" target="_blank"
-          rel="noopener noreferrer">Registro Nacional de Desaparecidos</a> de Medicina Legal.
+          Su programa de <strong>Restablecimiento del Contacto entre Familiares</strong> es el
+          que más alcance tiene y el único que conecta con la red internacional. Escríbeles a{' '}
+          <strong>rcf@cruzrojacolombiana.org</strong> o por WhatsApp al{' '}
+          <a href="tel:3212139525"><strong>321 213 9525</strong></a>, y registra el caso en el{' '}
+          <a href="https://www.medicinalegal.gov.co/" target="_blank" rel="noopener noreferrer">
+          Registro Nacional de Desaparecidos</a>.
         </p>
         <p style={{ marginBottom: 0 }}>
-          Después publícalo aquí para que más ojos lo busquen. Una cosa no reemplaza a la
-          otra. · <a href="/enlaces-oficiales#familiares">Ver todos los canales</a>
+          Y después publícalo aquí, para que más ojos lo busquen. Lo de abajo no reemplaza a
+          lo de arriba. · <a href="/enlaces-oficiales#familiares">Ver todos los canales</a>
         </p>
       </div>
     );
@@ -69,13 +67,13 @@ function Proposito({ slug }: { slug: Slug }) {
   if (slug === 'pido-ayuda') {
     return (
       <div className="aviso">
-        <p className="aviso__titulo">¿Es tu casa la que quedó dañada?</p>
+        <p className="aviso__titulo">¿Solo quedó dañada tu casa?</p>
         <p style={{ marginBottom: 0 }}>
-          Si <strong>no hay nadie en peligro</strong> pero la estructura está afectada,{' '}
+          Si <strong>no hay nadie en peligro</strong>, en{' '}
           <a href="https://sismoayudaco.com/reportar" target="_blank" rel="noopener noreferrer">
-          SismoAyuda</a> te manda por correo un informe preliminar de habitabilidad hecho por
-          ingenieros voluntarios, con solo subir fotos. Si hay alguien dentro o riesgo de
-          colapso, llama al <a href="tel:123"><strong>123</strong></a> y publica aquí. ·{' '}
+          SismoAyuda</a> subes fotos y unos ingenieros voluntarios te mandan por correo un
+          informe de si es habitable. Si hay alguien dentro o riesgo de colapso, llama al{' '}
+          <a href="tel:123"><strong>123</strong></a> y publica aquí. ·{' '}
           <a href="/enlaces-oficiales#vivienda">Más canales</a>
         </p>
       </div>
@@ -88,10 +86,12 @@ function Proposito({ slug }: { slug: Slug }) {
         <p className="aviso__titulo">La maquinaria no entra por su cuenta</p>
         <p>
           Una máquina solo entra a un punto de rescate{' '}
-          <strong>cuando un organismo de socorro lo pide</strong>. Mover escombros por
-          iniciativa propia puede aplastar la bolsa de aire donde alguien está respirando.
+          <strong>cuando lo pide un organismo de socorro</strong>. Mover escombros por
+          iniciativa propia puede aplastar la bolsa de aire donde alguien respira.
         </p>
-        <p>Registra aquí tu recurso y espera a que el equipo te llame para asignarte.</p>
+        <p style={{ marginBottom: 0 }}>
+          Registra aquí tu recurso y espera a que el equipo te llame para asignarte.
+        </p>
       </div>
     );
   }
@@ -136,8 +136,8 @@ export default async function PaginaFormulario({
 
       <div className="aviso aviso--privacidad">
         <p>
-          Lo que marques con 🔒 <strong>no se publica</strong>: solo lo ven los ayudantes que
-          el equipo verificó por teléfono, uno por uno.
+          Lo que lleva 🔒 <strong>no se publica</strong>: solo lo ven los ayudantes que el
+          equipo verificó por teléfono, uno por uno.
         </p>
       </div>
 

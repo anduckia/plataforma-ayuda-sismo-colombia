@@ -54,12 +54,12 @@ export const FORMULARIOS = {
     gancho: 'Para que la ayuda te encuentre',
     descripcion: 'Rescate, salud, comida, agua, refugio o transporte.',
     tono: 'auxilio',
-    visibilidad: '🌐 Aparece de inmediato en el mapa público',
+    visibilidad: '🌐 Sale en el mapa público al instante',
     meta: 'Publica qué necesitas y dónde estás para que los equipos de ayuda te ' +
       'encuentren. Tu teléfono y tu dirección exacta nunca son públicos. Sin cuenta y gratis.',
-    pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
+    pie: 'Se publica al instante. El equipo lo confirma después, llamando por teléfono.',
     confirmacion: {
-      titulo: 'Publicado. Ya es visible para los equipos de ayuda.',
+      titulo: 'Publicado. Ya lo ven los equipos de ayuda.',
       palabra: 'solicitud',
       detalle: 'El equipo revisa primero las solicitudes críticas. Si dejaste un teléfono, ' +
         'pueden llamarte para confirmar.',
@@ -72,15 +72,15 @@ export const FORMULARIOS = {
     gancho: 'Para que más ojos lo busquen',
     descripcion: 'Publica los datos de la persona que no aparece.',
     tono: 'busqueda',
-    visibilidad: '🌐 Aparece de inmediato en el mapa público',
+    visibilidad: '🌐 Sale en el mapa público al instante',
     meta: 'Publica los datos de la persona que no aparece para que más ojos la busquen. ' +
       'Tu teléfono no se publica. Registra el caso también en la Cruz Roja Colombiana.',
-    pie: 'Se publica de inmediato, marcado como «sin verificar» hasta que el equipo lo confirme.',
+    pie: 'Se publica al instante. El equipo lo confirma después, llamando por teléfono.',
     confirmacion: {
-      titulo: 'Publicado. Ya es visible para quien esté buscando.',
+      titulo: 'Publicado. Ya lo ve quien esté buscando.',
       palabra: 'búsqueda',
-      detalle: 'Registra el caso también en el programa de Restablecimiento del Contacto ' +
-        'entre Familiares de la Cruz Roja Colombiana.',
+      detalle: 'Si aún no lo has hecho, registra el caso también en el programa de ' +
+        'Restablecimiento del Contacto entre Familiares de la Cruz Roja Colombiana.',
       verMapa: true,
     },
   },
@@ -90,15 +90,15 @@ export const FORMULARIOS = {
     gancho: 'Para entrar al equipo verificado',
     descripcion: 'Regístrate como voluntario u organización.',
     tono: 'apoyo',
-    visibilidad: '🔒 Registro privado: solo lo revisa el equipo',
+    visibilidad: '🔒 Privado: solo lo ve el equipo',
     meta: 'Regístrate como voluntario u organización. El equipo te llama para verificarte ' +
       'y luego te da acceso a los datos de contacto de quienes piden ayuda.',
-    pie: 'Tus datos solo los ve el equipo; te llamaremos para verificarte.',
+    pie: 'Tus datos solo los ve el equipo. Te llamaremos para verificarte.',
     confirmacion: {
-      titulo: 'Recibido. Lo tiene el equipo.',
+      titulo: 'Recibido. Ya lo tiene el equipo.',
       palabra: 'registro',
-      detalle: 'No aparece en el mapa público ni lo ve nadie más: tu registro queda a la ' +
-        'espera de que el equipo te llame para verificarte. Ten el teléfono a mano.',
+      detalle: 'No sale en el mapa ni lo ve nadie más. Ahora falta que el equipo te llame ' +
+        'para verificarte: ten el teléfono a mano.',
       verMapa: false,
     },
   },
@@ -108,16 +108,16 @@ export const FORMULARIOS = {
     gancho: 'Para cruzar tu recurso con quien lo necesita',
     descripcion: 'Maquinaria, plantas eléctricas, luces, herramienta o transporte.',
     tono: 'recurso',
-    visibilidad: '🔒 Registro privado: solo lo revisa el equipo',
+    visibilidad: '🔒 Privado: solo lo ve el equipo',
     meta: 'Registra maquinaria, plantas eléctricas, iluminación, herramienta o transporte ' +
       'para que el equipo los cruce con quien los necesita. Tu teléfono no se publica.',
-    pie: 'Tus datos de contacto solo los ve el equipo; te llamaremos para coordinar la asignación.',
+    pie: 'Tus datos solo los ve el equipo. Te llamaremos para coordinar la asignación.',
     confirmacion: {
-      titulo: 'Recibido. Lo tiene el equipo.',
+      titulo: 'Recibido. Ya lo tiene el equipo.',
       palabra: 'recurso',
-      detalle: 'No aparece en el mapa público: el equipo lo cruza con las necesidades y te ' +
-        'llama para asignarte. Recuerda que la maquinaria solo entra a un punto de rescate ' +
-        'cuando un organismo de socorro lo pide.',
+      detalle: 'No sale en el mapa: el equipo lo cruza con las necesidades y te llama para ' +
+        'asignarte. Recuerda que la maquinaria solo entra a un punto de rescate cuando lo ' +
+        'pide un organismo de socorro.',
       verMapa: false,
     },
   },
