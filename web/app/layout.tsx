@@ -3,15 +3,36 @@ import LineasEmergencia from '@/components/LineasEmergencia';
 import PieLineas from '@/components/PieLineas';
 import './globals.css';
 
+const TITULO = 'SOS Sismo Colombia — pide ayuda o busca a un familiar';
+const DESCRIPCION =
+  'Publica tu solicitud para que la ayuda te encuentre. Tu teléfono y tu dirección exacta ' +
+  'nunca son públicos. Es gratuito y no necesitas crear una cuenta.';
+
 export const metadata: Metadata = {
-  title: 'SOS Sismo Colombia — pide ayuda o busca a un familiar',
-  description:
-    'Publica tu solicitud para que la ayuda te encuentre. Tu teléfono y tu dirección exacta ' +
-    'nunca son públicos. Es gratuito y no necesitas crear una cuenta.',
-  // RF-19: además de robots.txt, la cabecera en cada página. El archivo pide
-  // no rastrear; esto pide no indexar, que no es lo mismo: una URL compartida
-  // por WhatsApp puede acabar indexada sin que nadie rastree el sitio.
-  robots: { index: false, follow: false },
+  metadataBase: new URL('https://www.sossismocolombia.com.co'),
+  title: TITULO,
+  description: DESCRIPCION,
+  alternates: { canonical: '/' },
+  // RF-19 (revisado): indexación selectiva. Esta página no muestra datos de
+  // nadie, así que es indexable por defecto; /mapa anula esto en su propia
+  // metadata porque sí lleva nombres y ubicaciones reales.
+  //
+  // El Open Graph/Twitter es aparte: sirve para que el enlace se vea con
+  // imagen y texto al reenviarse por WhatsApp, el canal real de difusión
+  // (ver docs/guia-lanzamiento.md), indexado o no.
+  openGraph: {
+    title: TITULO,
+    description: DESCRIPCION,
+    url: '/',
+    siteName: 'SOS Sismo Colombia',
+    locale: 'es_CO',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITULO,
+    description: DESCRIPCION,
+  },
 };
 
 export const viewport: Viewport = {

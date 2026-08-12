@@ -5,6 +5,7 @@ export const metadata = {
   description:
     'Qué se publica, qué no, cuánto dura y cómo pedir que borremos tu publicación o la ' +
     'de un familiar.',
+  alternates: { canonical: '/privacidad' },
 };
 
 /**
