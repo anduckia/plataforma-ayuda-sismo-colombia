@@ -46,11 +46,19 @@ function Proposito({ slug }: { slug: Slug }) {
     return (
       <div className="aviso">
         <p className="aviso__titulo">Empieza por la Cruz Roja</p>
+        {/*
+          El correo y el WhatsApp del RCF estaban escritos aquí; salieron el
+          12-ago-2026 (RF-25, ADR-022). Los mantiene la Cruz Roja en su página,
+          que es quien responde por ellos; nosotros no íbamos a enterarnos el
+          día que cambiaran. Su línea nacional, el 132, no caduca y sigue en el
+          bloque de emergencia del pie.
+        */}
         <p>
           Su programa de <strong>Restablecimiento del Contacto entre Familiares</strong> es el
-          que más alcance tiene y el único que conecta con la red internacional. Escríbeles a{' '}
-          <strong>rcf@cruzrojacolombiana.org</strong> o por WhatsApp al{' '}
-          <a href="tel:3212139525"><strong>321 213 9525</strong></a>, y registra el caso en el{' '}
+          que más alcance tiene y el único que conecta con la red internacional. Escríbeles
+          desde{' '}
+          <a href="https://ayuda.cruzrojacolombiana.org/" target="_blank" rel="noopener noreferrer">
+          su página de ayuda</a>, donde está el contacto al día, y registra el caso en el{' '}
           <a href="https://www.medicinalegal.gov.co/" target="_blank" rel="noopener noreferrer">
           Registro Nacional de Desaparecidos</a>.
         </p>

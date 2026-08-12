@@ -8,6 +8,13 @@ export const metadata = {
 };
 
 /**
+ * Cuándo se comprobó dónde está alojado esto (RF-26, ADR-022): dónde vive un dato
+ * es un hecho que caduca, así que se fecha como los teléfonos de emergencia.
+ * Medido el 12-ago-2026 sin credenciales; el detalle técnico está en ADR-024.
+ */
+const ALOJAMIENTO_VERIFICADO = '12 de agosto de 2026';
+
+/**
  * RF-19: el canal de supresión (P2).
  *
  * Sin esta página, una persona que publicó a su hermana desaparecida y ya la
@@ -48,15 +55,38 @@ export default function PaginaPrivacidad() {
         nombre que mostrar.
       </p>
 
-      <h2>Esto no sale en Google</h2>
+      <h2>Dónde viven tus datos</h2>
       <p>
-        Le pedimos a los buscadores que no indexen el sitio: así el nombre de una persona
-        desaparecida no queda colgado en internet después de que aparezca.
+        Esta plataforma se apoya en servicios de otros: lo que escribes queda guardado en
+        servidores en <strong>Irlanda</strong>, y la página te llega desde{' '}
+        <strong>Estados Unidos</strong>. Los dos son sitios con leyes de protección de
+        datos reconocidas en Colombia.
       </p>
       <p>
-        Por eso la plataforma se difunde a mano, por canales de emergencia —WhatsApp, radio,
-        SMS—. No buscamos que se vuelva viral: eso llenaría el mapa de reportes falsos y le
-        haría perder tiempo a quien está rescatando.
+        Por esos datos respondemos nosotros, el equipo que sostiene esta plataforma.
+        Escríbenos a <strong>{CONTACTO}</strong> si quieres corregir algo, borrarlo o
+        preguntar.
+      </p>
+      <p className="nota">Comprobado el {ALOJAMIENTO_VERIFICADO}.</p>
+
+      {/*
+        Este texto se reescribió el 12-ago-2026 con la indexación selectiva
+        (ADR-023): antes decía que no se indexa «el sitio», y desde ese cambio
+        solo /mapa queda fuera. Decirlo mal aquí sería prometer una protección
+        más ancha de la que hay, en la única página donde alguien viene a
+        comprobar exactamente eso.
+      */}
+      <h2>Lo que publicas no sale en Google</h2>
+      <p>
+        Les pedimos a los buscadores que dejen el <a href="/mapa">mapa</a> fuera, porque ahí
+        es donde están las solicitudes: así el nombre de una persona desaparecida no queda
+        colgado en internet después de que aparezca. El resto del sitio —esta página, el
+        inicio y los formularios en blanco— sí se puede encontrar, para que quien necesita
+        ayuda dé con nosotros aunque nadie le haya pasado el enlace.
+      </p>
+      <p>
+        Aun así, la plataforma se difunde sobre todo a mano, por los canales que de verdad
+        llegan a la zona: WhatsApp, radio y SMS.
       </p>
 
       <h2>Si publicas por otra persona</h2>
@@ -93,10 +123,10 @@ export default function PaginaPrivacidad() {
 
       <h2>Cuánto dura esto</h2>
       <p>
-        Durante la emergencia no borramos nada por nuestra cuenta: una solicitud que
-        desaparece a media noche es un equipo que deja de ir. Cuando la operación termine,
-        cerramos el mapa y destruimos los datos de contacto. Lo que pidas borrar antes, lo
-        borramos antes.
+        Durante la emergencia no borramos nada por nuestra cuenta: si una solicitud
+        desaparece de un momento a otro, puede quedarse sin la ayuda que ya venía en
+        camino. Cuando la operación termine, cerramos el mapa y borramos los datos de
+        contacto. Lo que pidas borrar antes, lo borramos antes.
       </p>
 
       <h2>Lo que nunca vamos a hacer</h2>

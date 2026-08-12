@@ -8,6 +8,19 @@
  *     equivocado y el error sería nuestro; enlazar deja el dato en manos de
  *     quien lo emite y lo mantiene. Además sostiene la promesa de que aquí
  *     nunca se toca dinero (RNF-03).
+ *
+ *     **Ampliado el 12-ago-2026:** vale para todo dato de contacto de una
+ *     organización —fijos, celulares, WhatsApp y correos—, no solo para el
+ *     dinero. Un celular de coordinación cambia de manos en días y aquí no hay
+ *     quien lo vea caducar. Salieron de este archivo el correo y el WhatsApp
+ *     del RCF de la Cruz Roja, los dos celulares de la Defensa Civil del Chocó
+ *     y la línea de la alcaldía de Itagüí: todos siguen a un clic, en la
+ *     página de quien responde por ellos.
+ *
+ *     **Única excepción: `LINEAS`**, las nacionales de tres dígitos. No
+ *     caducan, y son lo único que sirve con la pantalla en la mano y sin datos
+ *     (P4, RNF-06). Enlazarlas sería pedirle a alguien que cargue una web para
+ *     poder marcar el 123.
  *  2. **Cada dato lleva de dónde salió y cuándo se comprobó.** Publicar una
  *     línea de emergencia equivocada en un desastre es daño propio, no un
  *     error de copia.
@@ -38,14 +51,6 @@ export const LINEAS: Linea[] = [
   { numero: '111', quien: 'Atención de desastres' },
 ];
 
-/**
- * Celulares que publicó la Defensa Civil del **Chocó**, no nacionales: el
- * epicentro cae a unos 20 km de San José del Palmar y allí la línea fija no
- * siempre entra. Etiquetarlos como nacionales mandaría a medio país a un
- * teléfono de Quibdó.
- */
-export const DEFENSA_CIVIL_CHOCO = ['310 330 5140', '311 356 2952'];
-
 export interface Enlace {
   titulo: string;
   url: string;
@@ -62,7 +67,7 @@ export const FAMILIARES: Enlace[] = [
     url: 'https://ayuda.cruzrojacolombiana.org/',
     que: 'El canal con más alcance para localizar a alguien y para mandar un «estoy bien». ' +
       'Es el primero al que hay que escribir.',
-    detalle: 'Correo rcf@cruzrojacolombiana.org · WhatsApp 321 213 9525',
+    detalle: 'En su página están el correo y el WhatsApp del programa, siempre al día.',
   },
   {
     titulo: 'Registro Nacional de Desaparecidos — Medicina Legal',
@@ -90,7 +95,6 @@ export const VIVIENDA: Enlace[] = [
     titulo: 'Itagüí — formulario municipal de reporte de daños',
     url: 'https://survey123.arcgis.com/share/fe89d3b0769e4fb1bbf8215526aa416d',
     que: 'Si estás en Itagüí, este es el reporte que le llega directo a tu alcaldía.',
-    detalle: 'Línea del municipio: (604) 372 65 60',
   },
 ];
 

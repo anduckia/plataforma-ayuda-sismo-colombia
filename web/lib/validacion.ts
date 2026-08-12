@@ -38,8 +38,8 @@ export function revisarPunto(p: Punto | null | undefined): Hallazgo[] {
   }
   if (!dentro(p, COLOMBIA)) {
     return [{
-      texto: 'Ese punto está fuera de Colombia. Márcalo de nuevo: sin una ubicación real ' +
-             'nadie puede llegar hasta allí.',
+      texto: 'Ese punto queda fuera de Colombia. Vuelve a marcarlo, porque con esa ' +
+             'ubicación nadie podría llegar hasta ti.',
       nivel: 'bloquea',
     }];
   }
@@ -132,7 +132,7 @@ export function revisarTitulo(titulo: string): Hallazgo[] {
   }
   // Teclado aporreado: una sola letra repetida, o sin vocales en algo largo.
   if (/^(.)\1+$/.test(t.replace(/\s/g, '')) || (t.length > 8 && !/[aeiouáéíóú]/i.test(t))) {
-    return [{ texto: 'El primer campo no se entiende. Escribe con palabras qué necesitas.',
+    return [{ texto: 'No alcanzamos a leer el primer campo. Cuéntanos con palabras qué necesitas.',
               nivel: 'bloquea' }];
   }
   return [];

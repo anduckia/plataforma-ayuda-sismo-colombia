@@ -112,6 +112,10 @@ def main() -> int:
     print(f"Auditando SIN CREDENCIALES: {api.base}\n")
 
     fallos: list[str] = []
+    # Lo que esta pasada NO ha podido comprobar. Va aparte de los fallos porque
+    # no es una fuga, pero no puede desaparecer del veredicto: una auditoría que
+    # da por bueno lo que no miró miente igual que un mapa incompleto (RF-18).
+    sin_probar: list[str] = []
     protegidas_por_encuesta = etiquetas_protegidas(cfg)
     # Una etiqueta puede ser protegida en una encuesta y pública en otra
     # («Qué ofreces» lo es). Se comprueba por encuesta, nunca por nombre suelto.
@@ -128,10 +132,29 @@ def main() -> int:
             fallos.append(f"falta o no es visible la encuesta «{titulo}»")
             continue
         protegidas_por_id[s["id"]] = etiquetas
+
+    # Se recorre lo que devuelve la PLATAFORMA, no lo que declara el YAML: una
+    # encuesta que nadie especificó es una que nadie ha revisado. Así apareció
+    # «Basic Post» (id 1), la que trae Ushahidi de fábrica: viva, visible al
+    # anónimo y la única del despliegue con `hide_author: false` (T-045, RF-20).
+    nuestras = set(protegidas_por_encuesta)
+    de_fabrica = {e["nombre"] for e in (cfg.get("encuestas_de_fabrica") or [])}
+    for s in encuestas:
+        titulo = s.get("name")
         estado = "solo la ve el equipo" if s.get("require_approval") else "publica al instante"
-        print(f"  · «{titulo}» (id {s['id']}) — {estado}")
+        if titulo in nuestras:
+            print(f"  · «{titulo}» (id {s.get('id')}) — {estado}")
+        elif titulo in de_fabrica:
+            # Declarada y consentida: viene con el despliegue y no se puede
+            # borrar sin llevarse sus publicaciones (ADR-019, RNF-04).
+            print(f"  · «{titulo}» (id {s.get('id')}) — de fábrica, fuera de uso")
+        else:
+            print(f"  ✗ «{titulo}» (id {s.get('id')}) — {estado}  ← NO está en el YAML")
+            fallos.append(
+                f"la encuesta «{titulo}» (id {s.get('id')}) está viva y visible sin cuenta "
+                f"y el YAML no la declara: nadie ha revisado qué publica ni qué expone")
         if s.get("hide_author") is False:
-            fallos.append(f"«{titulo}» no oculta el autor (P2)")
+            fallos.append(f"«{titulo}» (id {s.get('id')}) no oculta el autor (P2)")
 
     # ------------------------------------------------- 2. campos protegidos
     print("\n=== 2. ¿Se filtra algún campo protegido? ===")
@@ -176,6 +199,7 @@ def main() -> int:
         print("  [!] Todavía no hay ninguna publicación por SMS: esto NO prueba que el\n"
               "      canal SMS sea seguro. Manda un SMS de prueba y vuelve a auditar\n"
               "      ANTES de difundir el número.")
+        sin_probar.append("el canal SMS: no hay ninguna publicación con source=sms")
 
     # ------------------------------------------- 4. lo que debe estar cerrado
     print("\n=== 4. Lo que un desconocido NO debería poder hacer ===")
@@ -201,6 +225,14 @@ def main() -> int:
                   f"(editar o borrar publicaciones ajenas)")
             if not ok:
                 fallos.append(f"un anónimo puede {metodo} publicaciones ajenas (responde {c})")
+    else:
+        # Sin publicaciones visibles no hay contra qué probarlo, y callarlo sería
+        # dar por auditado lo que no se ha mirado. Se avisa, como con el SMS.
+        print("  [!] No hay ninguna publicación visible, así que NO se ha comprobado\n"
+              "      que un desconocido no pueda editar ni borrar publicaciones ajenas.\n"
+              "      Vuelve a auditar en cuanto entre la primera solicitud real.")
+        sin_probar.append("que un desconocido no pueda editar ni borrar publicaciones "
+                          "ajenas: no hay ninguna publicación visible contra la que probarlo")
 
     # ------------------------------------------------ 5. señal de verificación
     print("\n=== 5. La insignia de verificación (RF-17) ===")
@@ -229,8 +261,14 @@ def main() -> int:
         for f in fallos:
             print(f"   - {f}")
         return 1
-    print("✓ Un desconocido no ve ningún dato protegido, no puede tocar publicaciones\n"
-          "  ajenas y no puede darse la insignia de verificado.")
+    print("✓ Un desconocido no ve ningún dato protegido y no puede darse la insignia\n"
+          "  de verificado.")
+    if sin_probar:
+        print("\n  [!] Esta pasada NO ha comprobado:")
+        for s in sin_probar:
+            print(f"   - {s}")
+        print("  Verde no significa «todo probado»: significa «nada de lo que se pudo\n"
+              "  mirar está mal». Vuelve a auditar cuando exista lo que falta.")
     return 0
 
 

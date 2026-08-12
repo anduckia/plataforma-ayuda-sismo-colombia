@@ -177,8 +177,21 @@ const TEXTOS: Record<string, { etiqueta?: string; ayuda?: string }> = {
   // estafa post-desastre. Se puede seguir usando, pero pidiendo permiso y
   // sabiendo que es público.
   'Otra forma de contacto (pública)': {
-    ayuda: 'Esto lo ve CUALQUIERA. Tu teléfono va en el campo con candado, no aquí. ' +
-      'Si pones el contacto de otra persona, pídele permiso antes: quedará a la vista de todos.',
+    ayuda: 'Este campo sí es público. Tu teléfono va mejor en el campo con candado. ' +
+      'Y si vas a poner el contacto de otra persona, pídele permiso antes: lo verá cualquiera.',
+  },
+  // Las dos siguientes solo cambian el tono (12-ago-2026). Iban en mayúsculas
+  // —«tu BARRIO o VEREDA», «ESTO ES PÚBLICO»— y gritarle a alguien que está
+  // llenando un formulario con las manos temblando no lo hace leer mejor. El
+  // YAML ya lleva la versión suave para quien replique; en este despliegue las
+  // `instructions` viejas siguen vivas y se corrigen aquí, como en T-022.
+  'Ubicación (punto en el mapa)': {
+    ayuda: 'Marca tu barrio o tu vereda, no tu casa exacta. La dirección precisa va en el ' +
+      'siguiente campo, que es privado.',
+  },
+  'Punto de referencia comunitario': {
+    ayuda: 'La escuela, la cancha, la iglesia, el puente. Este campo es público, así que la ' +
+      'dirección de tu casa va mejor en el campo con candado.',
   },
 };
 

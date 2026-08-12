@@ -53,12 +53,16 @@ python scripts/aplicar_config.py --aplicar  # aplica y audita
 
 - **Nombre visible:** p. ej. «SOS Sismo Colombia — Ayuda ciudadana».
 - **Idioma:** español · **Zona horaria:** America/Bogota.
+
+> **⚠️ La zona horaria se descoloca sola.** Comprobado el 12-ago-2026: el despliegue estaba en **UTC** aunque el YAML dice `America/Bogota` desde el primer día, así que cada solicitud se fechaba con cinco horas de más. El `PUT` de la API **sí** la aplica —se probó y la guardó a la primera—, o sea que no es una rareza de la plataforma: se torció por el camino y **nadie se enteró porque la auditoría solo la imprimía**. Ahora falla (T-046, RF-12). Corre `python scripts/aplicar_config.py --solo-auditar` después de tocar Configuración en el panel.
+>
+> **⚠️ Nunca mandes un `PUT` parcial a `/api/v5/config/site`: vacía lo que no viaja en el cuerpo.** Un `PUT` con cuatro claves borró el **correo del sitio** —el canal público de borrado que promete RF-19— sin devolver ningún error. Es la misma trampa que `default_view` (ADR-009). `aplicar_config.py` ya reenvía el objeto completo y la auditoría avisa si el correo queda en blanco.
 - **Mapa por defecto:** centra cerca de lat `5.0`, lng `-76.2` con un zoom que abarque Chocó, Valle del Cauca, Risaralda, Quindío y Caldas.
 - **Publicación instantánea:** en Configuración, **desactiva la aprobación previa** de publicaciones («Require posts to be reviewed» o similar; el nombre exacto varía según versión — está en Settings → General o Surveys). Así todo sale al aire de inmediato y la verificación se marca con el campo del paso 4.
 - **Descripción del sitio** (pega este texto):
 
-> ⚠️ **¿Hay una vida en riesgo AHORA? Llama primero a la línea de emergencias 123.**
-> Esta plataforma es ciudadana y complementa a los organismos de socorro: publica aquí tu solicitud —o la de otra persona que no pueda hacerlo— para que la ayuda sepa dónde ir. **Tu teléfono y tu dirección exacta NUNCA son públicos**: solo los ven ayudantes verificados por el equipo. **Nunca te pediremos dinero, claves ni números de cuenta.** Es gratuito. Hay réplicas: si tu casa está dañada, no vuelvas a entrar. Sin internet, envía un SMS al 3148071191.
+> ⚠️ **¿Hay una vida en riesgo ahora? Llama primero a la línea de emergencias 123.**
+> Esta plataforma es ciudadana y complementa a los organismos de socorro: publica aquí tu solicitud —o la de otra persona que no pueda hacerlo— para que la ayuda sepa dónde ir. **Tu teléfono y tu dirección exacta nunca son públicos**: solo los ven ayudantes verificados por el equipo. **Nunca te pediremos dinero, claves ni números de cuenta.** Es gratuito. Sin internet, envía un SMS al 3148071191.
 
 ---
 
@@ -231,6 +235,7 @@ Con las intermitencias de datos reportadas en Chocó, Valle, Risaralda, Quindío
 - **Al cierre de la emergencia:** exporta un histórico anonimizado y elimina los datos de contacto de la plataforma.
 - Revoca de inmediato el rol a cualquier ayudante que incumpla las reglas.
 - **Peticiones de borrado:** llegan al correo de `NEXT_PUBLIC_CONTACTO`, publicado en `/privacidad`. Alguien tiene que leer ese buzón todos los días. Es un derecho (Ley 1581 de 2012), no un favor: si alguien pide que quitemos el nombre de su familiar, se quita.
+- **Dónde viven los datos:** `/privacidad` lo dice en dos frases y con fecha de verificación (RF-26). Sin nombres de proveedor ni citas legales: quien lee esa página acaba de perder su casa. El detalle —Irlanda (AWS eu-west-1), Vercel, tier `free` y por qué la transferencia es lícita— está en **ADR-024**, y lo que falta pedirle por escrito a Ushahidi (DPA, región confirmada, plazo real de borrado) es **T-047**. Si el alojamiento cambia, cambia también esa fecha.
 - **El sitio no se indexa** (`robots.txt` + cabecera `noindex`): el nombre de una persona desaparecida no debe quedar colgado en Google después de que aparezca. Si algún día se quiere indexar, esa decisión pasa por spec (P8) y no por un `robots.txt`.
 
 ### Antes de cada difusión: la auditoría del desconocido
@@ -240,6 +245,8 @@ python scripts/auditar_publico.py
 ```
 
 No pide credenciales a propósito: comprueba lo que ve **cualquiera**, que es lo que promete la portada. Si termina con «AUDITORÍA PÚBLICA FALLIDA», **no difundas el enlace** hasta arreglarlo. `aplicar_config.py --solo-auditar` no sustituye a esto: aquella entra como administrador y solo mira que las banderas estén bien puestas.
+
+Desde el 12-ago-2026 recorre **todas** las encuestas vivas que devuelve la API, no solo las del YAML, y falla ante cualquiera que no esté declarada: así apareció «Basic Post», la que Ushahidi crea de fábrica, viva y sin ocultar al autor (T-045). Lee también el final: cuando termina en verde puede añadir **«esta pasada NO ha comprobado…»**. Verde no quiere decir «todo probado», quiere decir «nada de lo que se pudo mirar está mal» — vuelve a auditar cuando entre la primera solicitud real y el primer SMS.
 
 ---
 

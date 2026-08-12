@@ -24,15 +24,22 @@ despliegue:
     autoencuadrar: false   # con 0 publicaciones el autoencuadre ignora el centro
   publicacion_instantanea: true   # RF-02: desactivar la aprobación previa
   ocultar_autor: true             # P2: el nombre de quien publica no se muestra
+  # RNF-06: la línea 123 va primero, antes que nada.
+  # OJO: dentro de un bloque « > » no existen los comentarios — un « # algo » al
+  # final de una línea es TEXTO y viaja a la descripción pública del despliegue.
+  # Pasó: la descripción vivió con un « # RNF-06 » pegado al final (corregido el
+  # 12-ago-2026). Los comentarios de este bloque van aquí arriba.
+  # El aviso «hay réplicas: si tu casa está dañada, no vuelvas a entrar» se retiró
+  # el 12-ago-2026: quien llega aquí ya sabe que tiembla, y advertirle sobre su
+  # propia casa desde una pantalla suena a regaño justo cuando viene a pedir ayuda.
   descripcion_publica: >
-    ⚠️ ¿Hay una vida en riesgo AHORA? Llama primero a la línea de emergencias
+    ⚠️ ¿Hay una vida en riesgo ahora? Llama primero a la línea de emergencias
     123. Esta plataforma es ciudadana y complementa a los organismos de
     socorro: publica aquí tu solicitud —o la de otra persona que no pueda
     hacerlo— para que la ayuda sepa dónde ir. Tu teléfono y tu dirección
-    exacta NUNCA son públicos: solo los ven ayudantes verificados por el
+    exacta nunca son públicos: solo los ven ayudantes verificados por el
     equipo. Nunca te pediremos dinero, claves ni números de cuenta. Es
-    gratuito. Hay réplicas: si tu casa está dañada, no vuelvas a entrar.
-    Sin internet, envía un SMS al 3148071191.   # RNF-06
+    gratuito. Sin internet, envía un SMS al 3148071191.
 
 # SIN EMOJI a propósito (ADR-007): Ushahidi valida los nombres de categoría y de
 # encuesta contra /^[\pL\pN\pP ]+$/u — letras, números, puntuación y espacios.
@@ -101,7 +108,12 @@ encuestas:
       - { etiqueta: "Urgencia", tipo: opcion_unica, opciones: ["🔴 CRÍTICA: vidas en riesgo ahora", "🟠 ALTA: necesito ayuda hoy", "🟡 MEDIA: puede esperar 1–2 días"], obligatorio: true, visibilidad: publico }
       - { etiqueta: "¿Cuántas personas necesitan ayuda?", tipo: numero, obligatorio: true, visibilidad: publico }
       - { etiqueta: "¿Hay personas vulnerables?", tipo: casillas, opciones: ["Bebés o niños", "Adultos mayores", "Heridos", "Personas con discapacidad", "Embarazo"], obligatorio: false, visibilidad: publico }
-      - { etiqueta: "Ubicación (punto en el mapa)", tipo: ubicacion, obligatorio: true, visibilidad: publico, ayuda: "Coloca el punto en tu BARRIO o VEREDA, no en tu casa exacta. La dirección precisa va en el siguiente campo y es privada." }
+      # OJO: el texto de ayuda de un campo ya creado NO se reconcilia (ADR-019 solo
+      # añade campos y opciones). Estos dos se suavizaron el 12-ago-2026 y en el
+      # despliegue vivo siguen los originales; el front los corrige con TEXTOS de
+      # `web/lib/ushahidi.ts`, igual que la etiqueta del correo en T-022. Lo de aquí
+      # es lo que se lleva quien replique desde cero.
+      - { etiqueta: "Ubicación (punto en el mapa)", tipo: ubicacion, obligatorio: true, visibilidad: publico, ayuda: "Marca tu barrio o tu vereda, no tu casa exacta. La dirección precisa va en el siguiente campo, que es privado." }
       - { etiqueta: "Municipio y departamento", tipo: texto_corto, obligatorio: true, visibilidad: publico, ayuda: "Ej.: San José del Palmar, Chocó." }
       - { etiqueta: "Dirección exacta y señas", tipo: texto_largo, obligatorio: true, visibilidad: protegido, ayuda: "Solo la verán ayudantes verificados por el equipo. Da señas claras: color de la casa, referencias, piso." }
       - { etiqueta: "Teléfono de contacto", tipo: texto_corto, obligatorio: false, visibilidad: protegido, ayuda: "Opcional. Solo lo verán ayudantes verificados por el equipo; si lo escribes, autorizas que te llamen." }  # ADR-004
@@ -122,7 +134,7 @@ encuestas:
       # acceso» (Ushahidi no tiene grupos de campos; ver Formulario.tsx).
       # ------------------------------------------------------------------
       - { etiqueta: "Cómo se llega", tipo: opcion_unica, opciones: ["Carretera", "Solo por río", "Solo a pie", "Necesita helicóptero", "No sé"], obligatorio: false, visibilidad: publico }
-      - { etiqueta: "Punto de referencia comunitario", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "La escuela, la cancha, la iglesia, el puente. ESTO ES PÚBLICO: no pongas la dirección de tu casa, que va en el campo con candado." }
+      - { etiqueta: "Punto de referencia comunitario", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "La escuela, la cancha, la iglesia, el puente. Este campo es público, así que la dirección de tu casa va mejor en el campo con candado." }
       - { etiqueta: "¿Hay dónde aterrizar cerca?", tipo: opcion_unica, opciones: ["Sí", "No", "No sé"], obligatorio: false, visibilidad: publico, ayuda: "Una cancha, un potrero plano o una vía ancha sin cables sirven." }
       - { etiqueta: "Tiempo desde el pueblo más cercano", tipo: texto_corto, obligatorio: false, visibilidad: publico, ayuda: "Ej.: 3 horas a pie desde Nóvita." }
       - { etiqueta: "¿La vía está bloqueada?", tipo: opcion_unica, opciones: ["Sí", "No", "No sé"], obligatorio: false, visibilidad: publico }
@@ -190,6 +202,21 @@ encuestas:
       - { etiqueta: "Estado del recurso", tipo: opcion_unica, opciones: ["🟢 Disponible", "🔵 Asignado", "⚪ Retirado"], defecto: "🟢 Disponible", obligatorio: true, visibilidad: publico, ayuda: "Lo actualiza el equipo al asignarlo. El front lo oculta y lo envía por código (ADR-011)." }
       - { etiqueta: "Nombre de contacto", tipo: texto_corto, obligatorio: true, visibilidad: protegido }
       - { etiqueta: "Teléfono", tipo: texto_corto, obligatorio: true, visibilidad: protegido, ayuda: "Solo lo verán el equipo y los ayudantes verificados, para coordinar la asignación." }
+
+# Encuestas que NO son nuestras pero existen en el despliegue (T-045, RF-20).
+# Se declaran aquí para que la auditoría pública distinga «encuesta vista y
+# consentida» de «encuesta que nadie ha revisado»: sin esta lista, cualquier
+# encuesta viva que no esté arriba hace fallar la auditoría, que es justo lo que
+# queremos. Borrarlas no es opción: se llevaría sus publicaciones por delante
+# (ADR-019), y durante la emergencia no se borra nada (RNF-04).
+encuestas_de_fabrica:
+  - nombre: "Basic Post"
+    # La trae Ushahidi al crear el despliegue. Comprobado el 12-ago-2026: aunque
+    # `aplicar_config.py` la deja en `disabled: true`, SIGUE saliendo en
+    # /api/v5/surveys para un anónimo, y venía con `hide_author: false` — la
+    # única del despliegue que no ocultaba al autor. Se le fuerza el ocultado.
+    motivo: "viene de fábrica con el despliegue; desactivada y fuera de uso"
+    ocultar_autor: true
 
 sms:
   fuente: SMSSync          # la fuente de datos de Ushahidi; la app del mismo nombre NO se usa (ADR-018)
