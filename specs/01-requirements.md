@@ -70,9 +70,11 @@
 
 ### RF-11 · Respaldo de datos (P2, P7)
 - EL EQUIPO DEBERÁ exportar los datos a CSV al menos 2 veces al día y guardarlos en dos ubicaciones **fuera de este repositorio**.
+- Las dos ubicaciones DEBERÁN estar **cifradas** y llevar una **caducidad declarada**, coherente con el cierre de la emergencia (P2). Cada respaldo es una copia completa con teléfonos y direcciones exactas fuera de Ushahidi: es la mayor superficie de fuga del sistema, y la única que depende solo de nosotros (ADR-024).
 
 ### RF-12 · Replicabilidad (P7)
 - Este repositorio DEBERÁ contener todo lo necesario (specs + guía + configuración) para que un tercero replique el despliegue en horas sin ayuda del equipo original.
+- CUANDO la plataforma acepte un ajuste del YAML y no lo aplique, la auditoría DEBERÁ **fallar**, no limitarse a imprimir el valor real. Un `PUT` que responde 200 y descarta el dato en silencio convierte el YAML en la descripción de un despliegue que no existe, y quien replique se lleva esa mentira entera.
 
 ### RF-13 · Validación de entrada y aviso de duplicados (P1, P2, P3)
 **Historia:** como Equipo, queremos que la cola llegue con datos utilizables, para no gastar rescates en solicitudes imposibles de atender.
@@ -139,6 +141,7 @@
 ### RF-20 · Se audita lo que ve un desconocido, no lo que ve el admin (P2, P8)
 **Historia:** como Equipo, antes de difundir el enlace quiero una comprobación de que la promesa de la portada es cierta, hecha como la haría cualquiera: sin cuenta.
 - DEBERÁ existir `scripts/auditar_publico.py`, **sin credenciales**, que compruebe contra la API pública: que ningún campo protegido llega con valor, que no viaja el contacto de quien reporta, que lo cerrado responde 401/403, que no se puede editar ni borrar publicaciones ajenas y que un anónimo no puede meterse en la colección de verificadas. Termina con código 1 si algo falla.
+- La auditoría DEBERÁ partir de **lo que devuelve la plataforma**, no de lo que declara el YAML: toda encuesta viva y visible que el YAML no declare DEBERÁ hacerla fallar. Una encuesta que nadie especificó es una que nadie ha revisado, y puede estar publicando justo lo que las demás ocultan.
 - NUNCA DEBERÁ imprimir el valor de un campo: una auditoría que vuelca teléfonos en la consola —y en los registros de CI— es la fuga que venía a buscar.
 - Mientras no exista ninguna publicación por SMS, la auditoría DEBERÁ advertir que **no ha probado el canal SMS**: el número del remitente viaja pegado a la publicación y eso hay que verificarlo con un SMS real antes de difundir el número.
 - La cara pública DEBERÁ servirse con cabeceras que acoten a dónde puede hablar el navegador (`connect-src`), impidan empotrar el sitio (`frame-ancestors`) y no filtren la URL de origen a los servidores de mapas (`Referrer-Policy`).
@@ -177,7 +180,18 @@
 - Búsqueda de familiares, vivienda dañada, donaciones e información oficial DEBERÁN tener salida contextual desde la página donde aparece la necesidad, no solo desde el centro.
 - Los canales de donación DEBERÁN **enlazarse, nunca transcribirse**. Ningún número de cuenta bancaria se copia a este sitio: un dígito mal copiado manda dinero al lugar equivocado, y refuerza que aquí nunca se toca dinero (RNF-03).
 - Cada dato de contacto DEBERÁ llevar su fuente y la fecha en que se verificó. Publicar un teléfono de emergencia equivocado en un desastre es un daño propio, no un error de copia.
+- **Ampliado el 12-ago-2026:** enlazar y no transcribir cubre **todo dato de contacto de una organización** —fijos, celulares, WhatsApp y correos—, no solo las cuentas bancarias. Un celular de coordinación cambia de manos en días, y aquí nadie está mirando cuándo caduca; la página de la organización la mantiene quien responde por ella. La fecha de verificación no arregla esto: solo certifica que el dato era bueno el día que lo copiamos.
+- **Excepción explícita: las líneas nacionales de tres dígitos** (123, 112, 132, 144, 119, 125, 111) se siguen escribiendo enteras y como enlace `tel:`. No caducan, RNF-06 las exige arriba de todo, y son lo único de este sitio que sirve con la pantalla en la mano: mandar a alguien a cargar una página web para poder marcar el 123 es exactamente el fallo que este requisito viene a evitar (P4).
 - `/busco-familiar` **sigue activo**: se encabeza con los canales oficiales, pero no se redirige. Mandar a la gente a un canal saturado y cerrarle el propio es peor que duplicar.
+
+### RF-26 · Se dice dónde viven los datos y quién más los toca (P2, P5, P7)
+**Historia:** como persona que va a escribir su dirección exacta, quiero saber en qué manos queda, y hoy la página de privacidad no lo dice.
+- `/privacidad` DEBERÁ decir, en castellano llano, que la plataforma **se apoya en servicios de otros**, que los datos se guardan en **servidores en Irlanda** y que la página llega desde **Estados Unidos**, dos sitios con leyes de protección de datos reconocidas en Colombia.
+- NO DEBERÁ nombrar a los proveedores ni citar la circular de la SIC: quien lee esa página acaba de perder su casa, no está auditando a un encargado (P5). El nombre de cada proveedor, la región exacta y la base jurídica viven en ADR-024, que es donde los busca quien los necesita.
+- DEBERÁ dejar claro **a quién se le reclama**. **Decidido el 12-ago-2026:** el punto de reclamación es el **correo del equipo**, sin nombre propio. La Ley 1581 de 2012 espera un responsable identificable y un buzón es menos que un nombre; a cambio, publicar el nombre de una persona en un repositorio público y en plena emergencia es un coste cierto por una mejora incierta. Si llega una reclamación formal, se identifica entonces. El correo DEBERÁ venir de configuración, nunca escrito a mano en la página (RF-19).
+- NO DEBERÁ convertirse en un consentimiento de doce párrafos (ADR-004, P5): dos frases claras, no una cláusula.
+- El dato de alojamiento DEBERÁ llevar **fecha de verificación**, como los teléfonos de emergencia (ADR-022): dónde vive un dato es un hecho que caduca.
+- **Comprobado el 12-ago-2026 sin credenciales:** `sos-sismo-colombia.api.ushahidi.io` resuelve a `ingress-default.bagheera.ush.systems` → **AWS eu-west-1 (Irlanda)**, y `www.sossismocolombia.com.co` lo sirve **Vercel** desde EE. UU. La **Circular Externa 005 de 2017** de la SIC lista a Irlanda y a Estados Unidos entre los países con nivel adecuado de protección, así que la transferencia internacional es lícita sin autorización especial: esto se cuenta, no se corrige (ADR-024).
 
 ## Backlog — Fase 2 (no bloquea el lanzamiento)
 

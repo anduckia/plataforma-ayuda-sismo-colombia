@@ -51,14 +51,16 @@ export default function Inicio() {
 
       {/*
         El pie era una lista de cuatro avisos sin relación entre sí. Se queda lo
-        que solo se puede decir aquí: qué es este sitio, y el riesgo de réplicas
-        —lo de la Cruz Roja ya encabeza «Busco a un familiar», que es donde le
-        sirve a quien lo necesita.
+        único que solo se puede decir aquí: qué es este sitio —lo de la Cruz Roja
+        ya encabeza «Busco a un familiar», que es donde le sirve a quien lo
+        necesita—. El aviso sobre las réplicas se retiró el 12-ago-2026: quien
+        abre esto ya sabe que tiembla, y advertirle sobre su propia casa desde
+        una pantalla suena a regaño justo cuando viene a pedir ayuda.
       */}
       <p className="pie">
         Somos una plataforma ciudadana: <strong>sumamos visibilidad a los organismos de
-        socorro, no los reemplazamos</strong>. Y hay réplicas: si tu casa quedó dañada, no
-        vuelvas a entrar. · <a href="/enlaces-oficiales">Todos los canales oficiales</a>
+        socorro, no los reemplazamos</strong>. · <a href="/enlaces-oficiales">Todos los
+        canales oficiales</a>
       </p>
     </>
   );

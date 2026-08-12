@@ -1,6 +1,6 @@
 import LineasEmergencia from '@/components/LineasEmergencia';
 import {
-  ADVERTENCIA, DEFENSA_CIVIL_CHOCO, DONACIONES, FAMILIARES, INFORMACION,
+  ADVERTENCIA, DONACIONES, FAMILIARES, INFORMACION,
   VERIFICADO, VIVIENDA, type Enlace,
 } from '@/lib/enlaces';
 
@@ -55,16 +55,12 @@ export default function EnlacesOficiales() {
 
       <LineasEmergencia />
 
-      <p className="campo__ayuda" style={{ marginTop: '-0.5rem' }}>
-        En el Chocó, la Defensa Civil también atiende en los celulares{' '}
-        {DEFENSA_CIVIL_CHOCO.map((c, i) => (
-          <span key={c}>
-            {i > 0 && ' y '}
-            <a href={`tel:${c.replace(/ /g, '')}`}><strong>{c}</strong></a>
-          </span>
-        ))}
-        .
-      </p>
+      {/*
+        Los dos celulares de la Defensa Civil del Chocó salieron el 12-ago-2026
+        (RF-25, ADR-022): un celular de coordinación cambia de manos en días y
+        nadie aquí lo va a ver caducar. El 144 es su línea nacional, no caduca,
+        y ya está en el bloque de arriba.
+      */}
 
       <Bloque
         id="familiares"

@@ -67,6 +67,10 @@ TIPOS = {
 # Los campos de imagen necesitan config, o el cliente falla al renderizarlos.
 CONFIG_IMAGEN = {"hasCaption": True, "maxUploadSize": 2}
 
+# Claves de /api/v5/config/site que la API calcula y no acepta de vuelta en el PUT.
+# El resto hay que reenviarlo entero: lo que no va en el cuerpo se vacía.
+SITIO_SOLO_LECTURA = {"allowed_privileges", "api_version", "id", "tier", "first_login"}
+
 # Ushahidi tiene UN solo nivel de privacidad por campo (response_private), que ven
 # quienes tengan el permiso «Manage Posts». No existe visibilidad por rol campo a
 # campo: la API acepta la clave `role` pero la descarta. Ver ADR-006 en 02-design.md.
@@ -186,7 +190,13 @@ def ajustes_generales(api: Api, cfg: dict, reg: Registro) -> None:
     }
     difs = {k: v for k, v in deseado.items() if sitio.get(k) != v}
     if difs:
-        api.put("/api/v5/config/site", deseado)
+        # El objeto COMPLETO, nunca solo las claves que cambian: /config/site se
+        # comporta como `default_view` (ADR-009) y vacía lo que no viaja en el
+        # cuerpo. Con un PUT de cuatro claves se perdía `email` —el canal público
+        # de supresión de RF-19, el que sale en /api/v5/config— en cada pasada.
+        # Comprobado el 12-ago-2026: quedó en "" y hubo que reponerlo.
+        cuerpo = {k: v for k, v in sitio.items() if k not in SITIO_SOLO_LECTURA}
+        api.put("/api/v5/config/site", {**cuerpo, **deseado})
         reg.hecho(f"Ajustes del sitio: {', '.join(difs)}")
     else:
         reg.igual("Ajustes del sitio ya correctos")
@@ -466,11 +476,25 @@ def encuestas(api: Api, cfg: dict, ids_cat: dict[str, int], reg: Registro, recre
             protegidos = sum(1 for f in cuerpo["tasks"][0]["fields"] if f["response_private"])
             reg.hecho(f"Encuesta «{nombre}»: {n_campos} campos ({protegidos} protegidos)")
 
-    # La encuesta de ejemplo que trae el despliegue no debe verse en producción.
-    ejemplo = existentes.get("Basic Post")
-    if ejemplo and not ejemplo.get("disabled"):
-        api.put(f"/api/v5/surveys/{ejemplo['id']}", {**ejemplo, "disabled": True})
-        reg.hecho("Encuesta de ejemplo «Basic Post» desactivada")
+    # Las encuestas que trae el despliegue de fábrica. Desactivarlas NO basta:
+    # comprobado el 12-ago-2026, «Basic Post» seguía saliendo en /api/v5/surveys
+    # para un anónimo con `disabled: true` y `hide_author: false` — la única del
+    # despliegue que no ocultaba al autor (T-045, P2). Borrarlas se lleva sus
+    # publicaciones por delante (ADR-019), así que se desactivan y se les fuerza
+    # el ocultado del autor. La auditoría pública las exige declaradas en el YAML.
+    for spec in (cfg.get("encuestas_de_fabrica") or []):
+        actual = existentes.get(spec["nombre"])
+        if not actual:
+            continue
+        quiere_ocultar = bool(spec.get("ocultar_autor", True))
+        if actual.get("disabled") and bool(actual.get("hide_author")) == quiere_ocultar:
+            reg.igual(f"Encuesta de fábrica «{spec['nombre']}» ya está desactivada y muda")
+            continue
+        # Objeto completo recién leído, nunca un parche (ADR-019, ADR-009).
+        vivo = api.get(f"/api/v5/surveys/{actual['id']}")["result"]
+        api.put(f"/api/v5/surveys/{actual['id']}",
+                {**vivo, "disabled": True, "hide_author": quiere_ocultar})
+        reg.hecho(f"Encuesta de fábrica «{spec['nombre']}»: desactivada y con el autor oculto")
 
 
 # --------------------------------------------------------------------------- auditoría
@@ -534,9 +558,35 @@ def auditar(api: Api, cfg: dict) -> int:
             fallos.append(f"falta la colección «{spec['nombre']}»: sin ella el mapa no "
                           f"puede marcar nada como verificado (RF-17, ADR-017)")
 
+    # T-046, RF-12: esto ANTES solo se imprimía, y por eso el despliegue estuvo
+    # con `timezone: UTC` mientras el YAML decía America/Bogota — cinco horas de
+    # desfase en la hora de cada solicitud, a la vista y sin que nadie fallara.
+    # Un ajuste que el YAML declara y el despliegue no tiene es un fallo: si no,
+    # el YAML describe un despliegue que no existe y quien replique se lo lleva.
+    desp = cfg["despliegue"]
     sitio = api.get("/api/v5/config/site")["result"]
+    esperado_sitio = {
+        "name": desp["nombre"],
+        "language": desp["idioma"],
+        "timezone": desp["zona_horaria"],
+        "description": " ".join(desp["descripcion_publica"].split()),
+    }
     print(f"\n  Sitio: «{sitio.get('name')}» · idioma {sitio.get('language')} · "
           f"zona {sitio.get('timezone')}")
+    for clave, quiero in esperado_sitio.items():
+        if sitio.get(clave) != quiero:
+            # La descripción es larga: se dice que difiere, no se vuelca entera.
+            detalle = ("difiere del YAML" if clave == "description"
+                       else f"es {sitio.get(clave)!r}, debería ser {quiero!r}")
+            print(f"    ✗ {clave}: {detalle}")
+            fallos.append(f"sitio → {clave} {detalle}")
+    # El correo del sitio sale en /api/v5/config, que es público: es el canal de
+    # supresión que promete RF-19. En blanco, la página de privacidad manda a
+    # escribir a un buzón que el despliegue no declara.
+    if not (sitio.get("email") or "").strip():
+        print("    ✗ el sitio no declara correo de contacto")
+        fallos.append("el sitio no declara correo de contacto: RF-19 promete un canal "
+                      "de borrado que aquí no consta")
 
     # El mapa se resetea solo ante PUT parciales; comprobarlo evita difundir un
     # enlace con el mapa apuntando a otro continente (ADR-009).
