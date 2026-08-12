@@ -9,6 +9,7 @@ export const metadata = {
   description:
     'Líneas de emergencia, búsqueda de familiares por la Cruz Roja, reporte de vivienda ' +
     'dañada, donaciones e información oficial tras el sismo. Enlaces directos, verificados.',
+  alternates: { canonical: '/enlaces-oficiales' },
 };
 
 function Bloque({

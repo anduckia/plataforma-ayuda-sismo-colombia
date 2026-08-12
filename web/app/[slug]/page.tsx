@@ -13,7 +13,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const f = FORMULARIOS[slug as Slug];
   // RF-15: cada página con su propia descripción. Compartiendo las cuatro URLs
   // por WhatsApp, todas se veían antes con el resumen de «Pido ayuda».
-  return f ? { title: `${f.titulo} — SOS Sismo Colombia`, description: f.meta } : {};
+  // ADR-023: canonical propio también — sin esto, las cuatro heredaban el
+  // `canonical: '/'` de layout.tsx y Google las veía como la misma página.
+  return f
+    ? {
+      title: `${f.titulo} — SOS Sismo Colombia`,
+      description: f.meta,
+      alternates: { canonical: `/${slug}` },
+    }
+    : {};
 }
 
 /**
