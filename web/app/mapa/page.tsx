@@ -11,6 +11,9 @@ export const metadata = {
   description:
     'Mapa de las solicitudes de ayuda y las búsquedas de familiares publicadas tras el ' +
     'sismo. El color indica la urgencia. Los teléfonos y las direcciones exactas no aparecen.',
+  // RF-19: la única página que se queda fuera de la indexación selectiva.
+  // Lleva nombres y ubicaciones de personas reales (ver app/robots.ts).
+  robots: { index: false, follow: false },
 };
 
 /**

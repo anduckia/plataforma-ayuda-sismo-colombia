@@ -54,8 +54,6 @@ const CABECERAS = [
     key: 'Permissions-Policy',
     value: 'geolocation=(self), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()',
   },
-  // El buscador que ignore robots.txt se topa además con esto.
-  { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
 ];
 
 const nextConfig = {
@@ -66,7 +64,13 @@ const nextConfig = {
   // Ni versión ni pistas de qué corre detrás.
   poweredByHeader: false,
   async headers() {
-    return [{ source: '/:ruta*', headers: CABECERAS }];
+    return [
+      { source: '/:ruta*', headers: CABECERAS },
+      // RF-19: /mapa lleva datos de personas reales (nombres, ubicaciones) y
+      // no debe indexarse aunque un rastreador ignore robots.txt. El resto
+      // del sitio sí se abre a buscadores (ver app/robots.ts).
+      { source: '/mapa', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
+    ];
   },
 };
 

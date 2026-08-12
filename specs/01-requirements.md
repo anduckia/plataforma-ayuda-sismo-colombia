@@ -131,6 +131,7 @@
 ### RF-19 · Derechos sobre lo publicado (P2)
 **Historia:** como persona que publicó a su hermana desaparecida y ya la encontró, quiero que su nombre deje de estar en internet, y hasta ahora no tenía ni a quién escribirle.
 - El sitio DEBERÁ pedir a los buscadores que no lo indexen, por `robots.txt` **y** por cabecera en cada página. Se difunde por WhatsApp, radio y SMS; ninguno necesita a Google, y una huella indexada no la borra retirar la publicación.
+- **Alcance revisado (ADR-023):** el bloqueo se aplica a `/mapa`, donde se publican los reportes con nombres y ubicaciones reales. El resto del sitio (inicio, los formularios vacíos, enlaces oficiales, privacidad) se abre a indexación porque no muestra ningún dato ya enviado por nadie, y así le sirve a quien busca «ayuda sismo Colombia» sin conocer aún el enlace.
 - DEBERÁ existir una página `/privacidad`, enlazada desde todas las páginas, que diga en castellano llano qué se ve, qué no, cuánto dura y **a qué correo se escribe para corregir o borrar** (Ley 1581 de 2012).
 - El canal de contacto DEBERÁ venir de configuración, y mostrar un marcador evidente mientras no esté puesto, para que no pase por bueno un canal que no existe.
 - La ayuda del campo «Otra forma de contacto (pública)» DEBERÁ dejar de invitar a publicar el teléfono de un tercero sin permiso.
