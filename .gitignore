@@ -14,6 +14,9 @@ datos/
 .env
 .env.*
 
+# vscode
+.vscode
+
 # Archivos basura del sistema operativo
 .DS_Store
 Thumbs.db
