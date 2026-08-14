@@ -123,7 +123,7 @@ Móvil primero. Todo lo que sigue describe la vista de 360–430 px; el escritor
 
 | # | Bloque | Nota |
 |---|---|---|
-| 1 | **Aviso de la línea 123** | Sin cambios (RNF-06). Va antes que nada, en todas las páginas. |
+| 1 | **Banda de «¿este enlace es tuyo?»** | Cambiado el 14-ago-2026: era el aviso de la línea 123. Ver RNF-06 revisado — el 123 se conserva en las URLs retiradas de los formularios, no en el directorio. |
 | 2 | Barra con el nombre del sitio | El nombre cambia (§6). |
 | 3 | H1 + una frase de qué es y qué no es | |
 | 4 | **Estado del directorio** | Inventario honesto: cuántas fuentes, cuándo se revisaron, cuántas llevan demasiado. |
@@ -261,7 +261,7 @@ Recomendación: **2 para lanzar, 1 o 3 cuando haya evidencia de que la gente lle
 
 ## 8. Lo que no cambia
 
-- El aviso del 123 arriba, en todas las páginas, antes que cualquier otra cosa (RNF-06).
+- La subordinación a los organismos de socorro, declarada en el pie de todas las páginas (RNF-06). *El aviso del 123 en la cabecera sí cambió el 14-ago-2026: ver RNF-06 revisado.*
 - Ningún dato personal de particulares en la página (P2).
 - La plataforma no pide, recibe ni gestiona dinero, y lo declara (P6).
 - Español claro, sin tecnicismos (P5).

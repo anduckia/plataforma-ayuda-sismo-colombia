@@ -48,13 +48,12 @@
     borde del índice, nunca en el texto: dos de los siete no llegan a 4,5:1
     sobre blanco, y como elemento no textual el umbral es 3:1, que todos pasan.
   */
-  --tema-albergues: #0B6244;
-  --tema-humanitaria: #C1121F;
-  --tema-personas: #23479B;
   --tema-voluntariado: #7A4E00;
+  --tema-donaciones: #0B6244;
+  --tema-documenta: #0F5C6B;
+  --tema-ayuda: #C1121F;
   --tema-vias: #D9541A;
   --tema-oficial: #3A4A5B;
-  --tema-documenta: #0F5C6B;
 }
 
 * { box-sizing: border-box; }
@@ -95,9 +94,9 @@ body {
 }
 
 /*
-  RNF-06 · La línea 123 va antes que todo lo demás, en rojo de urgencia y con
-  el número como área táctil: es la única acción de esta página que puede
-  salvar a alguien en los próximos minutos. No se cierra ni se desplaza.
+  RNF-06 · La línea 123, en rojo de urgencia y con el número como área táctil.
+  Sigue viva en las URLs retiradas de los formularios (`Retirado`), que es
+  donde llega gente esperando pedir auxilio. No se cierra ni se desplaza.
 */
 .linea123 {
   margin: 0;
@@ -110,6 +109,31 @@ body {
 }
 
 .linea123 a { color: #fff; text-underline-offset: 3px; text-decoration-thickness: 2px; }
+
+/*
+  La banda de cabecera del directorio (RNF-06 revisado el 14-ago-2026).
+  Aquí se listan sitios de otra gente sin pedirles permiso, así que la puerta
+  para corregir o salirse va arriba, donde la ve el dueño del enlace y no solo
+  quien llega hasta el pie.
+
+  Naranja pálido con la raya de `--alta` encima: se ve que es un aviso y no
+  parte del contenido, sin gritar. El relleno NO va en naranja pleno a
+  propósito — el rojo y el naranja saturados son los de urgencia (`--critica`,
+  `--alta`) y esto no es una urgencia. El texto va en tinta plena sobre el
+  pálido, así que el contraste se mantiene alto.
+*/
+.aviso-enlaces {
+  margin: 0;
+  padding: var(--e2) var(--e4);
+  background: #FDEDE1;
+  border-bottom: 2px solid var(--alta);
+  color: var(--tinta);
+  font-size: var(--t-meta);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.aviso-enlaces a { color: var(--tinta); text-underline-offset: 3px; }
 
 h1 {
   font-size: clamp(1.75rem, 1.3rem + 2.2vw, 2.5rem);
@@ -172,7 +196,14 @@ p { margin: 0 0 var(--e4); }
   justify-content: center;
   min-height: var(--alto-control);
   padding: var(--e2) var(--e3);
-  border: 2px solid var(--tinta);
+  /*
+    El botón entero va en el color de su tema, no solo la pestaña izquierda:
+    con el borde negro alrededor, el color quedaba reducido a una viruta y el
+    índice se leía como siete botones iguales. El TEXTO sigue en tinta
+    (ADR-028): el borde es elemento no textual y le basta 3:1, que los siete
+    colores pasan; como texto, dos de ellos no llegan a 4,5:1 sobre blanco.
+  */
+  border: 2px solid var(--linea);
   border-left-width: 8px;
   border-radius: var(--radio);
   color: var(--tinta);
@@ -186,13 +217,17 @@ p { margin: 0 0 var(--e4); }
 .indice__conteo { font-size: var(--t-min); font-weight: 600; color: var(--tinta-suave); margin-top: 2px; }
 .indice__conteo--cero { color: var(--alta); }
 
-.i-albergues    { border-left-color: var(--tema-albergues); }
-.i-humanitaria  { border-left-color: var(--tema-humanitaria); }
-.i-personas     { border-left-color: var(--tema-personas); }
-.i-voluntariado { border-left-color: var(--tema-voluntariado); }
-.i-vias         { border-left-color: var(--tema-vias); }
-.i-oficial      { border-left-color: var(--tema-oficial); }
-.i-documenta    { border-left-color: var(--tema-documenta); }
+/*
+  El `a` de estos selectores NO sobra: `.indice a` ya fija `border`, y sin él
+  estas reglas pierden por especificidad y los siete botones salen del color
+  por defecto. Es como estuvo hasta el 14-ago-2026.
+*/
+.indice a.i-voluntariado { border-color: var(--tema-voluntariado); }
+.indice a.i-donaciones   { border-color: var(--tema-donaciones); }
+.indice a.i-documenta    { border-color: var(--tema-documenta); }
+.indice a.i-ayuda        { border-color: var(--tema-ayuda); }
+.indice a.i-vias         { border-color: var(--tema-vias); }
+.indice a.i-oficial      { border-color: var(--tema-oficial); }
 
 /* --------------------------------------------- sección: el color vive aquí */
 
@@ -204,13 +239,12 @@ p { margin: 0 0 var(--e4); }
   margin-bottom: var(--e6);
 }
 
-.s-albergues .seccion__cabecera    { border-top-color: var(--tema-albergues); }
-.s-humanitaria .seccion__cabecera  { border-top-color: var(--tema-humanitaria); }
-.s-personas .seccion__cabecera     { border-top-color: var(--tema-personas); }
 .s-voluntariado .seccion__cabecera { border-top-color: var(--tema-voluntariado); }
+.s-donaciones .seccion__cabecera   { border-top-color: var(--tema-donaciones); }
+.s-documenta .seccion__cabecera    { border-top-color: var(--tema-documenta); }
+.s-ayuda .seccion__cabecera        { border-top-color: var(--tema-ayuda); }
 .s-vias .seccion__cabecera         { border-top-color: var(--tema-vias); }
 .s-oficial .seccion__cabecera      { border-top-color: var(--tema-oficial); }
-.s-documenta .seccion__cabecera    { border-top-color: var(--tema-documenta); }
 
 /* Encabezado en tinta, nunca en el color del tema (ADR-028). */
 .seccion h2 {

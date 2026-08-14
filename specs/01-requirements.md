@@ -85,7 +85,9 @@
 - **RNF-03 Anti-fraude:** el sitio declara visiblemente que nunca se pide dinero ni datos bancarios (P6).
 - **RNF-04 Auditabilidad:** nada se borra durante la emergencia; lo inválido se archiva.
 - **RNF-05 Costo:** operación en $0/mes durante la Fase 1 (plan Basic + SIM local con SMS).
-- **RNF-06 Subordinación a los canales oficiales:** toda cara pública DEBERÁ abrir con «⚠️ ¿Vida en riesgo AHORA? Llama al 123» —arriba, antes de los formularios— y presentarse como complemento de los organismos de socorro, nunca como sustituto.
+- **RNF-06 Subordinación a los canales oficiales:** toda cara pública DEBERÁ presentarse como complemento de los organismos de socorro, nunca como sustituto. **Toda página que reciba o invite a enviar una solicitud** DEBERÁ además abrir con «⚠️ ¿Vida en riesgo AHORA? Llama al 123», arriba y antes del formulario.
+  - *Revisado el 14-ago-2026, por decisión del equipo.* Hasta esa fecha el aviso iba en la cabecera de **todas** las páginas. Con la recepción de registros retirada (RF-37), en el directorio no queda ningún sitio donde alguien en peligro se quede escribiendo, y la cabecera pasó a llevar la vía de contacto de quien está listado en el directorio. El aviso de la 123 se conserva **sin cambios** en las URLs retiradas de los formularios, que es donde sigue llegando gente desde WhatsApp y radio esperando pedir auxilio, y el pie de todas las páginas mantiene la subordinación a los organismos de socorro.
+  - **Consecuencia asumida:** quien entra directo al directorio ya no ve el número 123 en pantalla. Se acepta porque el directorio no promete auxilio en ninguna parte de su texto; si el producto vuelve a recibir solicitudes, el aviso vuelve a la cabecera.
 
 ### RF-14 · Mapa de recursos ofrecidos (P1)
 **Historia:** como Equipo, queremos ver en el mismo mapa quién ofrece maquinaria, energía, iluminación o transporte y dónde, para cruzar necesidad↔recurso sin cadenas de WhatsApp.

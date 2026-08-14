@@ -53,20 +53,28 @@ export default function Directorio() {
 
   const porTema = (tema: TemaId) => validas.filter((f) => f.tema === tema);
   const inventario = resumenDelInventario(validas.map((f) => f.revisado), hoy);
-  const temasVacios = TEMAS.filter((t) => porTema(t.id).length === 0).length;
 
   return (
     <>
-      <h1>Dónde está cada cosa</h1>
+      <h1>¿Dónde está cada cosa?</h1>
+      {/*
+        Una frase, solo qué es la página. Lo demás que llegó a estar aquí —que
+        no pedimos dinero, que cada ficha lleva fecha— vive donde no compite con
+        el índice: en el pie y en la ficha misma.
+      */}
       <p className="entradilla">
-        Un directorio de fuentes sobre el sismo: albergues, ayuda, búsqueda de personas,
-        voluntariado y canales oficiales. No recogemos datos ni pedimos dinero: te llevamos
-        al sitio correcto y te decimos cuándo lo revisamos por última vez.
+        Un directorio de los sitios que están ayudando tras el sismo.
       </p>
 
       {/*
-        La promesa, antes del índice. Quien no lea nada más, lee esto: promete
-        lo revisado, no «todo», y nombra sus propios huecos (RF-34, RF-35).
+        La promesa, antes del índice: promete lo revisado, no «todo» (RF-34).
+
+        Se retiró el 14-ago-2026 el conteo de temas sin fuentes: no hacía falta
+        anunciarlo arriba porque la sección vacía se pinta igual, más abajo, con
+        su nombre y su nota (RF-35). Lo demás se queda — la antigüedad de la
+        revisión es la señal de confianza de este directorio, y el aviso de
+        fichas vencidas es la única parte que dice algo malo de nosotros, que es
+        justo lo que RF-34 pide que no se esconda.
       */}
       <section className="estado" aria-label="Estado del directorio">
         {inventario.total === 0 ? (
@@ -91,12 +99,6 @@ export default function Directorio() {
                 {plural(inventario.vencidas, 'fuente lleva', 'fuentes llevan')} más de una
                 semana sin revisar. {inventario.vencidas === 1 ? 'Está marcada' : 'Están marcadas'}
                 {' '}en su ficha.
-              </p>
-            )}
-            {temasVacios > 0 && (
-              <p className="estado__detalle estado__falta">
-                Hay {plural(temasVacios, 'tema', 'temas')} donde todavía no tenemos ninguna
-                fuente. {temasVacios === 1 ? 'Está' : 'Están'} abajo, con su nombre.
               </p>
             )}
           </>
@@ -169,6 +171,16 @@ export default function Directorio() {
         <p>
           Escríbenos y la revisamos. No publicamos ofertas de particulares ni datos de
           contacto de personas: solo fuentes que se mantienen en el tiempo.
+        </p>
+        {/*
+          Aquí se listan sitios de otra gente sin pedirles permiso, que es lo
+          correcto para un directorio pero deja una puerta que hay que abrir:
+          quien está en la lista tiene que poder corregir lo que decimos de él
+          —o salirse— sin buscar a nadie.
+        */}
+        <p>
+          ¿Alguno de estos enlaces es tuyo, o debería estar y no está? Escríbenos: te
+          corregimos lo que digamos de él, o lo sacamos.
         </p>
         <div className="aportar__vias">
           <a className="aportar__via" href={`mailto:${CONTACTO}`}>

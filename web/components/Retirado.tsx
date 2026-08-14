@@ -18,8 +18,9 @@ export default function Retirado({ que }: { que: string }) {
         <p className="aviso__titulo">Este sitio cambió</p>
         <p>
           Dejamos de recibir solicitudes. Ahora esto es un <strong>directorio</strong>:
-          una lista de dónde encontrar albergues, ayuda, búsqueda de personas,
-          voluntariado y canales oficiales, con la fecha en que revisamos cada uno.
+          una lista de dónde encontrar voluntariado, centros de acopio, donaciones,
+          búsqueda de personas, vías y canales oficiales, con la fecha en que revisamos
+          cada uno.
         </p>
         <p>
           Si necesitas ayuda, en el directorio están los sitios que sí la reciben.

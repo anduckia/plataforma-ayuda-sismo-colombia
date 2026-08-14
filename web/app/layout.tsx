@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from 'next';
+import { CONTACTO } from '@/lib/contacto';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: 'SOS Sismo Colombia — dónde está cada cosa',
   description:
-    'Directorio de fuentes sobre el sismo: albergues, ayuda humanitaria, búsqueda de ' +
-    'personas, voluntariado, vías y canales oficiales. Cada fuente dice quién la hace y ' +
+    'Directorio de fuentes sobre el sismo: voluntariado, centros de acopio, donaciones, ' +
+    'búsqueda de personas, vías y canales oficiales. Cada fuente dice quién la hace y ' +
     'cuándo se revisó por última vez.',
   /*
     T-067 · Sigue pidiendo no indexar, y es a propósito.
@@ -36,14 +37,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         {/*
-          RNF-06: va antes que cualquier otra cosa y en todas las páginas.
-          Esta plataforma complementa a los organismos de socorro; quien tiene
-          una vida en riesgo delante no debería estar leyendo un directorio.
-          El número es un enlace `tel:` para que se marque de un toque.
+          Decisión del equipo del 14-ago-2026: la banda de cabecera deja de ser
+          el aviso de la 123 y pasa a ser la puerta de quien está listado. El
+          producto ya no recibe solicitudes —no hay formulario donde alguien en
+          peligro se quede escribiendo— y sí publica los enlaces de terceros,
+          que es la deuda que quedaba sin dirección visible.
+
+          El aviso de la 123 NO desaparece del sitio: sigue en las URLs
+          retiradas de los formularios (`components/Retirado`), que es donde
+          llega quien viene de WhatsApp o de la radio esperando pedir auxilio.
+          RNF-06 quedó actualizado en `specs/01-requirements.md` para que diga
+          esto y no lo que la página hacía antes (P8).
         */}
-        <p className="linea123">
-          ¿Hay una vida en riesgo <strong>ahora</strong>? Llama primero a{' '}
-          <a href="tel:123">la línea de emergencias <strong>123</strong></a>.
+        <p className="aviso-enlaces">
+          ¿Alguno de estos enlaces es tuyo, o quieres aparecer? Escríbenos a{' '}
+          <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a>.
         </p>
         <main id="principal" className="envoltura">{children}</main>
         <footer className="envoltura pie">
@@ -58,7 +66,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <strong>No pedimos, no recibimos y no manejamos dinero.</strong> Si alguien te
             lo pide en nombre de este sitio, es un fraude.
           </p>
-          <p>Hay réplicas: si tu casa está dañada, no vuelvas a entrar.</p>
+          {/*
+            Aquí iba «Hay réplicas: si tu casa está dañada, no vuelvas a entrar».
+            Retirada el 14-ago-2026 por decisión del equipo. Era consejo de
+            seguridad de fase aguda y este sitio ya no da consejo: enlaza a
+            quien lo da. Lo equivalente vive ahora en la ficha de la Defensoría
+            («qué hacer y qué no») y en la de evaluación estructural, que es la
+            que de verdad puede decirle a alguien si su casa se puede habitar.
+          */}
           <p><a href="/privacidad">Privacidad</a></p>
         </footer>
       </body>

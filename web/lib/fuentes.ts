@@ -9,30 +9,31 @@
 /* ─────────────────────────────────────────────────────────────── temas ── */
 
 /**
- * Las siete secciones, en el orden en que se pintan.
+ * Las seis secciones, en el orden en que se pintan.
  *
- * El orden responde a la urgencia de quien lee, no al volumen de fuentes:
- * dormir y comer van antes que entender qué pasó.
+ * El orden lo fija el equipo y responde a lo que la gente está buscando de
+ * verdad estos días: dónde está la ayuda primero, entender qué pasó al final.
+ * Poner las manos y poner plata son cosas distintas y van separadas, porque
+ * quien puede ir a cargar bultos no es quien puede transferir.
  *
- * `corto` es la etiqueta del índice: «Ayuda humanitaria (agua, comida, aseo,
- * salud)» en una rejilla de dos columnas a 375 px ocupa cuatro renglones.
+ * `corto` es la etiqueta del índice: en una rejilla de dos columnas a 375 px,
+ * cualquier nombre de más de dos palabras ya ocupa tres renglones.
  */
 export const TEMAS = [
-  { id: 'albergues', nombre: 'Albergues y dónde dormir', corto: 'Albergues' },
   {
-    id: 'humanitaria',
-    nombre: 'Ayuda humanitaria: agua, comida, aseo, salud',
-    corto: 'Ayuda humanitaria',
+    id: 'voluntariado',
+    nombre: 'Voluntariado y centros de acopio',
+    corto: 'Voluntariado',
   },
-  { id: 'personas', nombre: 'Búsqueda de personas', corto: 'Buscar personas' },
-  { id: 'voluntariado', nombre: 'Voluntariado y cómo ayudar', corto: 'Voluntariado' },
-  { id: 'vias', nombre: 'Vías, transporte y acceso', corto: 'Vías y transporte' },
-  { id: 'oficial', nombre: 'Información oficial y qué pasó', corto: 'Info oficial' },
+  { id: 'donaciones', nombre: 'Donaciones', corto: 'Donaciones' },
   {
     id: 'documenta',
     nombre: 'Quién está documentando la emergencia',
     corto: 'Quién documenta',
   },
+  { id: 'ayuda', nombre: 'Links de ayuda', corto: 'Links de ayuda' },
+  { id: 'vias', nombre: 'Vías, transporte y acceso', corto: 'Vías y transporte' },
+  { id: 'oficial', nombre: 'Información oficial y qué pasó', corto: 'Info oficial' },
 ] as const;
 
 export type TemaId = (typeof TEMAS)[number]['id'];
