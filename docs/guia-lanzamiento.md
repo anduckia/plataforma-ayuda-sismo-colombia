@@ -199,7 +199,7 @@ Con las intermitencias de datos reportadas en Chocó, Valle, Risaralda, Quindío
 - **Al cierre de la emergencia:** exporta un histórico anonimizado y elimina los datos de contacto de la plataforma.
 - Revoca de inmediato el rol a cualquier ayudante que incumpla las reglas.
 - **Peticiones de borrado:** llegan al correo de `NEXT_PUBLIC_CONTACTO`, publicado en `/privacidad`. Alguien tiene que leer ese buzón todos los días. Es un derecho (Ley 1581 de 2012), no un favor: si alguien pide que quitemos el nombre de su familiar, se quita.
-- **El sitio no se indexa** (`robots.txt` + cabecera `noindex`): el nombre de una persona desaparecida no debe quedar colgado en Google después de que aparezca. Si algún día se quiere indexar, esa decisión pasa por spec (P8) y no por un `robots.txt`.
+- **El sitio se indexa desde el 14-ago-2026** (RF-38). Estuvo fuera de los buscadores mientras hubo mapa: el nombre de una persona desaparecida no debe quedar colgado en Google después de que aparezca. Retirados el mapa y los formularios, lo que se sirve son organizaciones, y un directorio que nadie encuentra no ayuda a nadie. **La condición se mantiene en pie: si el sitio vuelve a servir un dato de una persona identificable, se cierra la indexación ANTES de publicarlo.** Esa decisión pasa por spec (P8) y no por un `robots.txt`.
 
 ### Antes de cada difusión: la auditoría del desconocido
 
@@ -244,7 +244,9 @@ La plataforma (Ushahidi) ya es software libre. Nuestro aporte abierto es **esta 
 - [x] Colección «Verificadas por el equipo» creada; la insignia del mapa sale de ahí y no del campo (ADR-017)
 - [x] Comprobado que un anónimo **no** puede auto-verificarse, ni editar o borrar publicaciones ajenas
 - [x] `scripts/auditar_publico.py` en verde
-- [x] Sitio fuera de los buscadores y página `/privacidad` con canal de borrado
+- [x] ~~Sitio fuera de los buscadores~~ y página `/privacidad` con canal de borrado — el bloqueo se levantó el 14-ago-2026 con la condición de RF-38 confirmada
+- [ ] **Sitio dado de alta en Google Search Console, sitemap enviado** (T-071) — estuvo bloqueado meses; sin pedirlo, el rastreador tarda semanas en volver
+- [ ] **Vista previa del enlace comprobada en un WhatsApp real** (T-072) — WhatsApp cachea la tarjeta durante días, incluida la rota
 - [ ] **`NEXT_PUBLIC_CONTACTO` configurado en Vercel** — sin esto, `/privacidad` enseña un marcador y el canal de borrado no existe
 - [ ] **Pasada humana por el navegador** (llenar el formulario como un afectado)
 - [ ] Búsquedas guardadas de verificación (T-008 — se crean desde la interfaz)

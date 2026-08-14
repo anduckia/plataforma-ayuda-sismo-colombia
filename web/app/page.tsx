@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import Ficha from '@/components/Ficha';
 import { CONTACTO, MENSAJES_DIRECTOS } from '@/lib/contacto';
+import { DESCRIPCION, SITIO } from '@/lib/sitio';
 import { FUENTES, VACIOS } from '@/lib/fuentes-datos';
-import { revisar, TEMAS, type TemaId } from '@/lib/fuentes';
+import { destinoDe, revisar, TEMAS, type Fuente, type TemaId } from '@/lib/fuentes';
 import { haceCuanto, hoyEnBogota, resumenDelInventario } from '@/lib/fecha';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { url: '/' },
+};
 
 /**
  * Media hora. Los datos son estáticos, pero la ANTIGÜEDAD de cada revisión se
@@ -41,6 +48,48 @@ function SinFichas({ tema }: { tema: TemaId }) {
   );
 }
 
+/**
+ * El directorio en el formato que leen las máquinas (RF-38).
+ *
+ * Un `ItemList` describe exactamente lo que la página ya enseña: una lista
+ * ordenada de organizaciones, cada una con quién es y a dónde lleva. No añade
+ * ni una afirmación que no esté en pantalla —eso es lo que separa el marcado
+ * legítimo del que hace que te penalicen— y le ahorra al buscador tener que
+ * adivinar que estas treinta fichas son un directorio y no un blog.
+ *
+ * `nofollow` en los enlaces no contradice esto: aquel dice «no repartas
+ * reputación», este dice «esto es una lista de organizaciones». Cosas distintas.
+ */
+function datosDelDirectorio(fuentes: Fuente[], revisadoMax: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${SITIO}/#directorio`,
+    url: `${SITIO}/`,
+    name: 'Directorio de ayuda tras el sismo en Colombia',
+    description: DESCRIPCION,
+    inLanguage: 'es-CO',
+    isPartOf: { '@id': `${SITIO}/#sitio` },
+    dateModified: revisadoMax,
+    about: TEMAS.map((t) => ({ '@type': 'Thing', name: t.nombre })),
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: fuentes.length,
+      itemListElement: fuentes.map((f, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Organization',
+          name: f.quien,
+          url: destinoDe(f.principal).href,
+          description: f.que,
+          ...(f.zona ? { areaServed: f.zona } : {}),
+        },
+      })),
+    },
+  };
+}
+
 export default function Directorio() {
   const hoy = hoyEnBogota();
   const { validas, descartadas } = revisar(FUENTES, hoy);
@@ -54,16 +103,36 @@ export default function Directorio() {
   const porTema = (tema: TemaId) => validas.filter((f) => f.tema === tema);
   const inventario = resumenDelInventario(validas.map((f) => f.revisado), hoy);
 
+  // La más reciente de todas: es la fecha en que este directorio cambió de
+  // verdad, y la única que se puede afirmar sin mentir (ver `sitemap.ts`).
+  const revisadoMax = validas.reduce(
+    (max, f) => (f.revisado > max ? f.revisado : max),
+    '1970-01-01',
+  );
+
   return (
     <>
-      <h1>¿Dónde está cada cosa?</h1>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(datosDelDirectorio(validas, revisadoMax)),
+        }}
+      />
+      {/*
+        «tras el sismo» se añadió el 14-ago-2026 con la indexación (RF-38). El
+        H1 anterior —«¿Dónde está cada cosa?»— funciona para quien ya llegó,
+        pero es la señal más fuerte que lee un buscador y no contenía ni una de
+        las palabras que la gente escribe. Tres palabras arreglan eso sin tocar
+        la voz de la página, que sigue siendo una pregunta.
+      */}
+      <h1>¿Dónde está cada cosa tras el sismo?</h1>
       {/*
         Una frase, solo qué es la página. Lo demás que llegó a estar aquí —que
         no pedimos dinero, que cada ficha lleva fecha— vive donde no compite con
         el índice: en el pie y en la ficha misma.
       */}
       <p className="entradilla">
-        Un directorio de los sitios que están ayudando tras el sismo.
+        Un directorio de los sitios que están ayudando tras el sismo en Colombia.
       </p>
 
       {/*

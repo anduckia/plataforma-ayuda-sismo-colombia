@@ -3,6 +3,8 @@
 **Para emisoras y megáfonos: léanlo al aire tal cual, y repítanlo cada hora.**
 Funciona sin electricidad, sin internet y sin aplicaciones. (P4 · RF-10 · T-021)
 
+> ⚠️ **NO LEER AL AIRE SIN REVISAR (14-ago-2026).** Dos párrafos de este guion mandan a formularios que ya no existen: RF-37 retiró la recepción de solicitudes y el registro de recursos, y el sitio es ahora un directorio. El dominio quedó actualizado, pero **las instrucciones no**: quien siga «repórtala aquí» o «regístralas en Ofrezco recursos» llegará a una página que le dice que eso se retiró. Reescribir el guion es decisión del equipo, no del despliegue (T-075).
+
 ## Si estás atrapado
 
 Golpea **3 veces seguidas** un tubo o una pared, descansa y repite. Silba si puedes. No grites todo el tiempo: guarda aire y cúbrete boca y nariz del polvo. Si tienes celular: llama al **123**; después usa **SMS** — gasta menos batería y sale con poca señal. Brillo al mínimo y modo avión entre mensajes.
@@ -13,7 +15,7 @@ Cuando alguien levante el **puño en alto**, SILENCIO TOTAL: se está escuchando
 
 ## Si sabes quién estaba dónde
 
-Esa memoria encuentra más gente que cualquier máquina. Repórtala — aunque no estés seguro — en **plataforma-ayuda-sismo-colombia.vercel.app** o por SMS al **[NÚMERO]**. Tu teléfono y las direcciones exactas no se publican.
+Esa memoria encuentra más gente que cualquier máquina. Repórtala — aunque no estés seguro — en **www.sossismocolombia.com.co** o por SMS al **[NÚMERO]**. Tu teléfono y las direcciones exactas no se publican.
 
 ## Si tienes maquinaria, plantas eléctricas o luces
 

@@ -128,7 +128,7 @@
 
 ### RF-19 · Derechos sobre lo publicado (P2)
 **Historia:** como persona que publicó a su hermana desaparecida y ya la encontró, quiero que su nombre deje de estar en internet, y hasta ahora no tenía ni a quién escribirle.
-- El sitio DEBERÁ pedir a los buscadores que no lo indexen, por `robots.txt` **y** por cabecera en cada página. Se difunde por WhatsApp, radio y SMS; ninguno necesita a Google, y una huella indexada no la borra retirar la publicación.
+- ~~El sitio DEBERÁ pedir a los buscadores que no lo indexen, por `robots.txt` **y** por cabecera en cada página.~~ **Revertido por RF-38 el 14-ago-2026** (`specs/05-directorio.md`). El motivo era el mapa: publicaba nombres de personas desaparecidas, incluidos menores, y una huella indexada no la borra retirar la publicación. Retirados el mapa y los formularios (RF-37), la cara pública solo sirve organizaciones y sus canales, así que el motivo dejó de existir. **La regla sigue viva como condición: si algún día el sitio vuelve a servir un dato de una persona identificable, la indexación se cierra antes de publicarlo, no después.**
 - DEBERÁ existir una página `/privacidad`, enlazada desde todas las páginas, que diga en castellano llano qué se ve, qué no, cuánto dura y **a qué correo se escribe para corregir o borrar** (Ley 1581 de 2012).
 - El canal de contacto DEBERÁ venir de configuración, y mostrar un marcador evidente mientras no esté puesto, para que no pase por bueno un canal que no existe.
 - La ayuda del campo «Otra forma de contacto (pública)» DEBERÁ dejar de invitar a publicar el teléfono de un tercero sin permiso.

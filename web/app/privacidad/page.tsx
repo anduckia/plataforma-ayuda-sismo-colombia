@@ -1,10 +1,14 @@
+import type { Metadata } from 'next';
 import { CONTACTO, MENSAJES_DIRECTOS } from '@/lib/contacto';
 
-export const metadata = {
-  title: 'Privacidad — SOS Sismo Colombia',
+export const metadata: Metadata = {
+  // El sufijo «— SOS Sismo Colombia» lo pone la plantilla del layout.
+  title: 'Privacidad',
   description:
     'Qué es este directorio, qué pasa cuando sales a otro sitio desde aquí y cómo ' +
-    'escribirnos.',
+    'escribirnos. No pedimos dinero, claves ni números de cuenta.',
+  alternates: { canonical: '/privacidad' },
+  openGraph: { url: '/privacidad' },
 };
 
 /**

@@ -103,6 +103,20 @@ Toda ficha DEBERÁ presentar estos siete elementos, **siempre en este orden y si
 - **Condición previa, no negociable:** la reversión solo procede una vez retirado el mapa y confirmado que no queda ningún dato personal servido por la cara pública. RF-19 se estableció porque el mapa publicaba nombres de personas desaparecidas, incluidos menores; el motivo desaparece cuando desaparece el mapa, no antes.
 - Un directorio que quiere ser encontrado necesita estar indexado: es el único de los canales de difusión que no depende de que alguien lo reenvíe.
 
+> **✅ Condición previa confirmada — 14-ago-2026.** Auditoría ruta por ruta de la cara pública: `/` sirve organizaciones, sus canales y líneas institucionales (`01 8000…`); `/mapa` y las cuatro URLs de formularios son páginas fijas de `components/Retirado`; `/privacidad` es texto fijo. No hay rutas de API, ni mapa, ni formularios, ni ningún campo que reciba datos. **Ningún dato de persona identificable.** Reversión aplicada en las tres capas que la sostenían: `app/robots.ts`, el `robots` de `app/layout.tsx` y la cabecera `X-Robots-Tag` de `next.config.mjs`.
+
+**Lo que la reversión trae consigo.** Levantar el bloqueo es condición necesaria pero no suficiente: sin esto, el sitio es indexable y aun así no lo encuentra nadie.
+
+- El sitio DEBERÁ declarar un **dominio canónico** en un solo lugar (`lib/sitio.ts`, sobreescribible con `NEXT_PUBLIC_SITIO`). Open Graph, sitemap, canonical y datos estructurados necesitan URL absolutas; tres copias del dominio son tres copias que se desincronizan.
+- El canónico es **`https://www.sossismocolombia.com.co`**, con `www`. Las dos variantes servirían la misma página, y para un buscador eso son dos sitios idénticos compitiendo entre sí. La variante que NO es canónica DEBERÁ redirigir a la que sí lo es: un canonical apuntando a una URL que no responde es peor que no tenerlo (T-074).
+- Cada página indexable DEBERÁ declarar **su propio `canonical`**. NUNCA en el layout: la metadata del layout se hereda, y un canonical global apuntando a `/` le diría a Google que `/privacidad` es una copia.
+- El sitio DEBERÁ publicar **`sitemap.xml`** con las páginas indexables, y `robots.txt` DEBERÁ apuntar a él. Las URLs retiradas NO DEBERÁN entrar en el sitemap.
+- Las cinco URLs retiradas DEBERÁN llevar **`noindex, follow`**: son contenido delgado y casi idéntico entre sí, y repartirían entre seis URLs la relevancia que debe concentrarse en el directorio. `follow` conserva el valor de los enlaces viejos hacia la portada.
+- El sitio DEBERÁ tener **vista previa de enlace** (Open Graph + Twitter Card) con imagen generada en compilación. No es cosmética: la difusión principal es WhatsApp, y ahí un enlace sin tarjeta es una línea azul que en un grupo con cien mensajes no toca nadie.
+- El sitio DEBERÁ publicar **datos estructurados** (`NGO`, `WebSite`, `CollectionPage` con `ItemList`) que describan **solo lo que ya está en pantalla**. Marcar lo que no se ve es lo que hace que te penalicen.
+- El `H1` y la entradilla DEBERÁN contener las palabras con las que se busca esto («sismo», «Colombia»), sin convertirse en una ristra de términos. Ver §6.
+- El idioma DEBERÁ declararse como **`es-CO`**, no `es`: el sitio habla de municipios, líneas y una emergencia colombianas.
+
 ---
 
 ## 3. Decisiones de arquitectura
@@ -250,7 +264,12 @@ Recomendación: **2 para lanzar, 1 o 3 cuando haya evidencia de que la gente lle
 - [ ] **T-064** 🤝 Fecha de revisión con los tres estados de antigüedad, calculada en servidor · (RF-34)
 - [ ] **T-065** 🤝 Notas de vacío por sección, incluida la sección en cero · (RF-35)
 - [ ] **T-066** 🤝 Compartir por sección: ancla sin JS, compartir nativo como mejora; regreso al índice al final de cada sección · (RF-32, RF-36)
-- [ ] **T-067** 👤 Revertir la indexación — **solo después** de confirmar que no queda dato personal servido · (RF-38)
+- [x] **T-067** 👤 Revertir la indexación — **solo después** de confirmar que no queda dato personal servido · (RF-38) — *Hecho 14-ago-2026:* condición confirmada por auditoría ruta por ruta; levantadas las tres capas (`robots.ts`, metadata del layout, `X-Robots-Tag`), más canonical por página, `sitemap.xml`, Open Graph con imagen generada, datos estructurados y `noindex, follow` en las cinco URLs retiradas
+- [ ] **T-071** 👤 Dar de alta el sitio en Google Search Console y Bing Webmaster Tools, enviar el sitemap y pedir indexación de `/` · (RF-38) — el sitio estuvo bloqueado meses; sin esto, el rastreador puede tardar semanas en volver a pasar
+- [ ] **T-072** 👤 Comprobar la vista previa del enlace en un WhatsApp real antes de difundir · (RF-38) — WhatsApp cachea la tarjeta; si la primera vez sale rota, sale rota durante días
+- [x] **T-073** 👤 Registrar un dominio propio y fijarlo como canónico · (RF-38) — *Hecho 14-ago-2026:* `https://www.sossismocolombia.com.co`, con `www` por decisión de canonical (§7.1)
+- [ ] **T-074** 👤 Redirigir el apex `sossismocolombia.com.co` (sin `www`) al canónico · (RF-38) — hoy **no resuelve**: quien teclee la dirección que le dictaron por radio, sin el `www`, no llega a ninguna parte
+- [ ] **T-075** 👤 Reescribir `docs/senales-que-salvan.md` para el directorio · (RF-37) — el guion de radio sigue diciendo «repórtala aquí» y «regístralas en Ofrezco recursos», y esos formularios se retiraron; se leyó al aire, así que corregirlo es urgente
 - [ ] **T-068** 👤 Decidir el nombre y la promesa de portada · (§6)
 - [ ] **T-069** 👤 Cargar y comprobar las primeras fuentes: cada cuenta verificada como quien dice ser, con la comprobación escrita · (§5)
 - [ ] **T-070** 🤝 Decidir si se sacan los ~103 KB de runtime de React sirviendo el directorio como página estática sin framework · (§4.8) — no bloquea el lanzamiento
