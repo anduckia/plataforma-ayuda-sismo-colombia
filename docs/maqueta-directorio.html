@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maqueta · Directorio de información sobre el sismo</title>
+<style>
+/*
+  Maqueta del directorio. Mismo lenguaje visual del sitio: señalética de
+  emergencia, fuentes del sistema, contraste máximo, áreas táctiles de pulgar.
+*/
+
+:root {
+  --tinta: #141210;
+  --tinta-suave: #4A453E;
+  --fondo: #ffffff;
+  --fondo-hueco: #F1EFEB;
+  --linea: #D6D1C8;
+
+  --critica: #C1121F;
+  --alta: #D9541A;
+  --foco: #23479B;
+  --radio: 4px;
+
+  --alto-control: 3.25rem;   /* 52 px */
+  --alto-secundario: 2.75rem; /* 44 px */
+
+  --texto: clamp(1.0625rem, 0.98rem + 0.42vw, 1.1875rem);
+  --ancho: 34rem;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Escala de separación estricta. Nada fuera de aquí. */
+  --e1: 0.25rem; --e2: 0.5rem; --e3: 0.75rem;
+  --e4: 1rem;    --e6: 1.5rem; --e8: 2rem; --e12: 3rem;
+
+  /* Cuatro tamaños en la ficha, no más. */
+  --t-nombre: 1.1875rem;
+  --t-cuerpo: 1.0625rem;
+  --t-meta: 0.9375rem;
+  --t-min: 0.8125rem;
+
+  /* Un color por tema. Vive solo en la regla, nunca en el texto. */
+  --tema-albergues: #0B6244;
+  --tema-humanitaria: #C1121F;
+  --tema-personas: #23479B;
+  --tema-voluntariado: #7A4E00;
+  --tema-vias: #D9541A;
+  --tema-oficial: #3A4A5B;
+  --tema-documenta: #0F5C6B;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: var(--texto);
+  line-height: 1.55;
+}
+
+/* ═══ Nota de maqueta. NO es parte del diseño. ═══ */
+.nota-maqueta {
+  background: #2B2B2B; color: #F5F3EF;
+  padding: var(--e3) var(--e4);
+  font-size: 0.8125rem; line-height: 1.5;
+}
+.nota-maqueta strong { color: #fff; }
+.nota-maqueta p { margin: 0 auto; max-width: var(--ancho); }
+
+/* ─────────────────────────────────────────── línea 123 (sin cambios) */
+.linea123 {
+  margin: 0; padding: var(--e3) var(--e4);
+  background: var(--critica); color: #fff;
+  font-size: 1rem; line-height: 1.4; text-align: center;
+}
+.linea123 a { color: #fff; text-underline-offset: 3px; text-decoration-thickness: 2px; }
+
+/* ────────────────────────────────────────────────────────────── barra */
+.barra { border-bottom: 3px solid var(--tinta); background: var(--fondo); }
+.barra__interior {
+  max-width: var(--ancho); margin: 0 auto;
+  padding: var(--e3) var(--e4);
+}
+.barra__marca {
+  font-size: 1.0625rem; font-weight: 800; letter-spacing: -0.02em;
+  color: var(--tinta); text-decoration: none;
+}
+
+.envoltura { max-width: var(--ancho); margin: 0 auto; padding: var(--e4) var(--e4) var(--e12); }
+
+h1 {
+  font-size: clamp(1.75rem, 1.3rem + 2.2vw, 2.5rem);
+  line-height: 1.1; letter-spacing: -0.035em; font-weight: 800;
+  margin: var(--e6) 0 var(--e3); text-wrap: balance;
+}
+.entradilla { font-size: 1.0625em; color: var(--tinta-suave); margin: 0 0 var(--e6); }
+
+/* ══════════════════════ estado del directorio: la promesa, arriba ══════ */
+.estado {
+  border: 2px solid var(--tinta);
+  border-radius: var(--radio);
+  padding: var(--e4);
+  margin-bottom: var(--e8);
+  background: var(--fondo-hueco);
+}
+.estado__cifra {
+  font-size: 1.375rem; font-weight: 800; letter-spacing: -0.025em;
+  margin: 0 0 var(--e1);
+}
+.estado__detalle { margin: 0; font-size: var(--t-meta); color: var(--tinta-suave); }
+.estado__detalle + .estado__detalle { margin-top: var(--e2); }
+.estado__falta { color: var(--tinta); font-weight: 650; }
+
+/* ═══════════════════════════════ índice: dos columnas, ≥52 px ═════════ */
+.indice__titulo {
+  font-size: var(--t-min); font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--tinta-suave);
+  margin: 0 0 var(--e3);
+}
+.indice {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--e2);
+  margin: 0 0 var(--e12); padding: 0; list-style: none;
+}
+.indice a {
+  display: flex; flex-direction: column; justify-content: center;
+  min-height: var(--alto-control);
+  padding: var(--e2) var(--e3);
+  border: 2px solid var(--tinta); border-left-width: 8px;
+  border-radius: var(--radio);
+  color: var(--tinta); text-decoration: none;
+  font-size: var(--t-meta); font-weight: 700; line-height: 1.25;
+}
+.indice a:hover { background: var(--fondo-hueco); }
+.indice__conteo { font-size: var(--t-min); font-weight: 600; color: var(--tinta-suave); margin-top: 2px; }
+.indice__conteo--cero { color: var(--alta); }
+
+.i-albergues    { border-left-color: var(--tema-albergues); }
+.i-humanitaria  { border-left-color: var(--tema-humanitaria); }
+.i-personas     { border-left-color: var(--tema-personas); }
+.i-voluntariado { border-left-color: var(--tema-voluntariado); }
+.i-vias         { border-left-color: var(--tema-vias); }
+.i-oficial      { border-left-color: var(--tema-oficial); }
+.i-documenta    { border-left-color: var(--tema-documenta); }
+
+/* ═══════════════════════════════════════════ sección: el color vive aquí */
+.seccion { margin-bottom: var(--e12); scroll-margin-top: var(--e2); }
+
+.seccion__cabecera {
+  border-top: 8px solid var(--linea);
+  padding-top: var(--e3);
+  margin-bottom: var(--e6);
+}
+.s-albergues .seccion__cabecera    { border-top-color: var(--tema-albergues); }
+.s-humanitaria .seccion__cabecera  { border-top-color: var(--tema-humanitaria); }
+.s-personas .seccion__cabecera     { border-top-color: var(--tema-personas); }
+.s-vias .seccion__cabecera         { border-top-color: var(--tema-vias); }
+.s-documenta .seccion__cabecera    { border-top-color: var(--tema-documenta); }
+
+/* Encabezado en tinta, nunca en el color: contraste máximo (ADR-028). */
+.seccion h2 {
+  font-size: 1.375rem; font-weight: 800; letter-spacing: -0.025em;
+  line-height: 1.15; margin: 0 0 var(--e2); text-wrap: balance;
+}
+.seccion__pie {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--e2) var(--e3);
+  font-size: var(--t-min); color: var(--tinta-suave);
+}
+.seccion__compartir {
+  display: inline-flex; align-items: center; gap: var(--e1);
+  min-height: var(--alto-secundario);
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--linea); border-radius: var(--radio);
+  color: var(--tinta); text-decoration: none;
+  font-size: var(--t-min); font-weight: 650;
+}
+.seccion__compartir:hover { background: var(--fondo-hueco); border-color: var(--tinta); }
+
+/*
+  Con ~30 fichas la página pasa de 20.000 px. Sin esto, quien baja hasta el
+  fondo de una sección no tiene cómo volver al índice: el pulgar no alcanza.
+*/
+.seccion__volver {
+  display: inline-flex; align-items: center; gap: var(--e1);
+  min-height: var(--alto-secundario);
+  margin-top: var(--e4);
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--linea); border-radius: var(--radio);
+  color: var(--tinta); text-decoration: none;
+  font-size: var(--t-min); font-weight: 650;
+}
+.seccion__volver:hover { background: var(--fondo-hueco); border-color: var(--tinta); }
+
+/* ═════════════════════════════════════════════════ la ficha ═══════════ */
+.fichas { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e3); }
+
+.ficha {
+  border: 2px solid var(--linea);
+  border-radius: var(--radio);
+  padding: var(--e4);
+}
+
+/* 1 y 2 — nombre y tipo. El tipo cae a la misma línea si cabe. */
+.ficha__encabezado {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: var(--e1) var(--e2);
+  margin-bottom: var(--e2);
+}
+.ficha__nombre {
+  font-size: var(--t-nombre); font-weight: 750;
+  letter-spacing: -0.02em; line-height: 1.2;
+}
+.tipo {
+  display: inline-block; flex: none;
+  font-size: var(--t-min); font-weight: 650; line-height: 1.6;
+  border: 1.5px solid var(--tinta); border-radius: 999px;
+  padding: 0 var(--e2);
+  white-space: nowrap;
+}
+
+/* 3 — quién la hace */
+.ficha__quien { font-size: var(--t-meta); color: var(--tinta-suave); margin: 0 0 var(--e2); }
+.ficha__quien--anonimo { font-style: italic; }
+
+/* 4 — qué encuentras */
+.ficha__que { font-size: var(--t-cuerpo); margin: 0 0 var(--e3); }
+
+/* 5 y 6 — zona y fecha, un solo renglón de metadatos */
+.ficha__meta {
+  font-size: var(--t-min); color: var(--tinta-suave);
+  margin: 0 0 var(--e3); line-height: 1.45;
+}
+.ficha__meta .sep { opacity: 0.55; }
+.fecha--vieja { color: var(--alta); font-weight: 650; }
+
+/* 7 — el canal principal muestra el destino, nunca «ver más» */
+.canal {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--e2);
+  min-height: var(--alto-control);
+  padding: 0 var(--e3);
+  border: 2px solid var(--tinta); border-radius: var(--radio);
+  color: var(--tinta); text-decoration: none;
+  font-size: var(--t-cuerpo); font-weight: 700;
+  word-break: break-word;
+}
+.canal:hover { background: var(--fondo-hueco); }
+.canal__flecha { flex: none; font-weight: 400; opacity: 0.6; }
+
+.canales-otros {
+  display: flex; flex-wrap: wrap; gap: var(--e2);
+  margin-top: var(--e2);
+}
+.canal-otro {
+  display: inline-flex; align-items: center; gap: var(--e1);
+  min-height: var(--alto-secundario);
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--linea); border-radius: var(--radio);
+  color: var(--tinta); text-decoration: none;
+  font-size: var(--t-min); font-weight: 650;
+}
+.canal-otro:hover { background: var(--fondo-hueco); border-color: var(--tinta); }
+
+/* ═══════════════ nota de vacío: discontinua, para no leerse como ficha */
+.falta {
+  border: 2px dashed var(--linea);
+  border-radius: var(--radio);
+  padding: var(--e4);
+  color: var(--tinta-suave);
+  font-size: var(--t-meta);
+}
+.falta strong { color: var(--tinta); }
+.falta p { margin: 0; }
+.falta p + p { margin-top: var(--e2); }
+.fichas + .falta { margin-top: var(--e3); }
+
+/* ══════════════════════════════════════════════ aportar y pie ═════════ */
+.aportar {
+  border: 2px solid var(--tinta); border-radius: var(--radio);
+  padding: var(--e4); margin-bottom: var(--e8);
+}
+.aportar h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 var(--e2); }
+.aportar p { margin: 0 0 var(--e3); font-size: var(--t-meta); color: var(--tinta-suave); }
+.aportar__vias { display: grid; gap: var(--e2); }
+.aportar__via {
+  display: flex; align-items: center;
+  min-height: var(--alto-control);
+  padding: 0 var(--e3);
+  border: 2px solid var(--linea); border-radius: var(--radio);
+  color: var(--tinta); text-decoration: none;
+  font-size: var(--t-meta); font-weight: 650;
+}
+.aportar__via:hover { background: var(--fondo-hueco); border-color: var(--tinta); }
+
+.pie {
+  border-top: 2px solid var(--linea);
+  padding-top: var(--e4);
+  font-size: var(--t-meta); color: var(--tinta-suave);
+}
+.pie p { margin: 0 0 var(--e3); }
+.pie p:last-child { margin: 0; }
+
+a { color: var(--foco); }
+:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+.oculto {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ═══ Demostración de estados. NO es parte del diseño. ═══ */
+.demo { background: #2B2B2B; color: #F5F3EF; padding: var(--e8) var(--e4); }
+.demo__interior { max-width: var(--ancho); margin: 0 auto; }
+.demo h3 { font-size: 1rem; margin: 0 0 var(--e2); color: #fff; }
+.demo > .demo__interior > p { font-size: 0.8125rem; margin: 0 0 var(--e4); opacity: .8; line-height: 1.5; }
+.demo__fila { background: var(--fondo); color: var(--tinta); border-radius: var(--radio); padding: var(--e3) var(--e4); margin-bottom: var(--e2); }
+.demo__etiqueta { font-size: 0.75rem; opacity: .7; margin-bottom: var(--e1); }
+
+@media (min-width: 30rem) {
+  .indice { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="nota-maqueta">
+  <p><strong>Maqueta de diseño.</strong> El contenido es ilustrativo y <strong>no está comprobado</strong>:
+  ninguna de estas fichas debe publicarse sin verificar que la fuente es quien dice ser. Lo que hay que
+  juzgar aquí es la estructura, la jerarquía y el ritmo.</p>
+</div>
+
+<p class="linea123">
+  ¿Hay una vida en riesgo <strong>ahora</strong>? Llama primero a
+  <a href="tel:123">la línea de emergencias <strong>123</strong></a>.
+</p>
+
+<header class="barra">
+  <div class="barra__interior">
+    <a class="barra__marca" href="#">SOS Sismo Colombia</a>
+  </div>
+</header>
+
+<main class="envoltura">
+
+  <h1>Dónde está cada cosa</h1>
+  <p class="entradilla">
+    Un directorio de fuentes sobre el sismo: albergues, ayuda, búsqueda de personas,
+    voluntariado y canales oficiales. No recogemos datos ni pedimos dinero: te llevamos
+    al sitio correcto y te decimos cuándo lo revisamos por última vez.
+  </p>
+
+  <!-- La promesa, antes del índice. Quien no lea nada más, lee esto. -->
+  <section class="estado" aria-label="Estado del directorio">
+    <p class="estado__cifra">14 fuentes revisadas</p>
+    <p class="estado__detalle">
+      La más reciente, hoy. La más antigua, hace 3 días.
+    </p>
+    <p class="estado__detalle estado__falta">
+      Hay 2 temas donde todavía no encontramos ninguna fuente confiable. Están abajo, con su nombre.
+    </p>
+  </section>
+
+  <h2 class="indice__titulo" id="temas">Ir a un tema</h2>
+  <ul class="indice">
+    <li><a class="i-albergues" href="#albergues">Albergues<span class="indice__conteo">3 fuentes</span></a></li>
+    <li><a class="i-humanitaria" href="#humanitaria">Ayuda humanitaria<span class="indice__conteo">2 fuentes</span></a></li>
+    <li><a class="i-personas" href="#personas">Buscar personas<span class="indice__conteo">1 fuente</span></a></li>
+    <li><a class="i-voluntariado" href="#voluntariado">Voluntariado<span class="indice__conteo">4 fuentes</span></a></li>
+    <li><a class="i-vias" href="#vias">Vías y transporte<span class="indice__conteo indice__conteo--cero">Sin fuentes</span></a></li>
+    <li><a class="i-oficial" href="#oficial">Info oficial<span class="indice__conteo">2 fuentes</span></a></li>
+    <li><a class="i-documenta" href="#documenta">Quién documenta<span class="indice__conteo">2 fuentes</span></a></li>
+  </ul>
+
+  <!-- ══════════════════════════════════════════════════ ALBERGUES ═══ -->
+  <section class="seccion s-albergues" id="albergues">
+    <div class="seccion__cabecera">
+      <h2>Albergues y dónde dormir</h2>
+      <p class="seccion__pie">
+        <span>3 fuentes</span>
+        <a class="seccion__compartir" href="#albergues">Compartir esta sección</a>
+      </p>
+    </div>
+
+    <ul class="fichas">
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Albergues habilitados en Manizales</span>
+          <span class="tipo">Página</span>
+        </div>
+        <p class="ficha__quien">Alcaldía de Manizales</p>
+        <p class="ficha__que">
+          Listado de los albergues abiertos por la alcaldía, con dirección y cupo disponible.
+        </p>
+        <p class="ficha__meta">
+          Manizales, Caldas <span class="sep">·</span>
+          Revisado el <time datetime="2026-08-13">13 de agosto</time>
+        </p>
+        <a class="canal" href="#">
+          <span>manizales.gov.co</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+        <div class="canales-otros">
+          <a class="canal-otro" href="#">Línea telefónica · 606 887 9700 <span aria-hidden="true">↗</span></a>
+        </div>
+      </li>
+
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Red de alojamiento temporal Chocó</span>
+          <span class="tipo">Grupo de WhatsApp</span>
+        </div>
+        <p class="ficha__quien">Colectivo de juntas de acción comunal de Quibdó</p>
+        <p class="ficha__que">
+          Coordinan cupos en casas de familia y salones comunales para quien no alcanzó albergue.
+        </p>
+        <p class="ficha__meta">
+          Quibdó y alrededores <span class="sep">·</span>
+          Revisado el <time datetime="2026-08-11">11 de agosto</time>
+        </p>
+        <a class="canal" href="#">
+          <span>Grupo abierto en WhatsApp</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+        <div class="canales-otros">
+          <a class="canal-otro" href="#">Instagram · @cuenta <span aria-hidden="true">↗</span></a>
+          <a class="canal-otro" href="#">Facebook <span aria-hidden="true">↗</span></a>
+        </div>
+      </li>
+
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Mapa de puntos de acogida</span>
+          <span class="tipo">Mapa</span>
+        </div>
+        <p class="ficha__quien ficha__quien--anonimo">Colectivo no identificado</p>
+        <p class="ficha__que">
+          Mapa colaborativo con puntos donde reciben personas. Lo actualizan voluntarios.
+        </p>
+        <p class="ficha__meta">
+          Revisado el <time datetime="2026-08-10">10 de agosto</time>
+          <span class="sep">·</span> hace 3 días
+        </p>
+        <a class="canal" href="#">
+          <span>umap.openstreetmap.fr</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+      </li>
+    </ul>
+    <a class="seccion__volver" href="#temas"><span aria-hidden="true">↑</span> Ir a otro tema</a>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ HUMANITARIA ═══ -->
+  <section class="seccion s-humanitaria" id="humanitaria">
+    <div class="seccion__cabecera">
+      <h2>Ayuda humanitaria: agua, comida, aseo, salud</h2>
+      <p class="seccion__pie">
+        <span>2 fuentes</span>
+        <a class="seccion__compartir" href="#humanitaria">Compartir esta sección</a>
+      </p>
+    </div>
+
+    <ul class="fichas">
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Puntos de entrega de ayuda</span>
+          <span class="tipo">Página</span>
+        </div>
+        <p class="ficha__quien">Unidad Nacional para la Gestión del Riesgo de Desastres</p>
+        <p class="ficha__que">
+          Dónde y a qué hora se entregan mercados, agua y kits de aseo en cada municipio.
+        </p>
+        <p class="ficha__meta">
+          Caldas, Risaralda y Chocó <span class="sep">·</span>
+          Revisado el <time datetime="2026-08-13">13 de agosto</time>
+        </p>
+        <a class="canal" href="#">
+          <span>portal.gestiondelriesgo.gov.co</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+      </li>
+
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Ollas comunitarias de Pereira</span>
+          <span class="tipo">Instagram</span>
+        </div>
+        <p class="ficha__quien">Organizaciones sociales de Pereira</p>
+        <p class="ficha__que">
+          Publican a diario dónde están cocinando y qué les hace falta ese día.
+        </p>
+        <p class="ficha__meta">
+          Pereira, Risaralda <span class="sep">·</span>
+          Revisado el <time datetime="2026-08-12">12 de agosto</time>
+        </p>
+        <a class="canal" href="#">
+          <span>@cuenta en Instagram</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="falta">
+      <p><strong>Lo que no encontramos:</strong> ninguna fuente que diga de qué tiene
+      <em>suficiente</em> cada albergue. Sabemos que en Manizales pidieron dejar de mandar
+      comida y mandar agua y pañales, pero no hay dónde consultarlo antes de salir con un carro cargado.</p>
+    </div>
+    <a class="seccion__volver" href="#temas"><span aria-hidden="true">↑</span> Ir a otro tema</a>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════ PERSONAS ═══ -->
+  <section class="seccion s-personas" id="personas">
+    <div class="seccion__cabecera">
+      <h2>Búsqueda de personas</h2>
+      <p class="seccion__pie">
+        <span>1 fuente</span>
+        <a class="seccion__compartir" href="#personas">Compartir esta sección</a>
+      </p>
+    </div>
+
+    <ul class="fichas">
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Restablecimiento del contacto entre familiares</span>
+          <span class="tipo">Página</span>
+        </div>
+        <p class="ficha__quien">Cruz Roja Colombiana</p>
+        <p class="ficha__que">
+          Registran casos de personas de las que no se sabe nada y ayudan a reconectar familias.
+        </p>
+        <p class="ficha__meta">
+          Todo el país <span class="sep">·</span>
+          Revisado el <time datetime="2026-08-13">13 de agosto</time>
+        </p>
+        <a class="canal" href="#">
+          <span>cruzrojacolombiana.org</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+        <div class="canales-otros">
+          <a class="canal-otro" href="#">Línea telefónica <span aria-hidden="true">↗</span></a>
+        </div>
+      </li>
+    </ul>
+    <a class="seccion__volver" href="#temas"><span aria-hidden="true">↑</span> Ir a otro tema</a>
+  </section>
+
+  <!-- ══════════════════════════════════ VÍAS: sección en cero ═══ -->
+  <section class="seccion s-vias" id="vias">
+    <div class="seccion__cabecera">
+      <h2>Vías, transporte y acceso</h2>
+      <p class="seccion__pie">
+        <span>Sin fuentes todavía</span>
+        <a class="seccion__compartir" href="#vias">Compartir esta sección</a>
+      </p>
+    </div>
+
+    <div class="falta">
+      <p><strong>No encontramos fuente confiable de vías cerradas para Chocó.</strong>
+      Buscamos en los canales departamentales y en las cuentas que reportan tráfico;
+      lo que hay son publicaciones sueltas que no se actualizan.</p>
+      <p>Si conoces una, escríbenos: es lo que más nos están pidiendo.</p>
+    </div>
+    <a class="seccion__volver" href="#temas"><span aria-hidden="true">↑</span> Ir a otro tema</a>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════ DOCUMENTA ═══ -->
+  <section class="seccion s-documenta" id="documenta">
+    <div class="seccion__cabecera">
+      <h2>Quién está documentando la emergencia</h2>
+      <p class="seccion__pie">
+        <span>2 fuentes</span>
+        <a class="seccion__compartir" href="#documenta">Compartir esta sección</a>
+      </p>
+    </div>
+
+    <ul class="fichas">
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Servicio Geológico Colombiano</span>
+          <span class="tipo">X</span>
+        </div>
+        <p class="ficha__quien">Servicio Geológico Colombiano</p>
+        <p class="ficha__que">
+          Publican cada réplica con su magnitud y profundidad, minutos después de ocurrir.
+        </p>
+        <p class="ficha__meta">
+          Todo el país <span class="sep">·</span>
+          Revisado el <time datetime="2026-08-13">13 de agosto</time>
+        </p>
+        <a class="canal" href="#">
+          <span>@cuenta en X</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+        <div class="canales-otros">
+          <a class="canal-otro" href="#">Página · sgc.gov.co <span aria-hidden="true">↗</span></a>
+        </div>
+      </li>
+
+      <li class="ficha">
+        <div class="ficha__encabezado">
+          <span class="ficha__nombre">Registro visual del sismo en Chocó</span>
+          <span class="tipo">TikTok</span>
+        </div>
+        <p class="ficha__quien">Medio comunitario de Quibdó</p>
+        <p class="ficha__que">
+          Recorren veredas a las que no ha llegado la prensa y publican lo que ven.
+        </p>
+        <p class="ficha__meta">
+          Chocó <span class="sep">·</span>
+          Revisado el <time datetime="2026-08-11">11 de agosto</time>
+        </p>
+        <a class="canal" href="#">
+          <span>@cuenta en TikTok</span>
+          <span class="canal__flecha" aria-hidden="true">↗</span>
+          <span class="oculto">Se abre en otro sitio</span>
+        </a>
+      </li>
+    </ul>
+    <a class="seccion__volver" href="#temas"><span aria-hidden="true">↑</span> Ir a otro tema</a>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════ APORTAR ═══ -->
+  <section class="aportar">
+    <h2>¿Conoces una fuente que falta?</h2>
+    <p>
+      Escríbenos y la revisamos. No publicamos ofertas de particulares ni datos de
+      contacto de personas: solo fuentes que se mantienen en el tiempo.
+    </p>
+    <div class="aportar__vias">
+      <a class="aportar__via" href="#">Escribir al correo del equipo</a>
+      <a class="aportar__via" href="#">Mensaje directo en Instagram</a>
+      <a class="aportar__via" href="#">Mensaje directo en Facebook</a>
+    </div>
+  </section>
+
+  <footer class="pie">
+    <p>
+      Esta plataforma es ciudadana y <strong>complementa a los organismos de socorro</strong>:
+      suma visibilidad, no los reemplaza.
+    </p>
+    <p>
+      <strong>No pedimos, no recibimos y no manejamos dinero.</strong> Si alguien te lo pide
+      en nombre de este sitio, es un fraude.
+    </p>
+    <p>
+      Hay réplicas: si tu casa está dañada, no vuelvas a entrar.
+    </p>
+  </footer>
+</main>
+
+<!-- ═══════════════ Demostración de estados. NO es el diseño. ═══════════ -->
+<section class="demo">
+  <div class="demo__interior">
+    <h3>Cómo envejece la fecha de revisión</h3>
+    <p>Es el único elemento de la ficha que cambia de aspecto solo. Nadie tiene que acordarse
+    de marcar nada: si nadie vuelve a mirar, la ficha lo dice sola. Esto es lo que una insignia
+    de «verificado» no puede hacer.</p>
+
+    <div class="demo__fila">
+      <div class="demo__etiqueta">0 a 3 días — discreto</div>
+      <p class="ficha__meta" style="margin:0">Manizales, Caldas <span class="sep">·</span> Revisado el <time datetime="2026-08-13">13 de agosto</time></p>
+    </div>
+    <div class="demo__fila">
+      <div class="demo__etiqueta">4 a 7 días — se añade lo transcurrido</div>
+      <p class="ficha__meta" style="margin:0">Manizales, Caldas <span class="sep">·</span> Revisado el <time datetime="2026-08-08">8 de agosto</time> <span class="sep">·</span> hace 5 días</p>
+    </div>
+    <div class="demo__fila">
+      <div class="demo__etiqueta">8 días o más — color de alerta</div>
+      <p class="ficha__meta" style="margin:0">Manizales, Caldas <span class="sep">·</span> <span class="fecha--vieja">Revisado hace 12 días</span></p>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

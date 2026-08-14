@@ -1,23 +1,22 @@
 {
   "name": "sos-sismo-colombia-web",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Cara pública de SOS Sismo Colombia. Habla con la API de Ushahidi del despliegue.",
+  "description": "Directorio público de fuentes de información sobre el sismo. HTML y CSS: sin dependencias de cliente.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "revisar": "node scripts/revisar-visual.mjs"
+    "revisar": "node scripts/revisar-visual.mjs",
+    "revisar-fuentes": "node scripts/revisar-fuentes.mjs"
   },
   "dependencies": {
-    "leaflet": "1.9.4",
     "next": "15.5.23",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
   "devDependencies": {
-    "@types/leaflet": "1.9.16",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
     "playwright": "^1.62.1",

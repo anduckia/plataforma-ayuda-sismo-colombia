@@ -3,6 +3,11 @@
   Quien lee esto puede estar asustado, a media luz, con un teléfono barato y
   mala señal. Por eso: contraste máximo, cuerpo grande, áreas táctiles de
   pulgar, cero webfonts (la página aparece en 2G) y casi nada de movimiento.
+
+  Con fuentes del sistema, la escala y el ritmo vertical son TODA la calidad
+  tipográfica disponible. En cuanto las separaciones se eligen a ojo, treinta
+  fichas se ven baratas y no hay fuente que lo arregle. De ahí que las
+  separaciones salgan de una escala fija y que la ficha use cuatro tamaños.
 */
 
 :root {
@@ -12,39 +17,47 @@
   --fondo-hueco: #F1EFEB;
   --linea: #D6D1C8;
 
-  /* La escala de urgencia es el sistema de señales del sitio. */
   --critica: #C1121F;
   --alta: #D9541A;
-  --media: #B8860B;
-
-  --auxilio: #C1121F;
-  --busqueda: #23479B;
-  --apoyo: #0B6244;
-  --recurso: #7A4E00;
-  --privado: #3A4A5B;
-
   --foco: #23479B;
   --radio: 4px;
 
   /*
-    Una sola altura para todo lo que se toca en una fila: campos, selectores y
-    botones secundarios. Fijándola (no `min-height`) los renglones cuadran solos
-    y ningún control queda más bajo que el de al lado. 52 px supera con holgura
-    los 44 px mínimos de área táctil, contando con un pulgar y una mano temblando.
+    52 px supera con holgura los 44 px mínimos de área táctil, contando con un
+    pulgar y una mano temblando. Los canales secundarios bajan a 44.
   */
   --alto-control: 3.25rem;
-  /* La acción principal es lo más alto de la página: jerarquía por tamaño. */
-  --alto-boton: 3.75rem;
-  --pad-control: 0.75rem;
+  --alto-secundario: 2.75rem;
 
   --texto: clamp(1.0625rem, 0.98rem + 0.42vw, 1.1875rem);
   --ancho: 34rem;
-
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Escala de separación estricta. Nada fuera de aquí. */
+  --e1: 0.25rem; --e2: 0.5rem; --e3: 0.75rem;
+  --e4: 1rem;    --e6: 1.5rem; --e8: 2rem; --e12: 3rem;
+
+  /* Cuatro tamaños en la ficha, no más. */
+  --t-nombre: 1.1875rem;
+  --t-cuerpo: 1.0625rem;
+  --t-meta: 0.9375rem;
+  --t-min: 0.8125rem;
+
+  /*
+    Un color por tema (ADR-027). Vive SOLO en la regla del encabezado y en el
+    borde del índice, nunca en el texto: dos de los siete no llegan a 4,5:1
+    sobre blanco, y como elemento no textual el umbral es 3:1, que todos pasan.
+  */
+  --tema-albergues: #0B6244;
+  --tema-humanitaria: #C1121F;
+  --tema-personas: #23479B;
+  --tema-voluntariado: #7A4E00;
+  --tema-vias: #D9541A;
+  --tema-oficial: #3A4A5B;
+  --tema-documenta: #0F5C6B;
 }
 
 * { box-sizing: border-box; }
-
 html { -webkit-text-size-adjust: 100%; }
 
 body {
@@ -54,7 +67,6 @@ body {
   font-family: var(--sans);
   font-size: var(--texto);
   line-height: 1.55;
-  /* Evita el zoom automático de iOS al enfocar un campo. */
   text-rendering: optimizeLegibility;
 }
 
@@ -63,22 +75,15 @@ body {
 .envoltura {
   max-width: var(--ancho);
   margin: 0 auto;
-  padding: 1.25rem 1.15rem 4rem;
+  padding: var(--e4) var(--e4) var(--e12);
 }
 
-.barra {
-  border-bottom: 3px solid var(--tinta);
-  background: var(--fondo);
-}
+.barra { border-bottom: 3px solid var(--tinta); background: var(--fondo); }
 
 .barra__interior {
   max-width: var(--ancho);
   margin: 0 auto;
-  padding: 0.85rem 1.15rem;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  padding: var(--e3) var(--e4);
 }
 
 .barra__marca {
@@ -89,12 +94,6 @@ body {
   text-decoration: none;
 }
 
-.barra__enlace {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--tinta);
-}
-
 /*
   RNF-06 · La línea 123 va antes que todo lo demás, en rojo de urgencia y con
   el número como área táctil: es la única acción de esta página que puede
@@ -102,7 +101,7 @@ body {
 */
 .linea123 {
   margin: 0;
-  padding: 0.8rem 1.15rem;
+  padding: var(--e3) var(--e4);
   background: var(--critica);
   color: #fff;
   font-size: 1rem;
@@ -110,388 +109,342 @@ body {
   text-align: center;
 }
 
-.linea123 a {
-  color: #fff;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 2px;
-}
+.linea123 a { color: #fff; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 
 h1 {
-  font-size: clamp(1.9rem, 1.4rem + 2.4vw, 2.75rem);
-  line-height: 1.08;
+  font-size: clamp(1.75rem, 1.3rem + 2.2vw, 2.5rem);
+  line-height: 1.1;
   letter-spacing: -0.035em;
   font-weight: 800;
-  margin: 1.5rem 0 0.65rem;
+  margin: var(--e6) 0 var(--e3);
   text-wrap: balance;
 }
 
-h2 {
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
-  font-weight: 750;
-  margin: 2.25rem 0 0.75rem;
-}
+p { margin: 0 0 var(--e4); }
 
-p { margin: 0 0 1rem; }
+.entradilla { font-size: 1.0625em; color: var(--tinta-suave); margin: 0 0 var(--e6); }
 
-.entradilla {
-  font-size: 1.0625em;
-  color: var(--tinta-suave);
-  margin-bottom: 1.75rem;
-}
+/* ------------------------------ estado del directorio: la promesa, arriba */
 
-/* ------------------------------------------------- tarjetas de las 3 vías */
-
-.vias { display: grid; gap: 0.85rem; margin: 0 0 2rem; }
-
-.via {
-  display: block;
-  padding: 1.15rem 1.25rem;
+.estado {
   border: 2px solid var(--tinta);
-  border-left-width: 10px;
   border-radius: var(--radio);
-  background: var(--fondo);
-  color: var(--tinta);
-  text-decoration: none;
+  padding: var(--e4);
+  margin-bottom: var(--e8);
+  background: var(--fondo-hueco);
 }
 
-.via:hover, .via:focus-visible { background: var(--fondo-hueco); }
-.via--auxilio { border-left-color: var(--auxilio); }
-.via--busqueda { border-left-color: var(--busqueda); }
-.via--apoyo { border-left-color: var(--apoyo); }
-.via--recurso { border-left-color: var(--recurso); }
-
-.via__titulo {
-  display: block;
+.estado__cifra {
   font-size: 1.375rem;
   font-weight: 800;
   letter-spacing: -0.025em;
-  margin-bottom: 0.15rem;
+  margin: 0 0 var(--e1);
 }
 
-.via__desc { display: block; color: var(--tinta-suave); font-size: 0.9688rem; }
+.estado__detalle { margin: 0; font-size: var(--t-meta); color: var(--tinta-suave); }
+.estado__detalle + .estado__detalle { margin-top: var(--e2); }
+/* Lo que falta se dice en tinta plena: es la parte que no hay que suavizar. */
+.estado__falta { color: var(--tinta); font-weight: 650; }
 
-/* --------------------------------------------------------------- avisos */
+/* ------------------------------------------- índice: dos columnas, ≥52 px */
+
+.indice__titulo {
+  font-size: var(--t-min);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  margin: 0 0 var(--e3);
+}
+
+.indice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--e2);
+  margin: 0 0 var(--e12);
+  padding: 0;
+  list-style: none;
+}
+
+.indice a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--alto-control);
+  padding: var(--e2) var(--e3);
+  border: 2px solid var(--tinta);
+  border-left-width: 8px;
+  border-radius: var(--radio);
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: var(--t-meta);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.indice a:hover { background: var(--fondo-hueco); }
+.indice__conteo { font-size: var(--t-min); font-weight: 600; color: var(--tinta-suave); margin-top: 2px; }
+.indice__conteo--cero { color: var(--alta); }
+
+.i-albergues    { border-left-color: var(--tema-albergues); }
+.i-humanitaria  { border-left-color: var(--tema-humanitaria); }
+.i-personas     { border-left-color: var(--tema-personas); }
+.i-voluntariado { border-left-color: var(--tema-voluntariado); }
+.i-vias         { border-left-color: var(--tema-vias); }
+.i-oficial      { border-left-color: var(--tema-oficial); }
+.i-documenta    { border-left-color: var(--tema-documenta); }
+
+/* --------------------------------------------- sección: el color vive aquí */
+
+.seccion { margin-bottom: var(--e12); scroll-margin-top: var(--e2); }
+
+.seccion__cabecera {
+  border-top: 8px solid var(--linea);
+  padding-top: var(--e3);
+  margin-bottom: var(--e6);
+}
+
+.s-albergues .seccion__cabecera    { border-top-color: var(--tema-albergues); }
+.s-humanitaria .seccion__cabecera  { border-top-color: var(--tema-humanitaria); }
+.s-personas .seccion__cabecera     { border-top-color: var(--tema-personas); }
+.s-voluntariado .seccion__cabecera { border-top-color: var(--tema-voluntariado); }
+.s-vias .seccion__cabecera         { border-top-color: var(--tema-vias); }
+.s-oficial .seccion__cabecera      { border-top-color: var(--tema-oficial); }
+.s-documenta .seccion__cabecera    { border-top-color: var(--tema-documenta); }
+
+/* Encabezado en tinta, nunca en el color del tema (ADR-028). */
+.seccion h2 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0 0 var(--e2);
+  text-wrap: balance;
+}
+
+.seccion__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e2) var(--e3);
+  margin: 0;
+  font-size: var(--t-min);
+  color: var(--tinta-suave);
+}
+
+.seccion__compartir,
+.seccion__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e1);
+  min-height: var(--alto-secundario);
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio);
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: var(--t-min);
+  font-weight: 650;
+}
+
+/*
+  Con ~30 fichas la página pasa de 12.000 px. Sin esto, quien baja hasta el
+  fondo de una sección no tiene cómo volver al índice: el pulgar no alcanza.
+*/
+.seccion__volver { margin-top: var(--e4); }
+
+.seccion__compartir:hover,
+.seccion__volver:hover { background: var(--fondo-hueco); border-color: var(--tinta); }
+
+/* ----------------------------------------------------------------- ficha */
+
+.fichas { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e3); }
+
+.ficha {
+  border: 2px solid var(--linea);
+  border-radius: var(--radio);
+  padding: var(--e4);
+  scroll-margin-top: var(--e2);
+}
+
+/* 1 y 2 — nombre y tipo. El tipo cae a la misma línea si cabe. */
+.ficha__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--e1) var(--e2);
+  margin-bottom: var(--e2);
+}
+
+.ficha__nombre {
+  font-size: var(--t-nombre);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/*
+  Un solo tratamiento para los diez tipos. Cualquier jerarquía dentro de las
+  etiquetas empieza a leerse como juicio sobre la fuente, y el directorio no
+  juzga a otras plataformas: describe qué cubre cada una.
+*/
+.tipo {
+  display: inline-block;
+  flex: none;
+  font-size: var(--t-min);
+  font-weight: 650;
+  line-height: 1.6;
+  border: 1.5px solid var(--tinta);
+  border-radius: 999px;
+  padding: 0 var(--e2);
+  white-space: nowrap;
+}
+
+.ficha__quien { font-size: var(--t-meta); color: var(--tinta-suave); margin: 0 0 var(--e2); }
+.ficha__que { font-size: var(--t-cuerpo); margin: 0 0 var(--e3); }
+
+/*
+  Zona y fecha en un solo renglón apagado. Que la fecha sea discreta ES el
+  diseño: su fuerza no está en el peso visual sino en que envejece sola.
+*/
+.ficha__meta {
+  font-size: var(--t-min);
+  color: var(--tinta-suave);
+  margin: 0 0 var(--e3);
+  line-height: 1.45;
+}
+
+.ficha__meta .sep { opacity: 0.55; }
+
+/* Único momento en que la fecha levanta la voz: cuando lleva demasiado. */
+.fecha--vieja { color: var(--alta); font-weight: 650; }
+
+/* El canal muestra el destino —dominio o usuario—, nunca «ver más». */
+.canal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e2);
+  min-height: var(--alto-control);
+  padding: 0 var(--e3);
+  border: 2px solid var(--tinta);
+  border-radius: var(--radio);
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: var(--t-cuerpo);
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.canal:hover { background: var(--fondo-hueco); }
+.canal__flecha { flex: none; font-weight: 400; opacity: 0.6; }
+
+.canales-otros { display: flex; flex-wrap: wrap; gap: var(--e2); margin-top: var(--e2); }
+
+.canal-otro {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e1);
+  min-height: var(--alto-secundario);
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio);
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: var(--t-min);
+  font-weight: 650;
+}
+
+.canal-otro:hover { background: var(--fondo-hueco); border-color: var(--tinta); }
+
+/* ------------------- nota de vacío: discontinua, para no leerse como ficha */
+
+.falta {
+  border: 2px dashed var(--linea);
+  border-radius: var(--radio);
+  padding: var(--e4);
+  color: var(--tinta-suave);
+  font-size: var(--t-meta);
+}
+
+.falta strong { color: var(--tinta); }
+.falta p { margin: 0; }
+.falta p + p { margin-top: var(--e2); }
+
+/* ------------------------------------------------------- aportar y avisos */
+
+.aportar {
+  border: 2px solid var(--tinta);
+  border-radius: var(--radio);
+  padding: var(--e4);
+  margin-bottom: var(--e8);
+}
+
+.aportar h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 var(--e2); }
+.aportar p { margin: 0 0 var(--e3); font-size: var(--t-meta); color: var(--tinta-suave); }
+.aportar__vias { display: grid; gap: var(--e2); }
+
+.aportar__via {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  min-height: var(--alto-control);
+  padding: 0 var(--e3);
+  border: 2px solid var(--linea);
+  border-radius: var(--radio);
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: var(--t-meta);
+  font-weight: 650;
+  word-break: break-word;
+}
+
+.aportar__via:hover { background: var(--fondo-hueco); border-color: var(--tinta); }
 
 .aviso {
   border: 2px solid var(--tinta);
   border-radius: var(--radio);
-  padding: 1rem 1.15rem;
-  margin: 0 0 1.5rem;
+  padding: var(--e4);
+  margin: 0 0 var(--e6);
   background: var(--fondo-hueco);
 }
 
-.aviso--privacidad { border-color: var(--privado); }
-.aviso--error { border-color: var(--critica); background: #FDF0F1; }
-
-/* Alto en la publicación: hay que decidir, no es un error. */
-.aviso--revision { border-color: var(--alta); background: #FCF3EC; }
-
-.lista-hallazgos { margin: 0 0 1rem; padding-left: 1.15rem; }
-.lista-hallazgos li + li { margin-top: 0.5rem; }
-
-.decision { display: grid; gap: 0.5rem; margin-top: 1.25rem; }
-.aviso--revision .solicitudes { margin: 0 0 1.25rem; }
-.aviso__titulo { font-weight: 750; margin-bottom: 0.35rem; }
+.aviso__titulo { font-weight: 750; margin-bottom: var(--e1); }
 .aviso p:last-child { margin-bottom: 0; }
-.aviso small { font-size: 0.875rem; }
-
-/* ------------------------------------------------------------ formulario */
-
-.campo { margin-bottom: 1.9rem; }
-
-.campo__etiqueta {
-  display: block;
-  font-size: 1.0625rem;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  margin-bottom: 0.3rem;
-}
-
-.campo__obligatorio { color: var(--critica); font-weight: 800; }
-
-.campo__ayuda {
-  display: block;
-  font-size: 0.9375rem;
-  color: var(--tinta-suave);
-  margin-bottom: 0.6rem;
-}
-
-.campo__candado {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8438rem;
-  font-weight: 650;
-  color: var(--privado);
-  border: 1.5px solid var(--privado);
-  border-radius: 999px;
-  padding: 0.1rem 0.55rem;
-  margin-bottom: 0.5rem;
-}
-
-input[type="text"], input[type="number"], textarea, select {
-  width: 100%;
-  font: inherit;
-  /* Nunca por debajo de 16 px: menos que eso hace que iOS haga zoom al enfocar. */
-  font-size: 1.0625rem;
-  color: var(--tinta);
-  background: var(--fondo);
-  border: 2px solid var(--tinta);
-  border-radius: var(--radio);
-}
-
-input[type="text"], input[type="number"], select {
-  height: var(--alto-control);
-  /* Sin relleno vertical: con altura fija, el navegador centra el texto solo. */
-  padding: 0 var(--pad-control);
-}
-
-textarea {
-  min-height: 6.5rem;
-  padding: 0.7rem var(--pad-control);
-  resize: vertical;
-}
-
-input:focus-visible, textarea:focus-visible, select:focus-visible,
-button:focus-visible, a:focus-visible, .opcion:focus-within {
-  outline: 3px solid var(--foco);
-  outline-offset: 2px;
-}
-
-/* ----------------------------------------------- opciones y la urgencia */
-
-.opciones { display: grid; gap: 0.5rem; }
-
-.opcion {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  min-height: var(--alto-control);
-  padding: 0.7rem 0.9rem;
-  border: 2px solid var(--linea);
-  border-radius: var(--radio);
-  cursor: pointer;
-}
-
-.opcion:hover { border-color: var(--tinta); }
-.opcion input { margin: 0.2rem 0 0; width: 1.15rem; height: 1.15rem; flex: none; accent-color: var(--tinta); }
-.opcion--marcada { border-color: var(--tinta); background: var(--fondo-hueco); }
-
-/* La firma del sitio: la urgencia como bandas de señal a ancho completo. */
-.urgencia { display: grid; gap: 0.5rem; }
-
-.urgencia .opcion {
-  border-width: 2px;
-  border-left-width: 12px;
-  font-weight: 650;
-  min-height: 3.5rem;
-  align-items: center;
-}
-
-.urgencia .opcion:nth-child(1) { border-left-color: var(--critica); }
-.urgencia .opcion:nth-child(2) { border-left-color: var(--alta); }
-.urgencia .opcion:nth-child(3) { border-left-color: var(--media); }
-.urgencia .opcion--marcada:nth-child(1) { background: #FBEFF0; border-color: var(--critica); }
-.urgencia .opcion--marcada:nth-child(2) { background: #FCF2EC; border-color: var(--alta); }
-.urgencia .opcion--marcada:nth-child(3) { background: #FAF5E6; border-color: var(--media); }
-
-/* ----------------------------------------------------------------- mapa */
-
-.mapa {
-  height: 60vh;
-  min-height: 20rem;
-  border: 2px solid var(--tinta);
-  border-radius: var(--radio);
-  background: var(--fondo-hueco);
-}
-
-.mapa--selector { height: 17rem; margin-bottom: 0.6rem; }
-
-.coordenadas {
-  font-size: 0.875rem;
-  color: var(--tinta-suave);
-  margin-bottom: 0.6rem;
-}
-
-/* Cuatro formas de fijar el punto: por nombre, tocándolo, con el GPS, o a mano. */
-.buscador { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; }
-
-/* `min-width: 0` deja que el campo se encoja: sin él, su ancho mínimo por
-   contenido empuja al botón y desborda la fila en pantallas angostas. */
-.buscador input { flex: 1 1 auto; min-width: 0; }
-.buscador .boton { flex: 0 0 auto; }
-
-.resultados {
-  list-style: none;
-  margin: 0 0 0.6rem;
-  padding: 0;
-  border: 2px solid var(--tinta);
-  border-radius: var(--radio);
-}
-
-.resultados li + li { border-top: 1px solid var(--linea); }
-
-.resultados button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  font: inherit;
-  font-size: 0.9375rem;
-  color: var(--tinta);
-  background: none;
-  border: 0;
-  padding: 0.7rem 0.8rem;
-  cursor: pointer;
-}
-
-.resultados button:hover { background: var(--fondo-hueco); }
-
-/*
-  En un teléfono angosto, latitud + longitud + botón en un solo renglón dejaba
-  ~108 px por campo, y «-76.6611» ya pide unos 98. Van en dos columnas y el
-  botón debajo, a lo ancho. Desde 30rem sí caben los tres en línea.
-*/
-.coordenadas-manuales {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem 0.6rem;
-  margin-top: 1rem;
-}
-
-.coordenadas-manuales label {
-  display: block;
-  font-size: 0.8125rem;
-  font-weight: 650;
-  color: var(--tinta-suave);
-  margin-bottom: 0.25rem;
-}
-
-.coordenadas-manuales .boton { grid-column: 1 / -1; width: 100%; }
-
-@media (min-width: 30rem) {
-  .coordenadas-manuales { grid-template-columns: 1fr 1fr auto; align-items: end; }
-  .coordenadas-manuales .boton { grid-column: auto; width: auto; }
-}
-
-/* -------------------------------------------------------------- botones */
-
-.boton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: var(--alto-boton);
-  font: inherit;
-  font-size: 1.125rem;
-  font-weight: 750;
-  letter-spacing: -0.01em;
-  color: var(--fondo);
-  background: var(--tinta);
-  border: 2px solid var(--tinta);
-  border-radius: var(--radio);
-  padding: 0 1.25rem;
-  cursor: pointer;
-}
-
-.boton:hover:not(:disabled) { background: #000; }
-.boton:disabled { opacity: 0.55; cursor: progress; }
-
-/* Los secundarios comparten altura con los campos: van a su lado en una fila. */
-.boton--secundario {
-  color: var(--tinta);
-  background: var(--fondo);
-  font-size: 1.0625rem;
-  height: var(--alto-control);
-}
-
-/*
-  Va DESPUÉS de `.boton` a propósito: misma especificidad, así que gana el que
-  se declara al final. Estando antes, el `width: 100%` de `.boton` lo anulaba y
-  el botón se comía la fila entera dejando el campo sin espacio.
-*/
-.boton--angosto { width: auto; padding-inline: 1.25rem; }
-
-.boton--secundario:hover:not(:disabled) { background: var(--fondo-hueco); }
-
-/* ------------------------------------------------ lista de solicitudes */
-
-.solicitudes { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
-
-.solicitud {
-  border: 2px solid var(--linea);
-  border-left-width: 10px;
-  border-radius: var(--radio);
-  padding: 0.9rem 1rem;
-}
-
-.solicitud--critica { border-left-color: var(--critica); }
-.solicitud--alta { border-left-color: var(--alta); }
-.solicitud--media { border-left-color: var(--media); }
-.solicitud--sin { border-left-color: var(--linea); }
-/* La búsqueda de familiar no tiene urgencia: se distingue por color, no por escala. */
-.solicitud--busqueda { border-left-color: var(--busqueda); }
-
-/*
-  Leyenda del mapa. Sin ella los colores son decoración: quien llega de nuevo
-  no tiene cómo saber que el rojo es «persona atrapada» y el azul «desaparecida».
-*/
-.leyenda {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  margin: 0 0 1.5rem;
-  padding: 0;
-  list-style: none;
-  font-size: 0.9375rem;
-}
-
-.leyenda li { display: flex; align-items: center; gap: 0.4rem; }
-
-.leyenda__punto {
-  width: 0.85rem;
-  height: 0.85rem;
-  border-radius: 50%;
-  border: 2px solid var(--tinta);
-  flex: none;
-}
-
-.solicitud__titulo { font-weight: 750; letter-spacing: -0.015em; margin-bottom: 0.2rem; }
-.solicitud__meta { font-size: 0.875rem; color: var(--tinta-suave); }
-
-.etiquetas { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
-
-.etiqueta {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: 1.5px solid var(--linea);
-  border-radius: 999px;
-  padding: 0.1rem 0.55rem;
-}
-
-.etiqueta--verificada { border-color: var(--apoyo); color: var(--apoyo); }
 
 /* --------------------------------------------------------------- varios */
 
-.vacio {
-  border: 2px dashed var(--linea);
-  border-radius: var(--radio);
-  padding: 2rem 1.25rem;
-  text-align: center;
-  color: var(--tinta-suave);
-}
+h2 { font-size: 1.25rem; letter-spacing: -0.02em; font-weight: 750; margin: var(--e8) 0 var(--e3); }
 
 .pie {
   border-top: 2px solid var(--linea);
-  margin-top: 3rem;
-  padding-top: 1.25rem;
-  font-size: 0.9062rem;
+  margin-top: var(--e12);
+  padding-top: var(--e4);
+  font-size: var(--t-meta);
   color: var(--tinta-suave);
 }
 
+.pie p { margin: 0 0 var(--e3); }
+.pie p:last-child { margin: 0; }
+
 a { color: var(--foco); }
+
+:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+
+.oculto {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .saltar { position: absolute; left: -9999px; }
-.saltar:focus { left: 0.5rem; top: 0.5rem; background: var(--fondo); padding: 0.5rem; z-index: 10; }
+.saltar:focus { left: var(--e2); top: var(--e2); background: var(--fondo); padding: var(--e2); z-index: 10; }
+
+@media (min-width: 30rem) {
+  .indice { grid-template-columns: 1fr 1fr 1fr; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

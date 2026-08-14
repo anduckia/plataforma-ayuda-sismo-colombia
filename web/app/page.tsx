@@ -1,58 +1,188 @@
-import { FORMULARIOS } from '@/lib/ushahidi';
+import Ficha from '@/components/Ficha';
+import { CONTACTO, MENSAJES_DIRECTOS } from '@/lib/contacto';
+import { FUENTES, VACIOS } from '@/lib/fuentes-datos';
+import { revisar, TEMAS, type TemaId } from '@/lib/fuentes';
+import { haceCuanto, hoyEnBogota, resumenDelInventario } from '@/lib/fecha';
 
-const SMS = process.env.NEXT_PUBLIC_SMS?.trim();
+/**
+ * Media hora. Los datos son estáticos, pero la ANTIGÜEDAD de cada revisión se
+ * calcula contra el día de hoy: una página construida una vez congela el «hace
+ * 5 días» y al séptimo está mintiendo, que es justo lo que RF-34 impide.
+ */
+export const revalidate = 1800;
 
-export default function Inicio() {
+const plural = (n: number, uno: string, varios: string) =>
+  `${n} ${n === 1 ? uno : varios}`;
+
+/**
+ * Lo que se pinta cuando un tema no tiene fichas.
+ *
+ * La distinción importa: una nota escrita a mano afirma que alguien buscó y no
+ * encontró, y eso vale más que rellenar. El texto por defecto NO afirma eso —
+ * dice que no hemos cargado nada, que es lo único cierto mientras nadie haya
+ * buscado. Confundir las dos cosas es prometer trabajo que no se hizo.
+ */
+function SinFichas({ tema }: { tema: TemaId }) {
+  const nota = VACIOS.find((v) => v.tema === tema);
+
+  if (!nota) {
+    return (
+      <div className="falta">
+        <p>Todavía no hemos cargado fuentes de este tema.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="falta">
+      <p>{nota.texto}</p>
+      {nota.cola && <p>{nota.cola}</p>}
+    </div>
+  );
+}
+
+export default function Directorio() {
+  const hoy = hoyEnBogota();
+  const { validas, descartadas } = revisar(FUENTES, hoy);
+
+  // Falla cerrado: la ficha mala no se pinta, pero queda registrada para que
+  // alguien la arregle en vez de desaparecer en silencio.
+  for (const { fuente, problemas } of descartadas) {
+    console.warn(`[directorio] «${fuente.nombre || fuente.id}» no se publica: ${problemas.join('; ')}`);
+  }
+
+  const porTema = (tema: TemaId) => validas.filter((f) => f.tema === tema);
+  const inventario = resumenDelInventario(validas.map((f) => f.revisado), hoy);
+  const temasVacios = TEMAS.filter((t) => porTema(t.id).length === 0).length;
+
   return (
     <>
-      <h1>¿Qué necesitas hacer?</h1>
+      <h1>Dónde está cada cosa</h1>
       <p className="entradilla">
-        Elige una opción. No necesitas crear una cuenta y no cuesta nada.
+        Un directorio de fuentes sobre el sismo: albergues, ayuda, búsqueda de personas,
+        voluntariado y canales oficiales. No recogemos datos ni pedimos dinero: te llevamos
+        al sitio correcto y te decimos cuándo lo revisamos por última vez.
       </p>
 
-      <nav className="vias" aria-label="Qué quieres hacer">
-        {(Object.keys(FORMULARIOS) as (keyof typeof FORMULARIOS)[]).map((slug) => {
-          const f = FORMULARIOS[slug];
+      {/*
+        La promesa, antes del índice. Quien no lea nada más, lee esto: promete
+        lo revisado, no «todo», y nombra sus propios huecos (RF-34, RF-35).
+      */}
+      <section className="estado" aria-label="Estado del directorio">
+        {inventario.total === 0 ? (
+          <>
+            <p className="estado__cifra">Todavía no hay fuentes cargadas</p>
+            <p className="estado__detalle">
+              Estamos comprobando una por una antes de publicarlas. Preferimos una lista
+              corta que se sostenga a una larga que mande a nadie al sitio equivocado.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="estado__cifra">
+              {plural(inventario.total, 'fuente revisada', 'fuentes revisadas')}
+            </p>
+            <p className="estado__detalle">
+              La más reciente, {haceCuanto(inventario.masReciente!)}. La más antigua,{' '}
+              {haceCuanto(inventario.masAntigua!)}.
+            </p>
+            {inventario.vencidas > 0 && (
+              <p className="estado__detalle estado__falta">
+                {plural(inventario.vencidas, 'fuente lleva', 'fuentes llevan')} más de una
+                semana sin revisar. {inventario.vencidas === 1 ? 'Está marcada' : 'Están marcadas'}
+                {' '}en su ficha.
+              </p>
+            )}
+            {temasVacios > 0 && (
+              <p className="estado__detalle estado__falta">
+                Hay {plural(temasVacios, 'tema', 'temas')} donde todavía no tenemos ninguna
+                fuente. {temasVacios === 1 ? 'Está' : 'Están'} abajo, con su nombre.
+              </p>
+            )}
+          </>
+        )}
+      </section>
+
+      {/*
+        El índice no es una comodidad: con ~30 fichas la página pasa de 12.000
+        px, y el buscador y los filtros están descartados por sobreingeniería.
+        Esto, el regreso de cada sección y el compartir por sección son toda la
+        navegación del directorio (RF-32).
+      */}
+      <h2 className="indice__titulo" id="temas">Ir a un tema</h2>
+      <ul className="indice">
+        {TEMAS.map((t) => {
+          const cuantas = porTema(t.id).length;
           return (
-            <a key={slug} className={`via via--${f.tono}`} href={`/${slug}`}>
-              <span className="via__titulo">{f.titulo}</span>
-              <span className="via__desc">{f.descripcion}</span>
-              <span className="via__meta" style={{ fontSize: '0.8rem', opacity: 0.85, marginTop: '0.4rem', display: 'block' }}>
-                {f.visibilidad}
-              </span>
-            </a>
+            <li key={t.id}>
+              <a className={`i-${t.id}`} href={`#${t.id}`}>
+                {t.corto}
+                <span className={`indice__conteo${cuantas === 0 ? ' indice__conteo--cero' : ''}`}>
+                  {cuantas === 0 ? 'Sin fuentes' : plural(cuantas, 'fuente', 'fuentes')}
+                </span>
+              </a>
+            </li>
           );
         })}
-      </nav>
+      </ul>
 
-      <div className="aviso aviso--privacidad">
-        <p className="aviso__titulo">Tus datos de contacto no se publican</p>
-        <p>
-          Tu teléfono y tu dirección exacta <strong>nunca son públicos</strong>: solo los ven
-          los ayudantes que el equipo verificó uno por uno, por teléfono.
-        </p>
-        <p>
-          <strong>Nunca te pediremos dinero, claves ni números de cuenta.</strong> Si alguien
-          lo hace en nombre de este sitio, es un fraude.
-        </p>
-      </div>
+      {TEMAS.map((t) => {
+        const fichas = porTema(t.id);
+        return (
+          <section className={`seccion s-${t.id}`} id={t.id} key={t.id}>
+            <div className="seccion__cabecera">
+              <h2>{t.nombre}</h2>
+              <p className="seccion__pie">
+                <span>
+                  {fichas.length === 0
+                    ? 'Sin fuentes todavía'
+                    : plural(fichas.length, 'fuente', 'fuentes')}
+                </span>
+                {/*
+                  Ancla pura: compartir solo esta parte por WhatsApp tiene que
+                  funcionar sin JavaScript (RF-36).
+                */}
+                <a className="seccion__compartir" href={`#${t.id}`}>
+                  Compartir esta sección
+                </a>
+              </p>
+            </div>
 
-      {SMS && (
-        <div className="aviso">
-          <p className="aviso__titulo">¿Sin internet?</p>
-          <p>
-            Envía un SMS al <strong>{SMS}</strong> con: AYUDA + qué necesitas + cuántas
-            personas son + municipio y barrio.
-          </p>
+            {fichas.length > 0 ? (
+              <ul className="fichas">
+                {fichas.map((f) => <Ficha key={f.id} fuente={f} hoy={hoy} />)}
+              </ul>
+            ) : (
+              <SinFichas tema={t.id} />
+            )}
+
+            {/* Sin esto, quien llega al fondo de una sección no puede cambiar de tema. */}
+            <a className="seccion__volver" href="#temas">
+              <span aria-hidden="true">↑</span> Ir a otro tema
+            </a>
+          </section>
+        );
+      })}
+
+      <section className="aportar">
+        <h2>¿Conoces una fuente que falta?</h2>
+        <p>
+          Escríbenos y la revisamos. No publicamos ofertas de particulares ni datos de
+          contacto de personas: solo fuentes que se mantienen en el tiempo.
+        </p>
+        <div className="aportar__vias">
+          <a className="aportar__via" href={`mailto:${CONTACTO}`}>
+            Escribir a {CONTACTO}
+          </a>
+          {MENSAJES_DIRECTOS.map(({ red, href }) => (
+            <a className="aportar__via" key={red} href={href} rel="noopener">
+              Mensaje directo en {red}
+              <span className="canal__flecha" aria-hidden="true">↗</span>
+              <span className="oculto">Se abre en otro sitio</span>
+            </a>
+          ))}
         </div>
-      )}
-
-      <p className="pie">
-        Esta plataforma es ciudadana y <strong>complementa a los organismos de socorro</strong>:
-        suma visibilidad, no los reemplaza. Para personas desaparecidas, registra el caso
-        además en la Cruz Roja Colombiana. Hay réplicas: si tu casa está dañada, no vuelvas
-        a entrar.
-      </p>
+      </section>
     </>
   );
 }
