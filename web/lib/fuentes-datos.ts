@@ -22,11 +22,6 @@ import type { Fuente, Vacio } from './fuentes';
  * Lo que se revisó y quedó FUERA, para que nadie lo vuelva a intentar sin
  * saber por qué se cayó:
  *
- * - `smartlink2.metricool.com/public/smartlink/cruzrojabogota` — agregador de
- *   enlaces de Cruz Roja Bogotá. No cargó en ninguna de las tres visitas: se
- *   queda en «Loading, please wait…». No se puede comprobar a dónde manda, así
- *   que no se manda a nadie. El canal institucional de la Cruz Roja sí está
- *   cargado abajo.
  * - Una cuenta de Instagram de una veterinaria que está convocando voluntarios
  *   estos días. Es la cuenta personal de una particular, y §5 lo prohíbe
  *   expresamente: listarla aquí le echa encima un volumen de mensajes que no
@@ -147,6 +142,35 @@ export const FUENTES: Fuente[] = [
       'La página se presenta como herramienta comunitaria y no dice ser de ninguna ' +
       'entidad. Abierta el 14-ago, con reportes activos en las tres secciones.',
     principal: { tipo: 'pagina', enlace: 'https://emergencia-mascotas.vercel.app/' },
+  },
+  /*
+    Única ficha del directorio cuya comprobación NO es del sitio sino del
+    equipo: la página no llega a cargar en las visitas automáticas desde este
+    repo. Va porque el equipo confirmó qué es.
+
+    Ojo con el efecto secundario: el canal muestra el dominio de destino, y
+    aquí ese dominio es `smartlink2.metricool.com`, que no dice «Cruz Roja» por
+    ningún lado. El nombre y el «quién» de la ficha son los que sostienen la
+    identidad. Si la seccional llega a publicar el mismo índice en un dominio
+    propio, se cambia por ese: se lee mejor y se comprueba solo.
+  */
+  {
+    id: 'cruz-roja-bogota-canales',
+    tema: 'voluntariado',
+    nombre: 'Todos los canales de la Cruz Roja en Bogotá',
+    quien: 'Cruz Roja Colombiana, Seccional Cundinamarca y Bogotá',
+    que: 'Índice de los canales oficiales de la seccional.',
+    zona: 'Bogotá y Cundinamarca',
+    revisado: '2026-08-14',
+    comprobacion:
+      'Confirmada por el equipo el 14-ago como el índice de canales oficiales de la ' +
+      'seccional. Queda anotado que la página no cargó en las comprobaciones hechas ' +
+      'desde el repo —se queda en «Loading»—, así que aquí respalda el equipo y no el ' +
+      'propio sitio.',
+    principal: {
+      tipo: 'pagina',
+      enlace: 'https://smartlink2.metricool.com/public/smartlink/cruzrojabogota',
+    },
   },
 
   /* ───────────────────────────────────────────────────────── donaciones ── */
