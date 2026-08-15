@@ -114,6 +114,28 @@ export const FUENTES: Fuente[] = [
     },
   },
   {
+    id: 'mapa-voluntariado-bogota',
+    tema: 'voluntariado',
+    nombre: 'Voluntariado Bogotá - Agosto 2026',
+    quien: 'Instagram: @stromanthetriostar',
+    que:
+      'Punto por punto en Bogotá: si ese día reciben voluntarios o donaciones, con ' +
+      'horarios, enlaces de inscripción y la hora de la última actualización de cada lugar.',
+    zona: 'Bogotá',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Lista compartida de Google Maps titulada «Voluntariado Bogotá - Agosto 2026», ' +
+      'firmada por el usuario stromanthetriostar; 103 lugares con actualización por punto ' +
+      'del 14-ago. Abierta el 15-ago. Quien la mantiene se identifica solo por su usuario ' +
+      'e Instagram, no por una entidad.',
+    principal: {
+      tipo: 'mapa',
+      etiqueta: 'Abrir en Google Maps',
+      enlace:
+        'https://www.google.com/maps/@4.7992087,-74.2883166,10.85z/data=!4m3!11m2!2sXJQY-o3hsph0A1kkDaEESw!3e3?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D',
+    },
+  },
+  {
     id: 'acopio-centros',
     tema: 'voluntariado',
     nombre: 'Centros de acopio: qué falta y dónde sobra',
@@ -128,6 +150,70 @@ export const FUENTES: Fuente[] = [
       'no hay identidad que suplantar. Abierta el 14-ago: 65 centros cargados y ' +
       'necesidades con hora de actualización de ese mismo día.',
     principal: { tipo: 'pagina', enlace: 'https://ayudaspereira.com/' },
+  },
+  {
+    id: 'puente-logistico',
+    tema: 'voluntariado',
+    nombre: 'Hay camiones listos. Hay acopios llenos. Falta conectarlos.',
+    quien: 'Instagram contacto: @lacolombiajera @serinflorescencia',
+    que:
+      'Quién tiene vehículo y quién necesita uno para mover las ayudas, organizado a ' +
+      'partir de los comentarios de una publicación de Instagram: una ficha por persona, ' +
+      'con su comentario original completo y la fecha en que lo publicó.',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Confirmada por el equipo el 15-ago: la página está compartida públicamente y la ' +
+      'operan dos personas, identificadas en Instagram como @lacolombiajera y ' +
+      '@serinflorescencia. Es una página generada en claude.ai (un «artifact»), cuyo ' +
+      'dominio no dice quién está detrás, así que la identidad la sostienen el nombre y ' +
+      'el «quién» de la ficha. El contenido no abrió en las comprobaciones hechas desde ' +
+      'el repo —queda tras el marco de sesión de claude.ai—, de modo que aquí respalda ' +
+      'el equipo y no el propio sitio.',
+    principal: {
+      tipo: 'pagina',
+      etiqueta: 'Ver quién tiene vehículo y quién necesita uno',
+      enlace: 'https://claude.ai/code/artifact/a3912c24-7667-4c82-9da5-f94129c18734',
+    },
+  },
+  {
+    id: 'conectar-acopio-transporte',
+    tema: 'voluntariado',
+    nombre: 'Conecta tu acopio, tu vehículo o una zona rural con la ayuda',
+    quien: 'Juliana Pachón · Instagram: @pony____________',
+    que:
+      'Tres formularios de una misma coordinación logística: registrar un centro de ' +
+      'acopio y lo que tiene para donar, ofrecer un vehículo con espacio en su ruta, o ' +
+      'reportar una zona rural con necesidades cerca de una vía principal. Con eso cruzan ' +
+      'acopios, transportes y destinos para que las donaciones lleguen, también a zonas ' +
+      'de difícil acceso.',
+    zona: 'Valle del Cauca, Chocó, Eje Cafetero, Cauca y Cundinamarca',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Los tres formularios los firma Juliana Pachón Neira, con un WhatsApp de contacto, ' +
+      'y el equipo los identifica con la cuenta de Instagram @pony____________. Abiertos ' +
+      'el 15-ago: «Centros de Acopio», «Transportes y transportistas» y «Rutas y Zonas ' +
+      'Rurales», los tres activos. Es la coordinación de una persona, no de una entidad; ' +
+      'la identidad la sostienen su nombre y su Instagram.',
+    principal: {
+      tipo: 'formulario',
+      etiqueta: 'Registrar un centro de acopio',
+      enlace:
+        'https://docs.google.com/forms/d/e/1FAIpQLSegssXhTQVdvTCwThg9QwlawIywdkjNaGRGbpASH_ozsyTbpw/viewform',
+    },
+    otros: [
+      {
+        tipo: 'formulario',
+        etiqueta: 'Ofrecer un vehículo para transportar',
+        enlace:
+          'https://docs.google.com/forms/d/e/1FAIpQLSeEdJ9RBik61tIz0_BfWGgYczj3omgSi1LK1AliZC0jLugRrw/viewform',
+      },
+      {
+        tipo: 'formulario',
+        etiqueta: 'Reportar una zona rural en una ruta',
+        enlace:
+          'https://docs.google.com/forms/d/e/1FAIpQLSeRh4BrCWUv2ZNC1EZjW4ab_LLkXYTs5VoMemPWrwX9ogsrpQ/viewform',
+      },
+    ],
   },
   {
     id: 'huellas-mascotas',
@@ -220,6 +306,60 @@ export const FUENTES: Fuente[] = [
       tipo: 'pagina',
       enlace: 'https://plan.org.co/quiero-ayudar/terremoto-en-colombia/',
     },
+  },
+
+  /* ─────────────────────────────────────────── quién documenta ── */
+  {
+    id: 'natha-por-los-animales',
+    tema: 'documenta',
+    nombre: '@nathaporlosanimales',
+    quien: 'Dr. Nathalia Villada-Veterinaria',
+    que:
+      'Cuenta que se ha vuelto un canal para seguir, al día, lo que va pasando con la ' +
+      'emergencia, y qué se necesita.',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Confirmada por el equipo el 15-ago: la cuenta de Dr. Nathalia Villada ' +
+      '(@nathaporlosanimales) ya funciona como canal público sobre el terremoto y los ' +
+      'incendios, y el equipo decidió incluirla. Es una cuenta personal, no de una ' +
+      'entidad; entra por la excepción de §5 para figuras que ya operan como canal ' +
+      'público, con el equipo respondiendo por la inclusión.',
+    principal: { tipo: 'instagram', cuenta: 'nathaporlosanimales' },
+  },
+  {
+    id: 'andrea-rico',
+    tema: 'documenta',
+    nombre: '@andrearico_24',
+    quien: 'Cuenta de Instagram',
+    que:
+      'Voluntaria en el Chocó que publica reels de forma constante sobre cómo va la ' +
+      'situación con la emergencia, las ayudas que llegan y lo que se va necesitando.',
+    zona: 'Chocó',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Aportada por el equipo el 15-ago como cuenta de una voluntaria en el Chocó que ' +
+      'documenta la emergencia en reels. Es una cuenta personal, no una entidad; entra ' +
+      'por decisión del equipo (excepción de §5 para personas que ya operan como canal ' +
+      'público).',
+    principal: { tipo: 'instagram', cuenta: 'andrearico_24' },
+  },
+  {
+    id: 'rossy-lemos',
+    tema: 'documenta',
+    nombre: 'Rossy Lemos',
+    quien: 'Cuenta de Instagram · periodista y presentadora',
+    que:
+      'Presentadora reconocida que documenta, caso por caso, a las personas afectadas ' +
+      'en el Chocó y las formas de ayudar —centros de acopio, voluntarios—, y las ' +
+      'difunde en sus historias y reels.',
+    zona: 'Chocó',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Aportada por el equipo el 15-ago: presentadora y periodista reconocida que ' +
+      'documenta la situación en el Chocó y difunde formas de ayudar. Es una figura ' +
+      'pública que ya opera como canal; entra por decisión del equipo (excepción de §5 ' +
+      'para personas que ya operan como canal público).',
+    principal: { tipo: 'instagram', cuenta: 'rossylemos' },
   },
 
   /* ────────────────────────────────────────────────────── links de ayuda ── */

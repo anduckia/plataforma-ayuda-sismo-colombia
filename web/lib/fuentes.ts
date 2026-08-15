@@ -75,7 +75,7 @@ export type TipoEnlace = keyof typeof CON_ENLACE;
  */
 export type Canal =
   | { tipo: TipoCuenta; cuenta: string }
-  | { tipo: TipoEnlace; enlace: string }
+  | { tipo: TipoEnlace; enlace: string; etiqueta?: string }
   | { tipo: 'telefono'; numero: string };
 
 export type Tipo = Canal['tipo'];
@@ -117,9 +117,17 @@ export function destinoDe(canal: Canal): { href: string; texto: string } {
 
   if (canal.tipo === 'whatsapp') {
     // El enlace de invitación no dice nada («chat.whatsapp.com/K3f9…»), así que
-    // el texto describe qué es. Es la única excepción a mostrar el destino, y
-    // la píldora de tipo ya avisa que se entra a un grupo.
+    // el texto describe qué es. La píldora de tipo ya avisa que se entra a un
+    // grupo.
     return { href: canal.enlace, texto: 'Grupo abierto en WhatsApp' };
+  }
+
+  // Mismo caso que WhatsApp: cuando varios enlaces caen en el mismo dominio
+  // —tres Google Forms en `docs.google.com`, dos Google Docs— el dominio no
+  // distingue cuál es cuál. `etiqueta` dice para qué sirve ESE enlace; describe
+  // el propósito del formulario, no quién está detrás (eso sigue en `quien`).
+  if (canal.etiqueta?.trim()) {
+    return { href: canal.enlace, texto: canal.etiqueta.trim() };
   }
 
   let dominio = canal.enlace;
