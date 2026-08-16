@@ -21,6 +21,11 @@
  */
 export const TEMAS = [
   {
+    id: 'mapas',
+    nombre: 'Mapas en tiempo real',
+    corto: 'Mapas',
+  },
+  {
     id: 'voluntariado',
     nombre: 'Voluntariado y centros de acopio',
     corto: 'Voluntariado',

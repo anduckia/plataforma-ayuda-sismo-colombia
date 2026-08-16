@@ -74,10 +74,10 @@ import type { Fuente, Vacio } from './fuentes';
  * cada bloque es lo primero que ve quien llega a esa sección.
  */
 export const FUENTES: Fuente[] = [
-  /* ──────────────────────────────── voluntariado y centros de acopio ── */
+  /* ─────────────────────────────────────────── mapas en tiempo real ── */
   {
     id: 'mapa-puntos-ayuda',
-    tema: 'voluntariado',
+    tema: 'mapas',
     nombre: 'Mapa vivo de puntos de ayuda',
     quien: 'Artefacto',
     que:
@@ -93,6 +93,68 @@ export const FUENTES: Fuente[] = [
       enlace: 'https://mapa-emergencia.artefactofilms.workers.dev/',
     },
   },
+  {
+    id: 'mapa-voluntariado-bogota',
+    tema: 'mapas',
+    nombre: 'Voluntariado Bogotá - Agosto 2026',
+    quien: 'Instagram: @stromanthetriostar',
+    que:
+      'Punto por punto en Bogotá: si ese día reciben voluntarios o donaciones, con ' +
+      'horarios, enlaces de inscripción y la hora de la última actualización de cada lugar.',
+    zona: 'Bogotá',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Lista compartida de Google Maps titulada «Voluntariado Bogotá - Agosto 2026», ' +
+      'firmada por el usuario stromanthetriostar; 103 lugares con actualización por punto ' +
+      'del 14-ago. Abierta el 15-ago. Quien la mantiene se identifica solo por su usuario ' +
+      'e Instagram, no por una entidad.',
+    principal: {
+      tipo: 'mapa',
+      etiqueta: 'Abrir en Google Maps',
+      enlace:
+        'https://www.google.com/maps/@4.7992087,-74.2883166,10.85z/data=!4m3!11m2!2sXJQY-o3hsph0A1kkDaEESw!3e3?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D',
+    },
+  },
+  {
+    id: 'bengala-donde-llevar-ayuda',
+    tema: 'mapas',
+    nombre: 'Dónde llevar la ayuda',
+    quien: 'Instagram: @leoncio.aja',
+    que:
+      'Puntos abiertos hoy en un mapa: dónde llevar donaciones, atención en salud, ' +
+      'albergues y trámites, cada uno con el día y la hora en que se publicó.',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Abierta con lectura mínima el 15-ago: mapa con unos 369 puntos (donaciones, ' +
+      'salud, albergues, trámites), cada uno con fecha y hora de publicación. El pie se ' +
+      'declara solo —«lo hace la comunidad, no una entidad oficial»— y dice reunir lo que ' +
+      'la gente publica para apoyar a las fuentes oficiales (UNGRD, alcaldías y ' +
+      'gobernaciones). El equipo lo identifica con la cuenta de Instagram @leoncio.aja; ' +
+      'el dominio bengalacol.org no nombra responsable, así que la identidad la sostienen ' +
+      'esa cuenta y la declaración del propio sitio.',
+    principal: { tipo: 'mapa', enlace: 'https://bengalacol.org/' },
+  },
+  {
+    id: 'suma-plataforma-humanitaria',
+    tema: 'mapas',
+    nombre: 'SUMA Plataforma Humanitaria',
+    quien: 'Instagram: @fposadat · difundido por @luchocloud',
+    que:
+      'Mapa de coordinación humanitaria: ubica albergues, agua potable y puntos de ' +
+      'salud, y permite reportar emergencias o pedir ayuda (SOS). Los puntos están ' +
+      'organizados por ciudad —Bogotá, Cali, Medellín, Eje Cafetero, Quibdó y Caribe.',
+    zona: 'Bogotá, Cali, Medellín, Eje Cafetero, Quibdó y Caribe',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Abierta con lectura mínima el 15-ago: mapa de coordinación (Leaflet) con puntos ' +
+      'por ciudad para ubicar albergues, agua y salud y reportar emergencias. El dominio ' +
+      'suma.web.app (Firebase) no nombra responsable; el equipo lo identifica con la ' +
+      'cuenta de Instagram @fposadat, difundida por @luchocloud, y esa cuenta es la que ' +
+      'sostiene la identidad.',
+    principal: { tipo: 'mapa', enlace: 'https://suma.web.app/' },
+  },
+
+  /* ──────────────────────────────── voluntariado y centros de acopio ── */
   {
     id: 'voluntariado-bogota-medellin',
     tema: 'voluntariado',
@@ -111,28 +173,6 @@ export const FUENTES: Fuente[] = [
       tipo: 'documento',
       enlace:
         'https://docs.google.com/spreadsheets/d/1-hMGwC0XaSu5ddZ896gYyVRpmbPkVYg3NJ_6rSxK4Y8/htmlview',
-    },
-  },
-  {
-    id: 'mapa-voluntariado-bogota',
-    tema: 'voluntariado',
-    nombre: 'Voluntariado Bogotá - Agosto 2026',
-    quien: 'Instagram: @stromanthetriostar',
-    que:
-      'Punto por punto en Bogotá: si ese día reciben voluntarios o donaciones, con ' +
-      'horarios, enlaces de inscripción y la hora de la última actualización de cada lugar.',
-    zona: 'Bogotá',
-    revisado: '2026-08-15',
-    comprobacion:
-      'Lista compartida de Google Maps titulada «Voluntariado Bogotá - Agosto 2026», ' +
-      'firmada por el usuario stromanthetriostar; 103 lugares con actualización por punto ' +
-      'del 14-ago. Abierta el 15-ago. Quien la mantiene se identifica solo por su usuario ' +
-      'e Instagram, no por una entidad.',
-    principal: {
-      tipo: 'mapa',
-      etiqueta: 'Abrir en Google Maps',
-      enlace:
-        'https://www.google.com/maps/@4.7992087,-74.2883166,10.85z/data=!4m3!11m2!2sXJQY-o3hsph0A1kkDaEESw!3e3?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D',
     },
   },
   {
@@ -307,6 +347,27 @@ export const FUENTES: Fuente[] = [
       enlace: 'https://plan.org.co/quiero-ayudar/terremoto-en-colombia/',
     },
   },
+  {
+    id: 'presentes-colombia-se-levanta',
+    tema: 'donaciones',
+    nombre: 'Colombia se Levanta: agua para comunidades damnificadas',
+    quien: 'Corporación Presentes · campaña impulsada por @WestCol',
+    que:
+      'Campaña «Colombia se Levanta» para abastecer de agua a comunidades damnificadas; ' +
+      'aportas un monto único en línea, desde $10.000.',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Abierta el 15-ago: página de donación de la campaña «Colombia se Levanta» para ' +
+      'abastecimiento de agua. La opera Corporación Presentes, identificada al pie con ' +
+      'dirección en Medellín (Calle 16b sur #41-16), teléfonos, correo ' +
+      'comunicaciones@presentes.co, política de privacidad y PQRSF. El equipo confirma ' +
+      'la campaña como fuente confiable para donar, impulsada por @WestCol.',
+    principal: {
+      tipo: 'pagina',
+      enlace:
+        'https://presentes.co/abastecimiento-de-agua-en-comunidades-damnificadas/donacion/colombiaselevanta',
+    },
+  },
 
   /* ─────────────────────────────────────────── quién documenta ── */
   {
@@ -360,6 +421,74 @@ export const FUENTES: Fuente[] = [
       'pública que ya opera como canal; entra por decisión del equipo (excepción de §5 ' +
       'para personas que ya operan como canal público).',
     principal: { tipo: 'instagram', cuenta: 'rossylemos' },
+  },
+  {
+    id: 'valentina-herrada',
+    tema: 'documenta',
+    nombre: 'Valentina Herrada',
+    quien: 'Cuenta de Instagram',
+    que:
+      'Persona voluntaria en Cali que documenta cómo va la situación con la emergencia, ' +
+      'las donaciones y demás temas.',
+    zona: 'Cali, Valle del Cauca',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Aportada por el equipo el 15-ago como cuenta de una persona voluntaria en Cali ' +
+      'que documenta la emergencia en terreno, junto a las demás cuentas de voluntarios. ' +
+      'Es una cuenta personal, no una entidad; entra por decisión del equipo (excepción ' +
+      'de §5 para personas que ya operan como canal público).',
+    principal: { tipo: 'instagram', cuenta: 'hisoyvalh' },
+  },
+  {
+    id: 'guayaquiliando',
+    tema: 'documenta',
+    nombre: 'Guayaquiliando',
+    quien: 'Cuenta de Instagram',
+    que:
+      'Cuenta que documenta desde Pereira cómo va la situación con la emergencia, las ' +
+      'donaciones y demás temas.',
+    zona: 'Pereira, Risaralda',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Aportada por el equipo el 15-ago como cuenta que documenta la emergencia en ' +
+      'terreno desde Pereira, junto a las demás cuentas de voluntarios. Es una cuenta ' +
+      'personal, no una entidad; entra por decisión del equipo (excepción de §5 para ' +
+      'personas que ya operan como canal público).',
+    principal: { tipo: 'instagram', cuenta: 'guayaquiliando' },
+  },
+  {
+    id: 'katherine-duque',
+    tema: 'documenta',
+    nombre: 'Katherine Duque',
+    quien: 'Cuenta de Instagram',
+    que:
+      'Persona voluntaria en Buenaventura que documenta cómo va la situación con la ' +
+      'emergencia, las donaciones y demás temas.',
+    zona: 'Buenaventura, Valle del Cauca',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Aportada por el equipo el 15-ago como cuenta de una persona voluntaria en ' +
+      'Buenaventura que documenta la emergencia en terreno, junto a las demás cuentas de ' +
+      'voluntarios. Es una cuenta personal, no una entidad; entra por decisión del ' +
+      'equipo (excepción de §5 para personas que ya operan como canal público).',
+    principal: { tipo: 'instagram', cuenta: 'katheduque_' },
+  },
+  {
+    id: 'cesar-martinez',
+    tema: 'documenta',
+    nombre: 'Cesar Martinez',
+    quien: 'Cuenta de Instagram',
+    que:
+      'Persona voluntaria en Manizales que documenta cómo va la situación con la ' +
+      'emergencia, las donaciones y demás temas.',
+    zona: 'Manizales, Caldas',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Aportada por el equipo el 15-ago como cuenta de una persona voluntaria en ' +
+      'Manizales que documenta la emergencia en terreno, junto a las demás cuentas de ' +
+      'voluntarios. Es una cuenta personal, no una entidad; entra por decisión del ' +
+      'equipo (excepción de §5 para personas que ya operan como canal público).',
+    principal: { tipo: 'instagram', cuenta: 'descubriendosaborescol' },
   },
 
   /* ────────────────────────────────────────────────────── links de ayuda ── */
@@ -425,6 +554,26 @@ export const FUENTES: Fuente[] = [
       { tipo: 'mapa', enlace: 'https://sismoayudaco.com/mapa' },
       { tipo: 'formulario', enlace: 'https://sismoayudaco.com/inspector/registro' },
     ],
+  },
+  {
+    id: 'sos-pereira',
+    tema: 'ayuda',
+    nombre: 'Portal ciudadano SOS Pereira',
+    quien: 'No identificado',
+    que:
+      'Portal para Pereira donde puedes reportar una persona desaparecida y consultar ' +
+      'la lista pública, reportar edificaciones dañadas y sumarte al censo de ' +
+      'empresarios afectados.',
+    zona: 'Pereira, Risaralda',
+    revisado: '2026-08-15',
+    comprobacion:
+      'Abierta el 15-ago: portal ciudadano de Pereira con formularios para reportar ' +
+      'desaparecidos, edificaciones y un censo de empresarios, y una lista pública de ' +
+      'desaparecidos. La página no declara responsable, contacto ni política de datos, ' +
+      'así que quien la opera queda como No identificado. El equipo indica que la ' +
+      'plataforma apareció en las noticias. Entra en Links de ayuda —no en Info ' +
+      'oficial— porque no se declara ni se comprobó como entidad oficial.',
+    principal: { tipo: 'pagina', enlace: 'https://sospereira.com/' },
   },
 
   /* ────────────────────────────────────────────────── vías y transporte ── */
