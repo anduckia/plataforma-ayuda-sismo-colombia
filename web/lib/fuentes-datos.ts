@@ -116,6 +116,26 @@ export const FUENTES: Fuente[] = [
     },
   },
   {
+    id: 'redacopio-bogota',
+    tema: 'mapas',
+    nombre: 'RedAcopio Bogotá',
+    quien: 'Instagram: @dani.masdesign',
+    que:
+      'Mapa vivo de los puntos de acopio de Bogotá: por cada punto, la dirección, el ' +
+      'horario, qué está recibiendo, si está abierto o lleno y si buscan voluntarios, con ' +
+      'el estado que reporta la gente que está allí. Separa los puntos oficiales de los de ' +
+      'lista comunitaria.',
+    zona: 'Bogotá',
+    revisado: '2026-08-16',
+    comprobacion:
+      'El sitio se declara en el pie como coordinación ciudadana de puntos de acopio, con ' +
+      'contacto propio, y marca aparte los puntos oficiales (avalados por IDIGER / Alcaldía ' +
+      'de Bogotá) de la lista comunitaria. El dominio redacopiobogota.com es del proyecto, ' +
+      'no de una entidad oficial, y así lo dice él mismo. Abierto el 16-ago: 84 puntos con ' +
+      'actualizaciones de hace minutos.',
+    principal: { tipo: 'mapa', enlace: 'https://redacopiobogota.com/' },
+  },
+  {
     id: 'bengala-donde-llevar-ayuda',
     tema: 'mapas',
     nombre: 'Dónde llevar la ayuda',
@@ -156,26 +176,6 @@ export const FUENTES: Fuente[] = [
 
   /* ──────────────────────────────── voluntariado y centros de acopio ── */
   {
-    id: 'voluntariado-bogota-medellin',
-    tema: 'voluntariado',
-    nombre: 'Dónde piden voluntarios hoy',
-    quien: 'No identificado',
-    que:
-      'Hoja abierta con los puntos que están pidiendo gente: dirección, horarios, ' +
-      'qué se hace allí y enlace de inscripción, con la hora de cada actualización.',
-    zona: 'Bogotá y Medellín',
-    revisado: '2026-08-14',
-    comprobacion:
-      'El documento no declara responsable ni dice pertenecer a ninguna entidad. ' +
-      'Abierto el 14-ago: tres pestañas —voluntariado y donaciones— con filas ' +
-      'actualizadas esa misma mañana.',
-    principal: {
-      tipo: 'documento',
-      enlace:
-        'https://docs.google.com/spreadsheets/d/1-hMGwC0XaSu5ddZ896gYyVRpmbPkVYg3NJ_6rSxK4Y8/htmlview',
-    },
-  },
-  {
     id: 'acopio-centros',
     tema: 'voluntariado',
     nombre: 'Centros de acopio: qué falta y dónde sobra',
@@ -190,6 +190,24 @@ export const FUENTES: Fuente[] = [
       'no hay identidad que suplantar. Abierta el 14-ago: 65 centros cargados y ' +
       'necesidades con hora de actualización de ese mismo día.',
     principal: { tipo: 'pagina', enlace: 'https://ayudaspereira.com/' },
+  },
+  {
+    id: 'ayuda-mutua-colombia',
+    tema: 'voluntariado',
+    nombre: 'Ayuda Mutua Colombia',
+    quien: 'No identificado',
+    que:
+      'Guía nacional de puntos de ayuda mutua, buscable por ciudad y por tipo: donación ' +
+      'en especie, dinero, sangre, personas desaparecidas y comunidad. Por cada punto, qué ' +
+      'necesita exactamente ese día, la dirección y cómo llegar.',
+    revisado: '2026-08-16',
+    comprobacion:
+      'El pie declara que el sitio solo reúne información pública de ayuda mutua, que no ' +
+      'recauda fondos ni representa a las organizaciones listadas, y no dice quién lo hace: ' +
+      'sin responsable declarado no hay identidad que suplantar. El dominio colombiateamo.com ' +
+      'no coincide con el nombre del sitio. Abierto el 16-ago con 447 puntos y las ' +
+      'necesidades detalladas de cada uno.',
+    principal: { tipo: 'pagina', enlace: 'https://colombiateamo.com/' },
   },
   {
     id: 'puente-logistico',
@@ -218,42 +236,23 @@ export const FUENTES: Fuente[] = [
   {
     id: 'conectar-acopio-transporte',
     tema: 'voluntariado',
-    nombre: 'Conecta tu acopio, tu vehículo o una zona rural con la ayuda',
+    nombre: 'RUTAS: conecta acopios, transporte y zonas necesitadas',
     quien: 'Juliana Pachón · Instagram: @pony____________',
     que:
-      'Tres formularios de una misma coordinación logística: registrar un centro de ' +
-      'acopio y lo que tiene para donar, ofrecer un vehículo con espacio en su ruta, o ' +
-      'reportar una zona rural con necesidades cerca de una vía principal. Con eso cruzan ' +
-      'acopios, transportes y destinos para que las donaciones lleguen, también a zonas ' +
-      'de difícil acceso.',
-    zona: 'Valle del Cauca, Chocó, Eje Cafetero, Cauca y Cundinamarca',
-    revisado: '2026-08-15',
+      'Plataforma que cruza donaciones, centros de acopio y transportistas solidarios: ' +
+      'registras lo que tienes para donar, tu centro de acopio, tu vehículo con su ruta y ' +
+      'fecha, o una zona necesitada, y el sistema sugiere conexiones cruzando ciudad de ' +
+      'origen y destino. En «Ver conexiones» está el directorio completo para llamar o ' +
+      'escribir por WhatsApp directamente a quien te sirva.',
+    revisado: '2026-08-16',
     comprobacion:
-      'Los tres formularios los firma Juliana Pachón Neira, con un WhatsApp de contacto, ' +
-      'y el equipo los identifica con la cuenta de Instagram @pony____________. Abiertos ' +
-      'el 15-ago: «Centros de Acopio», «Transportes y transportistas» y «Rutas y Zonas ' +
-      'Rurales», los tres activos. Es la coordinación de una persona, no de una entidad; ' +
-      'la identidad la sostienen su nombre y su Instagram.',
-    principal: {
-      tipo: 'formulario',
-      etiqueta: 'Registrar un centro de acopio',
-      enlace:
-        'https://docs.google.com/forms/d/e/1FAIpQLSegssXhTQVdvTCwThg9QwlawIywdkjNaGRGbpASH_ozsyTbpw/viewform',
-    },
-    otros: [
-      {
-        tipo: 'formulario',
-        etiqueta: 'Ofrecer un vehículo para transportar',
-        enlace:
-          'https://docs.google.com/forms/d/e/1FAIpQLSeEdJ9RBik61tIz0_BfWGgYczj3omgSi1LK1AliZC0jLugRrw/viewform',
-      },
-      {
-        tipo: 'formulario',
-        etiqueta: 'Reportar una zona rural en una ruta',
-        enlace:
-          'https://docs.google.com/forms/d/e/1FAIpQLSeRh4BrCWUv2ZNC1EZjW4ab_LLkXYTs5VoMemPWrwX9ogsrpQ/viewform',
-      },
-    ],
+      'El propio sitio se firma al pie: «Creado por Juliana Pachón Neira», con WhatsApp, ' +
+      'correo e Instagram @pony____________ de contacto. Es la coordinación de una persona, ' +
+      'no de una entidad, sobre un dominio netlify.app que no dice de quién es; la identidad ' +
+      'la sostienen su nombre y su Instagram, ya declarados en la propia página. Abierta el ' +
+      '16-ago con 48 conexiones activas. Reemplaza a los tres Google Forms sueltos que ' +
+      'coordinaba antes, ahora consolidados aquí.',
+    principal: { tipo: 'pagina', enlace: 'https://rutasporcolombia.netlify.app/' },
   },
   {
     id: 'huellas-mascotas',
